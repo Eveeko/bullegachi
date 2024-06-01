@@ -1,0 +1,10 @@
+Medkit-
+Rarity: * · · · ·
+ -Heals pal to full HP.
+
+BulletTime-
+Rarity: * * * * ·
+ +Changes pal image to bulletTimePal.
+ -Disables food consumption per duration.
+ -Lasts inbetween 30m-1hr.
+ -bulletTimePal clock changes based on time left. (1h == 12 and 30m == 6pm, etc)

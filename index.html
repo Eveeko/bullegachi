@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Hello World with Sidebar</title>
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div class="container">
+        <div class="sidebar">
+            <div class="side_icon">
+                <div class="line-filter" id="infoBtn"></div>
+            </div>
+            <div class="side_icon side_icon_food" id="foodBtn">
+                <div class="line-filter"></div>
+            </div>
+            <div class="side_icon side_icon_inv" id="invBtn">
+                <div class="line-filter"></div>
+            </div>
+            <div class="side_icon side_icon_battle" id="battleBtn">
+                <div class="line-filter"></div>
+            </div>
+            <div class="side_icon side_icon_settings" id="settingsBtn">
+                <div class="line-filter"></div>
+            </div>
+            <audio id="hoverSound">
+                <source src="select_sfx.wav" type="audio/wav">
+                <!-- Add additional source elements for other audio formats if needed -->
+            </audio>
+        </div>
+        <div class="main-content">
+            <div class="bulletpal">
+                <div class="line-filter"></div>
+                <img src="faces/default_idle.png" class="bulletpal_face" id="bFace">
+                <div class="line-filter"></div>
+                </img>
+                <img src="elipse.svg" class="bulletpal_shadow">
+            </div>
+        </div>
+    </div>
+    <div id="infoBox" style="visibility: hidden;">
+        <div class="info_box" id="infoBox">
+            <div class="line-filter"></div>
+        </div>
+        <h4 class="info_health" id="info_health">health: [*] [*] [ ]</h4>
+        <h4 class="info_health info_food" id="info_food">food: 39%</h4>
+        <h4 class="info_health info_energy" id="info_energy">energy: 77%</h4>
+    </div>
+    <div id="foodBox" style="visibility: hidden;">
+        <div class="food_box" id="foodBox">
+            <div class="line-filter"></div>
+        </div>
+        <h4 class="food_title" id="food_title">Lunch Box</h4>
+        <div class="food_icon" id="food_icon_1"></div>
+        <h1 class="food_counter_1" id="food_counter_1"></h1>
+        <div class="food_icon food_icon_2" id="food_icon_2"></div>
+        <h1 class="food_counter_1 food_counter_2" id="food_counter_2"></h1>
+        <div class="food_icon food_icon_3" id="food_icon_3"></div>
+        <h1 class="food_counter_1 food_counter_3" id="food_counter_3"></h1>
+        <div class="food_warn" id="food_warn" style="display:none;">
+            <h1 class="food_warn_h1">PAL IS NOT HUNGRY</h1>
+        </div>
+    </div>
+    <div id="inventoryBox" style="visibility: hidden;">
+        <div class="inventory_box" id="inventoryBox">
+            <div class="line-filter"></div>
+        </div>
+        <h4 class="inventory_title" id="inventory_title">Inventory</h4>
+        <div class="food_icon inv_icon_1" id="inv_icon_1">
+            <h1 class="food_counter_1 inv_counter_1" id="inv_counter_1"></h1>
+        </div>
+        <div class="food_icon inv_icon_2" id="inv_icon_2">
+            <h1 class="food_counter_1 inv_counter_1" id="inv_counter_2"></h1>
+        </div>
+        <div class="food_icon inv_icon_3" id="inv_icon_3">
+            <h1 class="food_counter_1 inv_counter_1" id="inv_counter_3"></h1>
+        </div>
+        <div class="food_icon inv_icon_4" id="inv_icon_4">
+            <h1 class="food_counter_1 inv_counter_1" id="inv_counter_4"></h1>
+        </div>
+        <div class="food_icon inv_icon_5" id="inv_icon_5">
+            <h1 class="food_counter_1 inv_counter_1" id="inv_counter_5"></h1>
+        </div>
+        <div class="food_icon inv_icon_6" id="inv_icon_6">
+            <h1 class="food_counter_1 inv_counter_1" id="inv_counter_6"></h1>
+        </div>
+    </div>
+    <div id="battleBox" style="visibility: hidden;">
+        <div class="battle_box" id="battleBox">
+            <div class="line-filter"></div>
+        </div>
+        <h4 class="battle_title" id="battleTitle">Battle:</h4>
+        <h4 class="battle_timer" id="battleTimer">60s</h4>
+        <div class="battle_pal" id="battlePal"></div>
+        <div class="battle_pal_stat" id="battle_pal_stat">
+            <h4 class="battle_pal_name" id="battle_pal_name">Bullet Pal</h4>
+            <div class="battle_pal_statbox">
+                <h4 class="battle_pal_hp" id="battle_pal_hp">HP: 3</h4>
+            </div>
+        </div>
+        <audio id="deathSound">
+            <source src="death_sfx.wav" type="audio/wav">
+            <!-- Add additional source elements for other audio formats if needed -->
+        </audio>
+        <div class="battle_enemy" id="battleEnemy">
+        </div>
+        <div class="battle_enemy_stat" id="battle_enemy_stat">
+            <h4 class="battle_enemy_name" id="battle_enemy_name">Grok Rah</h4>
+            <div class="battle_enemy_statbox" id="battle_enemy_statbox">
+                <h4 class="battle_enemy_hp" id="battle_enemy_hp">HP: 100</h4>
+            </div>
+        </div>
+        <div class="battle_click_btn" id="battle_click_btn"></div>
+        <div class="battle_next_btn" id="battle_next_btn" style="visibility: hidden;"></div>
+        <div class="banner" id="bossBanner" style="display: none;">
+            <h4 class="banner-h4">BOSS ALERT BOSS ALERT BOSS ALERT BOSS ALERT BOSS ALERT</h4>
+            <audio id="bossAlertSound">
+                <source src="boss_alert_sfx.wav" type="audio/wav">
+            </audio>
+        </div>
+        <div class="battle_box_dead" id="battle_box_dead" style="visibility: hidden;">
+            <div class="battle_box_dead_img">
+                <div class="line-filter"></div>
+            </div>
+            <h4 class="battle_box_dead_h4">BulletPal is Dead.</h4>
+            <div class="battle_box_dead_line"></div>
+        </div>
+    </div>
+</body>
+<script src="index.js"></script>
+
+</html>

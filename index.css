@@ -1,0 +1,760 @@
+@font-face {
+  font-family: "VT220";
+  src: url("VT220.ttf") format("truetype");
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background:
+    /* Curved glass effect */
+    radial-gradient(circle at center,
+      rgb(25, 20, 0) 20%,
+      rgb(14, 11, 0) 70%,
+      rgb(4, 3, 0) 94%,
+      rgb(0, 0, 0) 98%);
+  position: relative;
+  background-size: 260px 210px;
+  font-family: "VT220", monospace;
+  /* Use VT220 font for the entire body */
+  user-select: none;
+  /* Standard syntax */
+}
+
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 210px;
+  background-image: linear-gradient(to bottom,
+      rgba(255, 204, 0, 0.1) 1px,
+      transparent 2px);
+  z-index: 1;
+  pointer-events: none;
+  animation: scan 7s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    background-position: 0 -100vh;
+  }
+
+  100% {
+    background-position: 0 100vh;
+  }
+}
+
+.container {
+  display: flex;
+}
+
+.sidebar {
+  position: fixed;
+  color: white;
+  width: 40px;
+  /* Adjust as needed */
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.sidebar a {
+  text-decoration: none;
+  padding: 0px;
+}
+
+.main-content {
+  padding: 20px;
+}
+
+.tile {
+  width: 25px;
+  height: 50px;
+  background-color: #ccc;
+  margin-bottom: 10px;
+}
+
+.side_icon {
+  width: 32px;
+  height: 32px;
+  top: 0px;
+  left: 0px;
+  color: transparent;
+  background-image: url("sprite_info.png");
+  background-position: center;
+  transform: rotateY(10deg) translateZ(5px);
+  /* Adjust rotation and translation values for the desired effect */
+}
+
+.side_icon:hover {
+  background-image: url("sprite_info_i.png");
+}
+
+.side_icon_food {
+  background-image: url("sprite_food.png");
+}
+
+.side_icon_food:hover {
+  background-image: url("sprite_food_i.png");
+}
+
+.side_icon_inv {
+  background-image: url("sprite_inv.png");
+}
+
+.side_icon_inv:hover {
+  background-image: url("sprite_inv_i.png");
+}
+
+.side_icon_inv:active {
+  background-image: url("sprite_inv.png");
+}
+
+.side_icon_battle {
+  background-image: url("sprite_battle.png");
+}
+
+.side_icon_battle:hover {
+  background-image: url("sprite_battle_i.png");
+}
+
+.side_icon_battle:active {
+  background-image: url("sprite_battle.png");
+}
+
+.side_icon_settings {
+  background-image: url("sprite_settings.png");
+}
+
+.side_icon_settings:hover {
+  background-image: url("sprite_settings_i.png");
+}
+
+.side_icon_settings:active {
+  background-image: url("sprite_settings.png");
+}
+
+.line-filter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(transparent,
+      transparent 2px,
+      rgba(11, 9, 0, 0.3) 3px,
+      rgba(11, 9, 0, 0.3) 4px);
+}
+
+.bulletpal {
+  background-image: url("sprite_bulletpal.png");
+  width: 160px;
+  height: 148px;
+  position: relative;
+  top: 10px;
+  left: 67px;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%) hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
+  /* Apply the SVG filter to the image */
+  filter: url(line-filter.svg#rgb-line-filter);
+  /* Apply the line filter to the image */
+}
+
+.bulletpal_face {
+  top: 82px;
+  left: 24px;
+  position: relative;
+  width: 58px;
+  height: 28px;
+  filter: blur(1px);
+  /* Apply a slight blur effect */
+}
+
+.bulletpal_shadow {
+  top: 68px;
+  left: -6px;
+  position: relative;
+  width: 120px;
+  height: 100px;
+  transform: rotateX(80deg);
+  filter: blur(10px);
+}
+
+/* info box */
+
+.info_box {
+  position: absolute;
+  top: 5px;
+  left: 40px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 180px;
+  height: 60px;
+  filter: blur(1px);
+}
+
+.info_health {
+  color: #ffcc00;
+  font-size: 12px;
+  left: 55px;
+  top: 0px;
+  position: fixed;
+  filter: blur(0px);
+}
+
+.info_food {
+  top: 15px;
+}
+
+.info_energy {
+  top: 30px;
+}
+
+/* MOVE MODE SHIT */
+
+.move-mode-border-top {
+  position: fixed;
+  border-top: 15px solid red;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.move-mode-border-bottom {
+  position: fixed;
+  border-left: 15px solid red;
+  border-right: 15px solid red;
+  width: calc(100% - 30px);
+  height: 200px;
+}
+
+.move-mode-border-left,
+.move-mode-border-right {
+  position: fixed;
+  border-top: 25px solid red;
+  border-bottom: 25px solid red;
+  height: 20px;
+  width: 100%;
+}
+
+.move-mode-border-top {
+  top: 0;
+}
+
+.move-mode-border-bottom {
+  bottom: 0;
+}
+
+.move-mode-border-left {
+  left: 0;
+}
+
+.move-mode-border-right {
+  right: 0;
+}
+
+.move-mode-text {
+  position: fixed;
+  font-size: 14px;
+  color: white;
+  pointer-events: none;
+  z-index: 10000;
+  /* Ensure text appears above borders */
+}
+
+.move-mode-text-top {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(0deg);
+  /* Rotate text for top side */
+}
+
+.move-mode-text-bottom {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
+  /* Rotate text for bottom side */
+}
+
+.move-mode-text-left {
+  top: 50%;
+  left: -24px;
+  transform: translateY(-50%) rotate(-90deg);
+  /* Rotate text for left side */
+}
+
+.move-mode-text-right {
+  top: 50%;
+  right: -22px;
+  transform: translateY(-50%) rotate(90deg);
+  /* Rotate text for right side */
+}
+
+.center-square {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  border: 0px solid red;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.center-x {
+  position: absolute;
+  top: -86px;
+  left: -32px;
+  right: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  margin: auto;
+  font-size: 92px;
+  color: red;
+}
+
+/* end of move mode shit */
+
+.food_box {
+  position: absolute;
+  top: 5px;
+  left: 40px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 210px;
+  height: 120px;
+  filter: blur(1px);
+}
+
+.food_title {
+  color: #ffcc00;
+  font-size: 18px;
+  left: 106px;
+  top: -4px;
+  position: fixed;
+  filter: blur(0.5px);
+}
+
+.food_icon {
+  position: absolute;
+  top: 50px;
+  left: 60px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 40px;
+  height: 40px;
+  filter: blur(1px);
+  background-image: url("sprite_unknown_food.png");
+  background-size: 35px 35px;
+  background-position: 2px;
+  background-repeat: no-repeat;
+}
+
+.food_icon_2 {
+  left: 120px;
+  width: 45px;
+  height: 45px;
+  top: 48px;
+  background-position: 4px;
+  background-image: url("sprite_sweets.png");
+  background-size: 40px 40px;
+}
+
+.food_icon_3 {
+  left: 190px;
+}
+
+.food_counter_1 {
+  color: #ffcc00;
+  font-size: 22px;
+  left: 78px;
+  top: 86px;
+  position: fixed;
+  filter: blur(0.5px);
+}
+
+.food_counter_2 {
+  left: 142px;
+}
+
+.food_counter_3 {
+  left: 208px;
+  background-position: 2px center;
+  background-size: 35px 35px;
+}
+
+.popupFood {
+  position: relative;
+  left: 162px;
+  top: -112px;
+  color: #ffcc00;
+  font-size: 22px;
+  animation: flicker-rising 1.5s forwards;
+}
+
+@keyframes flicker-rising {
+  0% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+
+  30% {
+    opacity: 0.2;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+
+  70% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(-20px);
+    /* Adjust this value based on your requirements */
+  }
+}
+
+.popup-container {
+  position: absolute;
+  top: 76px;
+}
+
+.inventory_box {
+  position: absolute;
+  top: 5px;
+  left: 40px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 210px;
+  height: 186px;
+  filter: blur(1px);
+}
+
+.inventory_title {
+  color: #ffcc00;
+  font-size: 22px;
+  left: 94px;
+  top: -12px;
+  position: fixed;
+  filter: blur(0.5px);
+}
+
+.inv_counter_1 {
+  left: 16px;
+  top: 32px;
+}
+
+.inv_icon_2 {
+  left: 125px;
+}
+
+.inv_icon_3 {
+  left: 190px;
+}
+
+.inv_icon_4 {
+  top: 122px;
+  left: 60px;
+}
+
+.inv_icon_5 {
+  top: 122px;
+  left: 125px;
+}
+
+.inv_icon_6 {
+  top: 122px;
+  left: 190px;
+}
+
+.battle_box {
+  position: absolute;
+  top: 5px;
+  left: 40px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 210px;
+  height: 186px;
+  filter: blur(1px);
+}
+
+.battle_title {
+  color: #ffcc00;
+  font-size: 22px;
+  left: 86px;
+  top: -12px;
+  position: fixed;
+  filter: blur(0.5px);
+}
+
+.battle_timer {
+  color: #ffcc00;
+  font-size: 22px;
+  left: 166px;
+  top: -11px;
+  position: fixed;
+  filter: blur(0.5px);
+}
+
+.battle_enemy {
+  background-image: url("sprite_enemy_1.png");
+  width: 130px;
+  height: 148px;
+  position: absolute;
+  top: 66px;
+  left: 160px;
+  background-repeat: no-repeat;
+  background-size: 56px;
+}
+
+.battle_enemy_statbox {
+  background-color: #ffcc00;
+  position: absolute;
+  top: 60px;
+  left: 153px;
+  width: 72px;
+  height: 12px;
+  border-radius: 0px;
+}
+
+.battle_enemy_name {
+  color: #ffcc00;
+  font-size: 12px;
+  left: 154px;
+  top: 32px;
+  position: fixed;
+  filter: blur(0.5px);
+}
+
+.battle_enemy_hp {
+  color: #110d00;
+  font-size: 14px;
+  left: 158px;
+  top: 41px;
+  position: fixed;
+}
+
+.battle_pal {
+  background-image: url("sprite_bulletpal_f.png");
+  width: 130px;
+  height: 148px;
+  position: absolute;
+  top: 92px;
+  left: 64px;
+  background-repeat: no-repeat;
+  background-size: 56px;
+}
+
+.battle_pal_statbox {
+  background-color: #ffcc00;
+  position: absolute;
+  top: -13px;
+  left: -4px;
+  width: 62px;
+  height: 12px;
+  border-radius: 0px;
+}
+
+.battle_pal_name {
+  color: #ffcc00;
+  font-size: 12px;
+  left: 60px;
+  top: 51px;
+  position: fixed;
+  filter: blur(0.5px);
+}
+
+.battle_pal_hp {
+  color: #110d00;
+  font-size: 14px;
+  left: 64px;
+  top: 60px;
+  position: fixed;
+}
+
+.battle_click_btn {
+  background-image: url("sprite_battle.png");
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 134px;
+  left: 122px;
+  background-repeat: no-repeat;
+  background-size: 50px;
+  filter: blur(0.5px);
+}
+
+.battle_enemy_stat {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.popupItem {
+  position: absolute;
+  top: 0px;
+  left: 162px;
+  font-size: 14px;
+  color: #ffcc00;
+  animation: flicker-rising 1.5s forwards;
+}
+
+.battle_next_btn {
+  background-image: url("sprite_next_btn.png");
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 134px;
+  left: 122px;
+  background-repeat: no-repeat;
+  background-size: 50px;
+  filter: blur(0.5px);
+}
+
+@keyframes bannerscroll {
+  0% {
+    left: -136px;
+    top: -148px;
+    visibility: visible;
+    background-color: rgba(11, 9, 0, 0.039);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    background-color: #ffcc00;
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    background-color: rgba(11, 9, 0, 0.039);
+  }
+
+  90% {
+    background-color: #ffcc00;
+    visibility: visible;
+  }
+
+  100% {
+    background-color: rgba(11, 9, 0, 0.039);
+    left: -536px;
+    top: 180px;
+    visibility: hidden;
+  }
+}
+
+.banner {
+  position: absolute;
+  left: -136px;
+  top: -148px;
+  font-size: 32px;
+  color: #110d00;
+  background-color: #ffcc00;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 220px;
+  animation: bannerscroll 7s linear forwards;
+  transform: rotate(320deg);
+}
+
+.banner-h4 {
+  margin: auto;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.battle_pal_stat {
+  position: absolute;
+  left: 63px;
+  top: 92px;
+}
+
+.battle_box_dead {
+  position: absolute;
+  left: 54px;
+  top: 16px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 180px;
+  height: 164px;
+  filter: blur(1px);
+}
+
+.battle_box_dead_img {
+  position: absolute;
+  left: 55px;
+  top: 20px;
+  background-image: url(sprite_pal_dead.png);
+  background-size: 65px 65px;
+  background-repeat: no-repeat;
+  width: 65px;
+  height: 65px;
+}
+
+.battle_box_dead_h4 {
+  position: absolute;
+  left: 2px;
+  top: 62px;
+  font-size: 22px;
+  color: #ffcc00;
+  text-align: center;
+}
+
+.battle_box_dead_line {
+  position: absolute;
+  left: 50px;
+  top: 140px;
+  border: 3px;
+  background-color: #ffcc00;
+  width: 76px;
+  height: 4px;
+}
+
+.food_warn {
+  position: absolute;
+  left: 41px;
+  top: 62px;
+  height: 20px;
+  width: 213px;
+  background-color: #ffcc00;
+  color: #110d00;
+  filter: blur(1px);
+  animation: blink_rapid 5.5s;
+}
+
+.food_warn_h1 {
+  position: absolute;
+  left: 15px;
+  top: -14px;
+  font-size: 22px;
+  color: #110d00;
+}
+
+@keyframes blink_rapid {
+  0%, 20%, 40%, 60%, 80%, 100%{
+    background-color: #ffcc00;
+  }
+  10%, 30%, 50%, 70%, 90% {
+    background-color: rgba(11, 9, 0, 0.039);
+  };
+}

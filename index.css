@@ -8,12 +8,13 @@ body {
   padding: 0;
   overflow: hidden;
   background:
-    /* Curved glass effect */
-    radial-gradient(circle at center,
-      rgb(25, 20, 0) 20%,
-      rgb(14, 11, 0) 70%,
-      rgb(4, 3, 0) 94%,
-      rgb(0, 0, 0) 98%);
+    /* Curved glass effect */ radial-gradient(
+    circle at center,
+    rgb(25, 20, 0) 20%,
+    rgb(14, 11, 0) 70%,
+    rgb(4, 3, 0) 94%,
+    rgb(0, 0, 0) 98%
+  );
   position: relative;
   background-size: 260px 210px;
   font-family: "VT220", monospace;
@@ -28,9 +29,11 @@ body {
   left: 0;
   width: 100%;
   height: 210px;
-  background-image: linear-gradient(to bottom,
-      rgba(255, 204, 0, 0.1) 1px,
-      transparent 2px);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 204, 0, 0.1) 1px,
+    transparent 2px
+  );
   z-index: 1;
   pointer-events: none;
   animation: scan 7s linear infinite;
@@ -144,10 +147,12 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(transparent,
-      transparent 2px,
-      rgba(11, 9, 0, 0.3) 3px,
-      rgba(11, 9, 0, 0.3) 4px);
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(11, 9, 0, 0.3) 3px,
+    rgba(11, 9, 0, 0.3) 4px
+  );
 }
 
 .bulletpal {
@@ -159,7 +164,8 @@ body {
   left: 67px;
   background-repeat: no-repeat;
   background-size: auto 100%;
-  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%) hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
+  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%)
+    hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
   /* Apply the SVG filter to the image */
   filter: url(line-filter.svg#rgb-line-filter);
   /* Apply the line filter to the image */
@@ -220,7 +226,7 @@ body {
 
 .move-mode-border-top {
   position: fixed;
-  border-top: 15px solid red;
+  border-top: 15px solid #ffcc00;
   width: 100%;
   top: 0;
   left: 0;
@@ -228,8 +234,9 @@ body {
 
 .move-mode-border-bottom {
   position: fixed;
-  border-left: 15px solid red;
-  border-right: 15px solid red;
+  border-left: 15px solid #ffcc00;
+  border-right: 15px solid #ffcc00;
+  border-bottom: 15px solid #ffcc00;
   width: calc(100% - 30px);
   height: 200px;
 }
@@ -237,8 +244,8 @@ body {
 .move-mode-border-left,
 .move-mode-border-right {
   position: fixed;
-  border-top: 25px solid red;
-  border-bottom: 25px solid red;
+  border-top: 25px solid #ffcc00;
+  border-bottom: 25px solid #ffcc00;
   height: 20px;
   width: 100%;
 }
@@ -262,21 +269,21 @@ body {
 .move-mode-text {
   position: fixed;
   font-size: 14px;
-  color: white;
+  color: #110d00;
   pointer-events: none;
   z-index: 10000;
   /* Ensure text appears above borders */
 }
 
 .move-mode-text-top {
-  top: 0;
+  top: 2px;
   left: 50%;
   transform: translateX(-50%) rotate(0deg);
   /* Rotate text for top side */
 }
 
 .move-mode-text-bottom {
-  bottom: 0;
+  bottom: 2px;
   left: 50%;
   transform: translateX(-50%) rotate(180deg);
   /* Rotate text for bottom side */
@@ -284,14 +291,14 @@ body {
 
 .move-mode-text-left {
   top: 50%;
-  left: -24px;
+  left: -23px;
   transform: translateY(-50%) rotate(-90deg);
   /* Rotate text for left side */
 }
 
 .move-mode-text-right {
   top: 50%;
-  right: -22px;
+  right: -23px;
   transform: translateY(-50%) rotate(90deg);
   /* Rotate text for right side */
 }
@@ -303,7 +310,7 @@ body {
   transform: translate(-50%, -50%);
   width: 100px;
   height: 100px;
-  border: 0px solid red;
+  border: 0px solid #ffcc00;
   box-sizing: border-box;
   cursor: pointer;
 }
@@ -318,7 +325,7 @@ body {
   height: 0;
   margin: auto;
   font-size: 92px;
-  color: red;
+  color: #ffcc00;
 }
 
 /* end of move mode shit */
@@ -751,10 +758,62 @@ body {
 }
 
 @keyframes blink_rapid {
-  0%, 20%, 40%, 60%, 80%, 100%{
+  0%,
+  20%,
+  40%,
+  60%,
+  80%,
+  100% {
     background-color: #ffcc00;
   }
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     background-color: rgba(11, 9, 0, 0.039);
-  };
+  }
+}
+
+/*
+      SETTINGS BOX AREA
+*/
+
+.settings_box {
+  position: absolute;
+  left: 34px;
+  top: 175px;
+  background-color: #ffcc00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 64px;
+  height: 4px;
+  filter: blur(1px);
+}
+
+.set_icon {
+  position: relative;
+  display: inline-block;
+  left: 40px;
+  top: -59px;
+  width: 32px;
+  height: 32px;
+  background-color: #110d00;
+  background-image: url(sprite_move.png);
+}
+
+.icon_mute {
+  background-image: url("sprite_mute.png");
+}
+
+.info_sacrifice {
+  background-image: url("sprite_sacrifice.png");
+  width: 32px;
+  height: 32px;
+  position: relative;
+  display: inline-block;
+  left: 174px;
+  top: -166px;
+  filter: blur(0.5px);
+
 }

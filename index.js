@@ -1,4 +1,4 @@
-const path = window.electronRequire('path');
+const path = window.electronRequire("path");
 
 const bFace = document.getElementById("bFace");
 const infoBtn = document.getElementById("infoBtn");
@@ -50,6 +50,11 @@ const bossAlertSound = document.getElementById("bossAlertSound");
 const battlePalStat = document.getElementById("battle_pal_stat");
 const battleBoxDead = document.getElementById("battle_box_dead");
 const foodWarn = document.getElementById("food_warn");
+const moveBtn = document.getElementById("moveBtn");
+const muteBtn = document.getElementById("muteBtn");
+const settingsBox = document.getElementById("settingsBox");
+const sacrificeBtn = document.getElementById("info_sacrifice");
+const sidebar = document.getElementById("sidebar");
 
 var moveMode = false;
 var isDragging = false;
@@ -57,6 +62,9 @@ let offset = { x: 0, y: 0 };
 var __dirname = "";
 var firstSetEnemy = true;
 var health = 3; // bullet pals health.
+var audioEnabled = true;
+var infoOpen = false;
+var sacking = false;
 
 var moveFaceTimeout; // Used to store the timeout object so it can be cancelled.
 var foods; // Used to store the foods obj
@@ -64,8 +72,8 @@ var items; // Used to store the items obj
 var enemy; // Used to store the enemy obj
 
 // Listen for the base directory path from the main process
-window.electron.receive('get-base-dir', (baseDir) => {
-  console.log('Base directory:', baseDir);
+window.electron.receive("get-base-dir", (baseDir) => {
+  console.log("Base directory:", baseDir);
   __dirname = baseDir;
 });
 
@@ -84,7 +92,7 @@ function moveFace() {
   // Set the next move after a random time between 2 and 9 seconds
   var randomTime = Math.floor(Math.random() * (13000 - 2000) + 2000); // Random time between 2 and 13 seconds in milliseconds
   moveFaceTimeout = setTimeout(moveFace, randomTime);
-};
+}
 
 // Start moving the div
 moveFaceTimeout = setTimeout(moveFace, 7000);
@@ -96,9 +104,11 @@ moveFaceTimeout = setTimeout(moveFace, 7000);
  * plays the select sfx.
  */
 function playSelectSfx() {
-  hoverSound.currentTime = 0; // Rewind the sound to the beginning
-  hoverSound.play(); // Play the sound
-};
+  if (audioEnabled) {
+    hoverSound.currentTime = 0; // Rewind the sound to the beginning
+    hoverSound.play(); // Play the sound
+  }
+}
 /**
  * closes all panels except the provided panel.
  * 1 = foodBox, 2 = invBox, 3 = battleBox, 4 = settingBox
@@ -107,47 +117,74 @@ function playSelectSfx() {
 function closeAnyOpenPanels(selector) {
   switch (selector) {
     case 1:
-      invBox.style.visibility = 'hidden';
-      invBtn.style.backgroundImage = ""
-      battleBox.style.visibility = 'hidden';
+      invBox.style.visibility = "hidden";
+      invBtn.style.backgroundImage = "";
+      battleBox.style.visibility = "hidden";
       battleBtn.style.backgroundImage = "";
       break;
     case 2:
-      foodBox.style.visibility = 'hidden';
+      foodBox.style.visibility = "hidden";
       foodBtn.style.backgroundImage = "";
-      battleBox.style.visibility = 'hidden';
+      battleBox.style.visibility = "hidden";
       battleBtn.style.backgroundImage = "";
       break;
     case 3:
-      invBox.style.visibility = 'hidden';
-      invBtn.style.backgroundImage = ""
-      foodBox.style.visibility = 'hidden';
+      invBox.style.visibility = "hidden";
+      invBtn.style.backgroundImage = "";
+      foodBox.style.visibility = "hidden";
       foodBtn.style.backgroundImage = "";
       break;
     case 4:
-      foodBox.style.visibility = 'hidden';
+      foodBox.style.visibility = "hidden";
       foodBtn.style.backgroundImage = "";
-      invBox.style.visibility = 'hidden';
+      invBox.style.visibility = "hidden";
       invBtn.style.backgroundImage = "";
-      battleBox.style.visibility = 'hidden';
+      battleBox.style.visibility = "hidden";
       battleBtn.style.backgroundImage = "";
       break;
     default:
-      foodBox.style.visibility = 'hidden';
+      foodBox.style.visibility = "hidden";
       foodBtn.style.backgroundImage = "";
-      invBox.style.visibility = 'hidden';
-      invBtn.style.backgroundImage = ""
-      battleBox.style.visibility = 'hidden';
+      invBox.style.visibility = "hidden";
+      invBtn.style.backgroundImage = "";
+      battleBox.style.visibility = "hidden";
       battleBtn.style.backgroundImage = "";
   }
-};
+}
 infoBtn.onmouseover = () => {
-  playSelectSfx();
-  infoBox.style.visibility = "visible";
+  if (!infoOpen) {
+    playSelectSfx();
+    infoBox.style.visibility = "visible";
+    infoBtn.style.backgroundImage = `url("sprite_info_i.png")`;
+  };
 };
 infoBtn.onmouseout = () => {
-  infoBox.style.visibility = "hidden";
+  if (!infoOpen) {
+    infoBox.style.visibility = "hidden";
+    infoBtn.style.backgroundImage = `url("sprite_info.png")`;
+  }
 };
+infoBtn.onmousedown = () => {
+  if (infoOpen) {
+    infoOpen = false;
+    infoBox.style.visibility = "hidden";
+  } else {
+    infoOpen = true;
+    infoBox.style.visibility = "visible";
+  };
+  if (infoBox.style.visibility == "visible") {
+    infoBtn.style.backgroundImage = `url("sprite_info.png")`;
+    setTimeout(() => {
+      infoBtn.style.backgroundImage = `url("sprite_info_i.png")`;
+    }, 150);
+  } else {
+    infoBtn.style.backgroundImage = `url("sprite_info_i.png")`;
+    setTimeout(() => {
+      infoBtn.style.backgroundImage = `url("sprite_info.png")`;
+    }, 150);
+  }
+  playSelectSfx();
+}
 foodBtn.onmouseover = () => {
   playSelectSfx();
 };
@@ -155,16 +192,16 @@ foodBtn.onmousedown = () => {
   closeAnyOpenPanels(1);
   if (foodBox.style.visibility == "visible") {
     foodBox.style.visibility = "hidden";
-    foodBtn.style.backgroundImage = `url("sprite_food.png")`
+    foodBtn.style.backgroundImage = `url("sprite_food.png")`;
     setTimeout(() => {
-      foodBtn.style.backgroundImage = ""
-    }, 150)
+      foodBtn.style.backgroundImage = "";
+    }, 150);
   } else {
     foodBox.style.visibility = "visible";
-    foodBtn.style.backgroundImage = `url("sprite_food.png")`
+    foodBtn.style.backgroundImage = `url("sprite_food.png")`;
     setTimeout(() => {
-      foodBtn.style.backgroundImage = `url("sprite_food_i.png")`
-    }, 150)
+      foodBtn.style.backgroundImage = `url("sprite_food_i.png")`;
+    }, 150);
   }
   playSelectSfx();
 };
@@ -175,19 +212,19 @@ invBtn.onmousedown = () => {
   closeAnyOpenPanels(2);
   if (invBox.style.visibility == "visible") {
     invBox.style.visibility = "hidden";
-    invBtn.style.backgroundImage = `url("sprite_inv.png")`
+    invBtn.style.backgroundImage = `url("sprite_inv.png")`;
     setTimeout(() => {
-      invBtn.style.backgroundImage = ""
-    }, 150)
+      invBtn.style.backgroundImage = "";
+    }, 150);
   } else {
     invBox.style.visibility = "visible";
-    invBtn.style.backgroundImage = `url("sprite_inv.png")`
+    invBtn.style.backgroundImage = `url("sprite_inv.png")`;
     setTimeout(() => {
-      invBtn.style.backgroundImage = `url("sprite_inv_i.png")`
-    }, 150)
+      invBtn.style.backgroundImage = `url("sprite_inv_i.png")`;
+    }, 150);
   }
   playSelectSfx();
-}
+};
 battleBtn.onmouseover = () => {
   playSelectSfx();
 };
@@ -195,25 +232,38 @@ battleBtn.onmousedown = () => {
   closeAnyOpenPanels(3);
   if (battleBox.style.visibility == "visible") {
     battleBox.style.visibility = "hidden";
-    battleBtn.style.backgroundImage = `url("sprite_battle.png")`
+    battleBtn.style.backgroundImage = `url("sprite_battle.png")`;
     setTimeout(() => {
-      battleBtn.style.backgroundImage = ""
-    }, 150)
+      battleBtn.style.backgroundImage = "";
+    }, 150);
   } else {
     battleBox.style.visibility = "visible";
-    battleBtn.style.backgroundImage = `url("sprite_battle.png")`
+    battleBtn.style.backgroundImage = `url("sprite_battle.png")`;
     setTimeout(() => {
-      battleBtn.style.backgroundImage = `url("sprite_battle_i.png")`
-    }, 150)
+      battleBtn.style.backgroundImage = `url("sprite_battle_i.png")`;
+    }, 150);
   }
   playSelectSfx();
-}
+};
 settingsBtn.onmouseover = () => {
   playSelectSfx();
 };
 settingsBtn.onmousedown = () => {
-  createMoveModeBorder();
-}
+  if (settingsBox.style.visibility == "visible") {
+    settingsBox.style.visibility = "hidden";
+    settingsBtn.style.backgroundImage = `url("sprite_settings.png")`;
+    setTimeout(() => {
+      settingsBtn.style.backgroundImage = "";
+    }, 150);
+  } else {
+    settingsBox.style.visibility = "visible";
+    settingsBtn.style.backgroundImage = `url("sprite_settings.png")`;
+    setTimeout(() => {
+      settingsBtn.style.backgroundImage = `url("sprite_settings_i.png")`;
+    }, 150);
+  }
+  playSelectSfx();
+};
 
 // MOVE MODE FUNCTIONALITY
 // -----------------------
@@ -241,25 +291,25 @@ function createMoveModeBorder() {
 
   const centerX = document.createElement("h1");
   centerX.className = "center-x";
-  centerX.textContent = "X"
+  centerX.textContent = "X";
   centerSquare.appendChild(centerX);
 
   centerSquare.addEventListener("click", removeMoveModeBorder);
   moveMode = true;
-  window.electron.send('toggle-move-mode', true);
+  window.electron.send("toggle-move-mode", true);
 }
 
 function removeMoveModeBorder() {
   moveModeBorders.forEach((element) => {
     element.remove();
   });
-  document.querySelector('.center-square').remove();
+  document.querySelector(".center-square").remove();
   moveModeBorders = []; // Reset the array
   moveMode = false;
-  window.electron.send('toggle-move-mode', false);
+  window.electron.send("toggle-move-mode", false);
 }
 
-document.addEventListener('mousedown', (event) => {
+document.addEventListener("mousedown", (event) => {
   if (moveMode == true) {
     isDragging = true;
     offset.x = event.screenX - window.screenLeft;
@@ -267,15 +317,15 @@ document.addEventListener('mousedown', (event) => {
   }
 });
 
-document.addEventListener('mousemove', (event) => {
+document.addEventListener("mousemove", (event) => {
   if (isDragging) {
     const newX = event.screenX - offset.x;
     const newY = event.screenY - offset.y;
-    window.electron.send('drag-window', { x: newX, y: newY });
+    window.electron.send("drag-window", { x: newX, y: newY });
   }
 });
 
-document.addEventListener('mouseup', () => {
+document.addEventListener("mouseup", () => {
   isDragging = false;
 });
 
@@ -283,150 +333,151 @@ document.addEventListener('mouseup', () => {
 //removeMoveModeBorder(); // for debug
 
 // info panel listeners
-window.electron.receive('setStats', (stats) => {
-  console.log('Stats received for info panel:', stats);
+window.electron.receive("setStats", (stats) => {
+  console.log("Stats received for info panel:", stats);
   switch (stats.health) {
     case 3:
       infoHealth.innerHTML = `health: [*] [*] [*]`;
-      bFace.src = 'faces/default_idle.png'
+      bFace.src = "faces/default_idle.png";
       break;
     case 2:
       infoHealth.innerHTML = `health: [*] [*] [ ]`;
-      bFace.src = 'faces/default_sad_1.png'
+      bFace.src = "faces/default_sad_1.png";
       break;
     case 1:
       infoHealth.innerHTML = `health: [*] [ ] [ ]`;
-      bFace.src = 'faces/default_sad_2.png'
+      bFace.src = "faces/default_sad_2.png";
       break;
     case 0:
       infoHealth.innerHTML = `health: D E A D`;
-      bFace.src = 'faces/default_dead.png'
+      bFace.src = "faces/default_dead.png";
       break;
-  };
+  }
   infoFood.innerHTML = `food: ${stats.food}%`;
   infoEnergy.innerHTML = `energy: ${stats.energy}%`;
 });
 
-window.electron.receive('setFoods', (foodsObj) => {
+window.electron.receive("setFoods", (foodsObj) => {
   foods = foodsObj;
-  console.log(`Foods object updated:`)
+  console.log(`Foods object updated:`);
   console.log(foodsObj);
   if (foodsObj[0].discovered == true) {
     foodIcon1.style.backgroundImage = `url("sprite_orange.png")`;
     foodCounter1.innerHTML = foods[0].count;
-  } if (foodsObj[1].discovered == true) {
+  }
+  if (foodsObj[1].discovered == true) {
     foodIcon2.style.backgroundImage = `url("sprite_sweets.png")`;
     foodCounter2.innerHTML = foods[1].count;
-  } if (foodsObj[2].discovered == true) {
+  }
+  if (foodsObj[2].discovered == true) {
     foodIcon3.style.backgroundImage = `url("sprite_spice.png")`;
     foodCounter3.innerHTML = foods[2].count;
   }
 });
 
-window.electron.receive('killPal', (bool) => {
+window.electron.receive("killPal", (bool) => {
   console.log("pal killed.");
   bFace.setAttribute("src", "faces/default_dead.png");
   clearTimeout(moveFaceTimeout);
-  battleBoxDead.style.visibility = '';
+  battleBoxDead.style.visibility = "";
 }); // Kill the pal.
 
-window.electron.receive('alivePal', (bool) => {
+window.electron.receive("alivePal", (bool) => {
   console.log("pal alived.");
   bFace.setAttribute("src", "faces/default_idle.png");
   moveFace();
-  battleBoxDead.style.visibility = 'hidden';
+  battleBoxDead.style.visibility = "hidden";
 }); // Alive the pal.
 
-foodIcon1.addEventListener('mouseover', () => {
+foodIcon1.addEventListener("mouseover", () => {
   if (foods[0].discovered == true) {
-    foodIcon1.style.backgroundImage = `url("sprite_orange_i.png")`
-    foodIcon1.style.backgroundPosition = "0px"
-    foodIcon1.style.backgroundSize = "40px 40px"
+    foodIcon1.style.backgroundImage = `url("sprite_orange_i.png")`;
+    foodIcon1.style.backgroundPosition = "0px";
+    foodIcon1.style.backgroundSize = "40px 40px";
     playSelectSfx();
-  };
-})
-foodIcon1.addEventListener('mouseleave', () => {
+  }
+});
+foodIcon1.addEventListener("mouseleave", () => {
   if (foods[0].discovered == true) {
-    foodIcon1.style.backgroundImage = `url("sprite_orange.png")`
-    foodIcon1.style.backgroundPosition = "2px"
-    foodIcon1.style.backgroundSize = "35px 35px"
-  };
-})
-foodIcon1.addEventListener('mousedown', () => {
+    foodIcon1.style.backgroundImage = `url("sprite_orange.png")`;
+    foodIcon1.style.backgroundPosition = "2px";
+    foodIcon1.style.backgroundSize = "35px 35px";
+  }
+});
+foodIcon1.addEventListener("mousedown", () => {
   if (foods[0].discovered == true) {
-    foodIcon1.style.backgroundImage = `url("sprite_orange.png")`
-    foodIcon1.style.backgroundPosition = "2px"
-    foodIcon1.style.backgroundSize = "35px 35px"
+    foodIcon1.style.backgroundImage = `url("sprite_orange.png")`;
+    foodIcon1.style.backgroundPosition = "2px";
+    foodIcon1.style.backgroundSize = "35px 35px";
     playSelectSfx();
     window.electron.send("consume_food", "orange");
     setTimeout(() => {
-      foodIcon1.style.backgroundImage = `url("sprite_orange_i.png")`
-      foodIcon1.style.backgroundPosition = "0px"
-      foodIcon1.style.backgroundSize = "40px 40px"
-    }, 150)
-  };
-})
-foodIcon2.addEventListener('mouseover', () => {
+      foodIcon1.style.backgroundImage = `url("sprite_orange_i.png")`;
+      foodIcon1.style.backgroundPosition = "0px";
+      foodIcon1.style.backgroundSize = "40px 40px";
+    }, 150);
+  }
+});
+foodIcon2.addEventListener("mouseover", () => {
   if (foods[1].discovered == true) {
-    foodIcon2.style.backgroundImage = `url("sprite_sweets_i.png")`
-    foodIcon2.style.backgroundPosition = "0px"
-    foodIcon2.style.backgroundSize = "45px 45px"
+    foodIcon2.style.backgroundImage = `url("sprite_sweets_i.png")`;
+    foodIcon2.style.backgroundPosition = "0px";
+    foodIcon2.style.backgroundSize = "45px 45px";
     playSelectSfx();
-
-  };
-})
-foodIcon2.addEventListener('mouseleave', () => {
+  }
+});
+foodIcon2.addEventListener("mouseleave", () => {
   if (foods[1].discovered == true) {
-    foodIcon2.style.backgroundImage = `url("sprite_sweets.png")`
-    foodIcon2.style.backgroundPosition = "4px"
-    foodIcon2.style.backgroundSize = "40px 40px"
-  };
-})
-foodIcon2.addEventListener('mousedown', () => {
+    foodIcon2.style.backgroundImage = `url("sprite_sweets.png")`;
+    foodIcon2.style.backgroundPosition = "4px";
+    foodIcon2.style.backgroundSize = "40px 40px";
+  }
+});
+foodIcon2.addEventListener("mousedown", () => {
   if (foods[1].discovered == true) {
-    foodIcon2.style.backgroundImage = `url("sprite_sweets.png")`
-    foodIcon2.style.backgroundPosition = "4px"
-    foodIcon2.style.backgroundSize = "40px 40px"
+    foodIcon2.style.backgroundImage = `url("sprite_sweets.png")`;
+    foodIcon2.style.backgroundPosition = "4px";
+    foodIcon2.style.backgroundSize = "40px 40px";
     playSelectSfx();
     window.electron.send("consume_food", "sweets");
     setTimeout(() => {
-      foodIcon2.style.backgroundImage = `url("sprite_sweets_i.png")`
-      foodIcon2.style.backgroundPosition = "0px"
-      foodIcon2.style.backgroundSize = "45px 45px"
+      foodIcon2.style.backgroundImage = `url("sprite_sweets_i.png")`;
+      foodIcon2.style.backgroundPosition = "0px";
+      foodIcon2.style.backgroundSize = "45px 45px";
     }, 150);
-  };
-})
-foodIcon3.addEventListener('mouseover', () => {
+  }
+});
+foodIcon3.addEventListener("mouseover", () => {
   if (foods[2].discovered == true) {
-    foodIcon3.style.backgroundImage = `url("sprite_spice_i.png")`
-    foodIcon3.style.backgroundPosition = "0px"
-    foodIcon3.style.backgroundSize = "40px 40px"
+    foodIcon3.style.backgroundImage = `url("sprite_spice_i.png")`;
+    foodIcon3.style.backgroundPosition = "0px";
+    foodIcon3.style.backgroundSize = "40px 40px";
     playSelectSfx();
-  };
-})
-foodIcon3.addEventListener('mouseleave', () => {
+  }
+});
+foodIcon3.addEventListener("mouseleave", () => {
   if (foods[2].discovered == true) {
-    foodIcon3.style.backgroundImage = `url("sprite_spice.png")`
-    foodIcon3.style.backgroundPosition = "2px"
-    foodIcon3.style.backgroundSize = "35px 35px"
-  };
-})
-foodIcon3.addEventListener('mousedown', () => {
+    foodIcon3.style.backgroundImage = `url("sprite_spice.png")`;
+    foodIcon3.style.backgroundPosition = "2px";
+    foodIcon3.style.backgroundSize = "35px 35px";
+  }
+});
+foodIcon3.addEventListener("mousedown", () => {
   if (foods[2].discovered == true) {
-    foodIcon3.style.backgroundImage = `url("sprite_spice.png")`
-    foodIcon3.style.backgroundPosition = "2px"
-    foodIcon3.style.backgroundSize = "35px 35px"
+    foodIcon3.style.backgroundImage = `url("sprite_spice.png")`;
+    foodIcon3.style.backgroundPosition = "2px";
+    foodIcon3.style.backgroundSize = "35px 35px";
     playSelectSfx();
     window.electron.send("consume_food", "spice");
     setTimeout(() => {
-      foodIcon3.style.backgroundImage = `url("sprite_spice_i.png")`
-      foodIcon3.style.backgroundPosition = "0px"
-      foodIcon3.style.backgroundSize = "40px 40px"
-    }, 150)
-  };
-})
+      foodIcon3.style.backgroundImage = `url("sprite_spice_i.png")`;
+      foodIcon3.style.backgroundPosition = "0px";
+      foodIcon3.style.backgroundSize = "40px 40px";
+    }, 150);
+  }
+});
 
-window.electron.receive('food_popup', (num) => {
+window.electron.receive("food_popup", (num) => {
   var popupElement = document.createElement("h1");
   popupElement.textContent = `+${num}%`;
   popupElement.className = "popupFood";
@@ -446,21 +497,27 @@ window.electron.receive('food_popup', (num) => {
   audioElement.src = "foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
   audioElement.autoplay = true;
   audioElement.volume = 0.2; // Adjust the volume as needed
+  if (!audioEnabled) {
+    audioElement.volume = 0;
+  }
   popupElement.appendChild(audioElement);
 
   setTimeout(function () {
     foodBox.removeChild(popupElement);
     foodBox.removeChild(audioElement);
   }, 1300); // 1500 milliseconds = 1.5 seconds
-})
+});
 
 var isWarningFood = false;
 
-window.electron.receive('food_full', () => {
+window.electron.receive("food_full", () => {
   if (isWarningFood == false) {
     isWarningFood = true;
     foodWarn.style.display = "block";
-    setTimeout(() => { foodWarn.style.display = "none"; isWarningFood = false }, 1500);
+    setTimeout(() => {
+      foodWarn.style.display = "none";
+      isWarningFood = false;
+    }, 1500);
   }
 });
 
@@ -468,198 +525,203 @@ window.electron.receive('food_full', () => {
 // Inventory system
 // --------------------
 
-window.electron.receive('setItems', (itemsObj) => {
+window.electron.receive("setItems", (itemsObj) => {
   items = itemsObj;
-  console.log(`Items object updated:`)
+  console.log(`Items object updated:`);
   console.log(itemsObj);
   if (itemsObj[0].discovered == true) {
     invIcon1.style.backgroundImage = `url("sprite_medkit.png")`;
     invCounter1.innerHTML = items[0].count;
-  } if (itemsObj[1].discovered == true) {
+  }
+  if (itemsObj[1].discovered == true) {
     invIcon2.style.backgroundImage = `url("sprite_bulletTime.png")`;
     invCounter2.innerHTML = items[1].count;
-  } if (itemsObj[2].discovered == true) {
+  }
+  if (itemsObj[2].discovered == true) {
     invIcon3.style.backgroundImage = `url("sprite_soda.png")`;
     invCounter3.innerHTML = items[2].count;
-  } if (itemsObj[3].discovered == true) {
+  }
+  if (itemsObj[3].discovered == true) {
     invIcon4.style.backgroundImage = `url("sprite_sword.png")`;
     invCounter4.innerHTML = items[3].count;
-  } if (itemsObj[4].discovered == true) {
+  }
+  if (itemsObj[4].discovered == true) {
     invIcon5.style.backgroundImage = `url("sprite_lootbox.png")`;
     invCounter5.innerHTML = items[4].count;
-  } if (itemsObj[5].discovered == true) {
+  }
+  if (itemsObj[5].discovered == true) {
     invIcon6.style.backgroundImage = `url("sprite_heartchain.png")`;
     invCounter6.innerHTML = items[5].count;
-  };
+  }
 });
-invIcon1.addEventListener('mouseover', () => {
+invIcon1.addEventListener("mouseover", () => {
   if (items[0].discovered == true) {
-    invIcon1.style.backgroundImage = `url("sprite_medkit_i.png")`
-    invIcon1.style.backgroundPosition = "0px"
-    invIcon1.style.backgroundSize = "40px 40px"
+    invIcon1.style.backgroundImage = `url("sprite_medkit_i.png")`;
+    invIcon1.style.backgroundPosition = "0px";
+    invIcon1.style.backgroundSize = "40px 40px";
     playSelectSfx();
-  };
-})
-invIcon1.addEventListener('mouseleave', () => {
+  }
+});
+invIcon1.addEventListener("mouseleave", () => {
   if (items[0].discovered == true) {
-    invIcon1.style.backgroundImage = `url("sprite_medkit.png")`
-    invIcon1.style.backgroundPosition = "2px"
-    invIcon1.style.backgroundSize = "35px 35px"
-  };
-})
-invIcon1.addEventListener('mousedown', () => {
+    invIcon1.style.backgroundImage = `url("sprite_medkit.png")`;
+    invIcon1.style.backgroundPosition = "2px";
+    invIcon1.style.backgroundSize = "35px 35px";
+  }
+});
+invIcon1.addEventListener("mousedown", () => {
   if (items[0].discovered == true) {
-    invIcon1.style.backgroundImage = `url("sprite_medkit.png")`
-    invIcon1.style.backgroundPosition = "2px"
-    invIcon1.style.backgroundSize = "35px 35px"
+    invIcon1.style.backgroundImage = `url("sprite_medkit.png")`;
+    invIcon1.style.backgroundPosition = "2px";
+    invIcon1.style.backgroundSize = "35px 35px";
     playSelectSfx();
     setTimeout(() => {
-      invIcon1.style.backgroundImage = `url("sprite_medkit_i.png")`
-      invIcon1.style.backgroundPosition = "0px"
-      invIcon1.style.backgroundSize = "40px 40px"
-    }, 150)
-  };
-})
-invIcon2.addEventListener('mouseover', () => {
+      invIcon1.style.backgroundImage = `url("sprite_medkit_i.png")`;
+      invIcon1.style.backgroundPosition = "0px";
+      invIcon1.style.backgroundSize = "40px 40px";
+    }, 150);
+  }
+});
+invIcon2.addEventListener("mouseover", () => {
   if (items[1].discovered == true) {
-    invIcon2.style.backgroundImage = `url("sprite_bulletTime_i.png")`
-    invIcon2.style.backgroundPosition = "0px"
-    invIcon2.style.backgroundSize = "40px 40px"
+    invIcon2.style.backgroundImage = `url("sprite_bulletTime_i.png")`;
+    invIcon2.style.backgroundPosition = "0px";
+    invIcon2.style.backgroundSize = "40px 40px";
     playSelectSfx();
-  };
-})
-invIcon2.addEventListener('mouseleave', () => {
+  }
+});
+invIcon2.addEventListener("mouseleave", () => {
   if (items[1].discovered == true) {
-    invIcon2.style.backgroundImage = `url("sprite_bulletTime.png")`
-    invIcon2.style.backgroundPosition = "2px"
-    invIcon2.style.backgroundSize = "35px 35px"
-  };
-})
-invIcon2.addEventListener('mousedown', () => {
+    invIcon2.style.backgroundImage = `url("sprite_bulletTime.png")`;
+    invIcon2.style.backgroundPosition = "2px";
+    invIcon2.style.backgroundSize = "35px 35px";
+  }
+});
+invIcon2.addEventListener("mousedown", () => {
   if (items[1].discovered == true) {
-    invIcon2.style.backgroundImage = `url("sprite_bulletTime.png")`
-    invIcon2.style.backgroundPosition = "2px"
-    invIcon2.style.backgroundSize = "35px 35px"
+    invIcon2.style.backgroundImage = `url("sprite_bulletTime.png")`;
+    invIcon2.style.backgroundPosition = "2px";
+    invIcon2.style.backgroundSize = "35px 35px";
     playSelectSfx();
     setTimeout(() => {
-      invIcon2.style.backgroundImage = `url("sprite_bulletTime_i.png")`
-      invIcon2.style.backgroundPosition = "0px"
-      invIcon2.style.backgroundSize = "40px 40px"
-    }, 150)
-  };
-})
-invIcon3.addEventListener('mouseover', () => {
+      invIcon2.style.backgroundImage = `url("sprite_bulletTime_i.png")`;
+      invIcon2.style.backgroundPosition = "0px";
+      invIcon2.style.backgroundSize = "40px 40px";
+    }, 150);
+  }
+});
+invIcon3.addEventListener("mouseover", () => {
   if (items[2].discovered == true) {
-    invIcon3.style.backgroundImage = `url("sprite_soda_i.png")`
-    invIcon3.style.backgroundPosition = "0px"
-    invIcon3.style.backgroundSize = "40px 40px"
+    invIcon3.style.backgroundImage = `url("sprite_soda_i.png")`;
+    invIcon3.style.backgroundPosition = "0px";
+    invIcon3.style.backgroundSize = "40px 40px";
     playSelectSfx();
-  };
-})
-invIcon3.addEventListener('mouseleave', () => {
+  }
+});
+invIcon3.addEventListener("mouseleave", () => {
   if (items[2].discovered == true) {
-    invIcon3.style.backgroundImage = `url("sprite_soda.png")`
-    invIcon3.style.backgroundPosition = "2px"
-    invIcon3.style.backgroundSize = "35px 35px"
-  };
-})
-invIcon3.addEventListener('mousedown', () => {
+    invIcon3.style.backgroundImage = `url("sprite_soda.png")`;
+    invIcon3.style.backgroundPosition = "2px";
+    invIcon3.style.backgroundSize = "35px 35px";
+  }
+});
+invIcon3.addEventListener("mousedown", () => {
   if (items[2].discovered == true) {
-    invIcon3.style.backgroundImage = `url("sprite_soda.png")`
-    invIcon3.style.backgroundPosition = "2px"
-    invIcon3.style.backgroundSize = "35px 35px"
+    invIcon3.style.backgroundImage = `url("sprite_soda.png")`;
+    invIcon3.style.backgroundPosition = "2px";
+    invIcon3.style.backgroundSize = "35px 35px";
     playSelectSfx();
     setTimeout(() => {
-      invIcon3.style.backgroundImage = `url("sprite_soda_i.png")`
-      invIcon3.style.backgroundPosition = "0px"
-      invIcon3.style.backgroundSize = "40px 40px"
-    }, 150)
-  };
-})
-invIcon4.addEventListener('mouseover', () => {
+      invIcon3.style.backgroundImage = `url("sprite_soda_i.png")`;
+      invIcon3.style.backgroundPosition = "0px";
+      invIcon3.style.backgroundSize = "40px 40px";
+    }, 150);
+  }
+});
+invIcon4.addEventListener("mouseover", () => {
   if (items[3].discovered == true) {
-    invIcon4.style.backgroundImage = `url("sprite_sword_i.png")`
-    invIcon4.style.backgroundPosition = "0px"
-    invIcon4.style.backgroundSize = "40px 40px"
+    invIcon4.style.backgroundImage = `url("sprite_sword_i.png")`;
+    invIcon4.style.backgroundPosition = "0px";
+    invIcon4.style.backgroundSize = "40px 40px";
     playSelectSfx();
-  };
-})
-invIcon4.addEventListener('mouseleave', () => {
+  }
+});
+invIcon4.addEventListener("mouseleave", () => {
   if (items[3].discovered == true) {
-    invIcon4.style.backgroundImage = `url("sprite_sword.png")`
-    invIcon4.style.backgroundPosition = "2px"
-    invIcon4.style.backgroundSize = "35px 35px"
-  };
-})
-invIcon4.addEventListener('mousedown', () => {
+    invIcon4.style.backgroundImage = `url("sprite_sword.png")`;
+    invIcon4.style.backgroundPosition = "2px";
+    invIcon4.style.backgroundSize = "35px 35px";
+  }
+});
+invIcon4.addEventListener("mousedown", () => {
   if (items[3].discovered == true) {
-    invIcon4.style.backgroundImage = `url("sprite_sword.png")`
-    invIcon4.style.backgroundPosition = "2px"
-    invIcon4.style.backgroundSize = "35px 35px"
+    invIcon4.style.backgroundImage = `url("sprite_sword.png")`;
+    invIcon4.style.backgroundPosition = "2px";
+    invIcon4.style.backgroundSize = "35px 35px";
     playSelectSfx();
     setTimeout(() => {
-      invIcon4.style.backgroundImage = `url("sprite_sword_i.png")`
-      invIcon4.style.backgroundPosition = "0px"
-      invIcon4.style.backgroundSize = "40px 40px"
-    }, 150)
-  };
-})
-invIcon5.addEventListener('mouseover', () => {
+      invIcon4.style.backgroundImage = `url("sprite_sword_i.png")`;
+      invIcon4.style.backgroundPosition = "0px";
+      invIcon4.style.backgroundSize = "40px 40px";
+    }, 150);
+  }
+});
+invIcon5.addEventListener("mouseover", () => {
   if (items[4].discovered == true) {
-    invIcon5.style.backgroundImage = `url("sprite_lootbox_i.png")`
-    invIcon5.style.backgroundPosition = "0px"
-    invIcon5.style.backgroundSize = "40px 40px"
+    invIcon5.style.backgroundImage = `url("sprite_lootbox_i.png")`;
+    invIcon5.style.backgroundPosition = "0px";
+    invIcon5.style.backgroundSize = "40px 40px";
     playSelectSfx();
-  };
-})
-invIcon5.addEventListener('mouseleave', () => {
+  }
+});
+invIcon5.addEventListener("mouseleave", () => {
   if (items[4].discovered == true) {
-    invIcon5.style.backgroundImage = `url("sprite_lootbox.png")`
-    invIcon5.style.backgroundPosition = "2px"
-    invIcon5.style.backgroundSize = "35px 35px"
-  };
-})
-invIcon5.addEventListener('mousedown', () => {
+    invIcon5.style.backgroundImage = `url("sprite_lootbox.png")`;
+    invIcon5.style.backgroundPosition = "2px";
+    invIcon5.style.backgroundSize = "35px 35px";
+  }
+});
+invIcon5.addEventListener("mousedown", () => {
   if (items[4].discovered == true) {
-    invIcon5.style.backgroundImage = `url("sprite_lootbox.png")`
-    invIcon5.style.backgroundPosition = "2px"
-    invIcon5.style.backgroundSize = "35px 35px"
+    invIcon5.style.backgroundImage = `url("sprite_lootbox.png")`;
+    invIcon5.style.backgroundPosition = "2px";
+    invIcon5.style.backgroundSize = "35px 35px";
     playSelectSfx();
     setTimeout(() => {
-      invIcon5.style.backgroundImage = `url("sprite_lootbox_i.png")`
-      invIcon5.style.backgroundPosition = "0px"
-      invIcon5.style.backgroundSize = "40px 40px"
-    }, 150)
-  };
-})
-invIcon6.addEventListener('mouseover', () => {
+      invIcon5.style.backgroundImage = `url("sprite_lootbox_i.png")`;
+      invIcon5.style.backgroundPosition = "0px";
+      invIcon5.style.backgroundSize = "40px 40px";
+    }, 150);
+  }
+});
+invIcon6.addEventListener("mouseover", () => {
   if (items[5].discovered == true) {
-    invIcon6.style.backgroundImage = `url("sprite_heartchain_i.png")`
-    invIcon6.style.backgroundPosition = "0px"
-    invIcon6.style.backgroundSize = "40px 40px"
+    invIcon6.style.backgroundImage = `url("sprite_heartchain_i.png")`;
+    invIcon6.style.backgroundPosition = "0px";
+    invIcon6.style.backgroundSize = "40px 40px";
     playSelectSfx();
-  };
-})
-invIcon6.addEventListener('mouseleave', () => {
+  }
+});
+invIcon6.addEventListener("mouseleave", () => {
   if (items[5].discovered == true) {
-    invIcon6.style.backgroundImage = `url("sprite_heartchain.png")`
-    invIcon6.style.backgroundPosition = "2px"
-    invIcon6.style.backgroundSize = "35px 35px"
-  };
-})
-invIcon6.addEventListener('mousedown', () => {
+    invIcon6.style.backgroundImage = `url("sprite_heartchain.png")`;
+    invIcon6.style.backgroundPosition = "2px";
+    invIcon6.style.backgroundSize = "35px 35px";
+  }
+});
+invIcon6.addEventListener("mousedown", () => {
   if (items[5].discovered == true) {
-    invIcon6.style.backgroundImage = `url("sprite_heartchain.png")`
-    invIcon6.style.backgroundPosition = "2px"
-    invIcon6.style.backgroundSize = "35px 35px"
+    invIcon6.style.backgroundImage = `url("sprite_heartchain.png")`;
+    invIcon6.style.backgroundPosition = "2px";
+    invIcon6.style.backgroundSize = "35px 35px";
     playSelectSfx();
     setTimeout(() => {
-      invIcon6.style.backgroundImage = `url("sprite_heartchain_i.png")`
-      invIcon6.style.backgroundPosition = "0px"
-      invIcon6.style.backgroundSize = "40px 40px"
-    }, 150)
-  };
-})
+      invIcon6.style.backgroundImage = `url("sprite_heartchain_i.png")`;
+      invIcon6.style.backgroundPosition = "0px";
+      invIcon6.style.backgroundSize = "40px 40px";
+    }, 150);
+  }
+});
 
 // ---------------------
 //     Attack window
@@ -670,19 +732,19 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let attackSoundBuffer;
 
 // Load the audio file
-fetch('attack_sfx.wav')
-  .then(response => response.arrayBuffer())
-  .then(data => audioContext.decodeAudioData(data))
-  .then(buffer => {
+fetch("attack_sfx.wav")
+  .then((response) => response.arrayBuffer())
+  .then((data) => audioContext.decodeAudioData(data))
+  .then((buffer) => {
     attackSoundBuffer = buffer;
   })
-  .catch(e => console.error('Error with decoding audio data', e));
+  .catch((e) => console.error("Error with decoding audio data", e));
 
 // Function to play attack sfx
 // Function to play attack sfx with pitch variation
 function playAttackSfx() {
   if (!attackSoundBuffer) {
-    console.error('Audio buffer not loaded yet');
+    console.error("Audio buffer not loaded yet");
     return;
   }
 
@@ -700,7 +762,9 @@ function playAttackSfx() {
   gainNode.connect(audioContext.destination);
 
   // Start the sound
-  source.start(0);
+  if (audioEnabled) {
+    source.start(0);
+  }
 }
 
 function shake(selector) {
@@ -709,16 +773,16 @@ function shake(selector) {
     enemy = battlePal;
   } else {
     enemy = battleEnemy;
-  };
+  }
   const shakeFrames = [
-    { transform: 'translate(0, 0)' },
-    { transform: 'translate(-10px, 0)' },
-    { transform: 'translate(10px, 0)' },
-    { transform: 'translate(-10px, 0)' },
-    { transform: 'translate(10px, 0)' },
-    { transform: 'translate(-5px, 0)' },
-    { transform: 'translate(5px, 0)' },
-    { transform: 'translate(0, 0)' }
+    { transform: "translate(0, 0)" },
+    { transform: "translate(-10px, 0)" },
+    { transform: "translate(10px, 0)" },
+    { transform: "translate(-10px, 0)" },
+    { transform: "translate(10px, 0)" },
+    { transform: "translate(-5px, 0)" },
+    { transform: "translate(5px, 0)" },
+    { transform: "translate(0, 0)" },
   ];
 
   let frame = 0;
@@ -731,23 +795,23 @@ function shake(selector) {
       setTimeout(animate, 50); // Adjust the timing as needed
     } else {
       // Reset to the original position
-      enemy.style.transform = 'translate(0, 0)';
+      enemy.style.transform = "translate(0, 0)";
     }
   }
 
   animate();
 }
 
-battleClickBtn.addEventListener('mouseover', () => {
-  battleClickBtn.style.backgroundImage = `url("sprite_battle_i.png")`
+battleClickBtn.addEventListener("mouseover", () => {
+  battleClickBtn.style.backgroundImage = `url("sprite_battle_i.png")`;
   playSelectSfx();
 });
-battleClickBtn.addEventListener('mouseleave', () => {
-  battleClickBtn.style.backgroundImage = `url("sprite_battle.png")`
+battleClickBtn.addEventListener("mouseleave", () => {
+  battleClickBtn.style.backgroundImage = `url("sprite_battle.png")`;
 });
-battleClickBtn.addEventListener('mousedown', () => {
+battleClickBtn.addEventListener("mousedown", () => {
   playAttackSfx();
-  window.electron.send('battle-click');
+  window.electron.send("battle-click");
   battleClickBtn.style.backgroundImage = `url("sprite_battle.png")`;
   shake();
   setTimeout(() => {
@@ -757,9 +821,11 @@ battleClickBtn.addEventListener('mousedown', () => {
 });
 
 function playDeathSfx() {
-  deathSound.currentTime = 0; // Rewind the sound to the beginning
-  deathSound.play(); // Play the sound
-};
+  if (audioEnabled) {
+    deathSound.currentTime = 0; // Rewind the sound to the beginning
+    deathSound.play(); // Play the sound
+  }
+}
 
 function popupItem(name, bl) {
   var popupElement = document.createElement("h1");
@@ -784,11 +850,14 @@ function popupItem(name, bl) {
   var audioElement = document.createElement("audio");
   if (bl) {
     audioElement.src = "ne_sfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
-    audioElement.volume = 1.0 // Adjust the volume as needed
+    audioElement.volume = 1.0; // Adjust the volume as needed
   } else {
     audioElement.src = "foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
     audioElement.volume = 0.2; // Adjust the volume as needed
-  };
+  }
+  if (!audioEnabled) {
+    audioElement.volume = 0;
+  }
   audioElement.autoplay = true;
   popupElement.appendChild(audioElement);
 
@@ -796,65 +865,65 @@ function popupItem(name, bl) {
     battleBox.removeChild(popupElement);
     battleBox.removeChild(audioElement);
   }, 1500); // 1500 milliseconds = 1.5 seconds
-};
+}
 
-battleNextBtn.addEventListener('mouseover', () => {
-  battleNextBtn.style.backgroundImage = `url("sprite_next_btn_i.png")`
+battleNextBtn.addEventListener("mouseover", () => {
+  battleNextBtn.style.backgroundImage = `url("sprite_next_btn_i.png")`;
   playSelectSfx();
 });
-battleNextBtn.addEventListener('mouseleave', () => {
-  battleNextBtn.style.backgroundImage = `url("sprite_next_btn.png")`
+battleNextBtn.addEventListener("mouseleave", () => {
+  battleNextBtn.style.backgroundImage = `url("sprite_next_btn.png")`;
 });
-battleNextBtn.addEventListener('mousedown', () => {
-  battleNextBtn.style.backgroundImage = `url("sprite_next_btn.png")`
+battleNextBtn.addEventListener("mousedown", () => {
+  battleNextBtn.style.backgroundImage = `url("sprite_next_btn.png")`;
   playSelectSfx();
   setTimeout(() => {
-    battleNextBtn.style.backgroundImage = `url("sprite_next_btn_i.png")`
-    window.electron.send('advanceEnemy');
-  }, 150)
+    battleNextBtn.style.backgroundImage = `url("sprite_next_btn_i.png")`;
+    window.electron.send("advanceEnemy");
+  }, 150);
 });
 
 var killingEnemy = false;
 
-window.electron.receive('setEnemy', (enemyObj) => {
+window.electron.receive("setEnemy", (enemyObj) => {
   enemy = enemyObj;
   if (enemy.health == 0 && firstSetEnemy == true) {
     // enemy was dead on startup.
     firstSetEnemy = false;
-    battleClickBtn.style.visibility = 'hidden';
+    battleClickBtn.style.visibility = "hidden";
     battleEnemyHP.innerHTML = `D E A D`;
     battleEnemyName.innerHTML = `${enemyObj.name}`;
-    battleEnemy.style.visibility = 'hidden';
+    battleEnemy.style.visibility = "hidden";
     battleTimer.innerHTML = `--`;
-    battleNextBtn.style.visibility = '';
-    console.log('Enemy loaded as dead.');
+    battleNextBtn.style.visibility = "";
+    console.log("Enemy loaded as dead.");
   } else {
     // enemy still alive, process.
     battleEnemyHP.innerHTML = `HP: ${enemyObj.health}`;
     battleEnemyName.innerHTML = `${enemyObj.name}`;
     battleEnemy.style.backgroundImage = `url("sprite_enemy_${enemyObj.face}.png")`;
     battleTimer.innerHTML = `${enemyObj.ttk}s`;
-    console.log('Enemy updated.');
+    console.log("Enemy updated.");
   }
 });
 
-window.electron.receive('killEnemy', (enemyObj) => {
-  console.log('window killing enemy.');
-  battleNextBtn.style.visibility = 'hidden';
+window.electron.receive("killEnemy", (enemyObj) => {
+  console.log("window killing enemy.");
+  battleNextBtn.style.visibility = "hidden";
   // Enemy dead, process.
   killingEnemy = true;
   enemy = enemyObj;
-  battleClickBtn.style.visibility = 'hidden';
+  battleClickBtn.style.visibility = "hidden";
   battleEnemyHP.innerHTML = `D E A D`;
-  battleEnemy.style.visibility = 'hidden';
-  battleTimer.innerHTML = '--';
+  battleEnemy.style.visibility = "hidden";
+  battleTimer.innerHTML = "--";
   playDeathSfx();
   setTimeout(() => {
     battleEnemy.style.backgroundImage = `url("sprite_enemy_dead_1.png")`;
-    battleEnemy.style.visibility = '';
+    battleEnemy.style.visibility = "";
     setTimeout(() => {
       // Wrap up current enemy and generate new.
-      battleEnemy.style.visibility = 'hidden';
+      battleEnemy.style.visibility = "hidden";
       // Drop random item.
       var itemId = weightedRandom();
       var itemName = "err";
@@ -865,27 +934,27 @@ window.electron.receive('killEnemy', (enemyObj) => {
       // -------------------------------------------------------------------------------|
       switch (itemId) {
         case 1:
-          itemName = 'Orange';
+          itemName = "Orange";
           break;
         case 2:
-          itemName = 'Sweets';
+          itemName = "Sweets";
           break;
         case 3:
-          itemName = 'Spice';
+          itemName = "Spice";
           break;
         case 4:
-          itemName = 'BulletTime';
+          itemName = "BulletTime";
           break;
         case 5:
-          itemName = 'Lootbox';
+          itemName = "Lootbox";
           break;
         case 6:
-          itemName = 'HeartChain';
+          itemName = "HeartChain";
           break;
-      };
+      }
       popupItem(itemName);
-      window.electron.send('itemDropped', itemId);
-      battleNextBtn.style.visibility = '';
+      window.electron.send("itemDropped", itemId);
+      battleNextBtn.style.visibility = "";
     }, 1500);
   }, 1000);
 });
@@ -898,7 +967,7 @@ function weightedRandom() {
     { number: 3, weight: 10 }, // Higher chance
     { number: 4, weight: 5 },
     { number: 5, weight: 10 },
-    { number: 6, weight: 5 }
+    { number: 6, weight: 5 },
   ];
 
   // Calculate the total weight
@@ -917,9 +986,9 @@ function weightedRandom() {
   }
 }
 
-window.electron.receive('timerDamage', (currentHealth) => {
+window.electron.receive("timerDamage", (currentHealth) => {
   // Timer expired and needs to deal damage to pal.
-  console.log('timerDamage triggered', currentHealth);
+  console.log("timerDamage triggered", currentHealth);
   health = currentHealth;
   if (health == 0) {
     // Out of health, kill it.
@@ -927,78 +996,161 @@ window.electron.receive('timerDamage', (currentHealth) => {
     // Healthy enough, ruin it.
     health--;
     battlePalHP.innerHTML = `HP: ${health}`;
-    battleClickBtn.style.visibility = 'hidden';
-    shake(true); // Shakes the bulletPal. 
+    battleClickBtn.style.visibility = "hidden";
+    shake(true); // Shakes the bulletPal.
     playDeathSfx(); // Play sfx.
     setTimeout(() => {
-      battleEnemyHP.innerHTML = 'FLED';
-      battleEnemyName.innerHTML = '';
-      battleTimer.innerHTML = '--';
-      battleEnemy.style.visibility = 'hidden';
+      battleEnemyHP.innerHTML = "FLED";
+      battleEnemyName.innerHTML = "";
+      battleTimer.innerHTML = "--";
+      battleEnemy.style.visibility = "hidden";
       playSelectSfx();
-      battleNextBtn.style.visibility = '';
+      battleNextBtn.style.visibility = "";
     }, 2500);
-  };
+  }
 });
 
-window.electron.receive('neEnergy', (str) => {
+window.electron.receive("neEnergy", (str) => {
   popupItem(str, true);
 });
 
-window.electron.receive('nextEnemy', (enemyObj) => {
+window.electron.receive("nextEnemy", (enemyObj) => {
   enemy = enemyObj;
-  console.log('nxtEnemy', enemy);
-  console.log('generating next enemy and reseting battleBox');
-  battleNextBtn.style.visibility = 'hidden';
+  console.log("nxtEnemy", enemy);
+  console.log("generating next enemy and reseting battleBox");
+  battleNextBtn.style.visibility = "hidden";
   setTimeout(() => {
-    battleEnemyStatbox.style.visibility = 'hidden';
-    battleEnemyName.style.visibility = 'hidden';
+    battleEnemyStatbox.style.visibility = "hidden";
+    battleEnemyName.style.visibility = "hidden";
     setTimeout(() => {
-      battlePalHP.style.visibility = 'hidden';
-      battlePalName.style.visibility = 'hidden';
-      battlePal.style.visibility = 'hidden';
-      battlePalStat.style.visibility = 'hidden';
+      battlePalHP.style.visibility = "hidden";
+      battlePalName.style.visibility = "hidden";
+      battlePal.style.visibility = "hidden";
+      battlePalStat.style.visibility = "hidden";
       setTimeout(() => {
-        battleTimer.innerHTML = '';
+        battleTimer.innerHTML = "";
         setTimeout(() => {
           p1();
         }, 1500);
-      }, 500)
-    }, 500)
-  }, 500)
+      }, 500);
+    }, 500);
+  }, 500);
   function p1() {
     // Modify all elements to comply with new enemy.
     battleEnemyHP.innerHTML = `HP: ${enemy.health}`;
     battleEnemyName.innerHTML = enemy.name;
     battleEnemy.style.backgroundImage = `url("sprite_enemy_${enemy.face}.png")`;
     // Reshow all elements.
-    battleEnemyStatbox.style.visibility = '';
-    battleEnemyName.style.visibility = '';
-    battleEnemy.style.visibility = '';
-    battlePalHP.style.visibility = '';
-    battlePalName.style.visibility = '';
-    battlePal.style.visibility = '';
-    battlePalStat.style.visibility = '';
-    battleTimer.innerHTML = '--';
+    battleEnemyStatbox.style.visibility = "";
+    battleEnemyName.style.visibility = "";
+    battleEnemy.style.visibility = "";
+    battlePalHP.style.visibility = "";
+    battlePalName.style.visibility = "";
+    battlePal.style.visibility = "";
+    battlePalStat.style.visibility = "";
+    battleTimer.innerHTML = "--";
     playSelectSfx();
     if (enemy.boss == true) {
-      battleBossBanner.style.display = '';
+      battleBossBanner.style.display = "";
       bossAlertSound.currentTime = 0; // Rewind the sound to the beginning
       bossAlertSound.play(); // Play the sound
       setTimeout(() => {
-        battleBossBanner.style.display = 'none';
+        battleBossBanner.style.display = "none";
         p2();
       }, 7000);
     } else {
       p2();
     }
-  };
+  }
   function p2() {
     setTimeout(() => {
       battleTimer.innerHTML = `${enemy.ttk}s`;
       killingEnemy = false;
-      battleClickBtn.style.visibility = '';
-      window.electron.send('startTTK');
-    }, 500)
+      battleClickBtn.style.visibility = "";
+      window.electron.send("startTTK");
+    }, 500);
   }
-})
+});
+
+/* 
+  Settings box stuff
+*/
+
+moveBtn.addEventListener("mouseover", () => {
+  moveBtn.style.backgroundImage = `url("sprite_move_i.png")`;
+  playSelectSfx();
+});
+moveBtn.addEventListener("mouseleave", () => {
+  moveBtn.style.backgroundImage = `url("sprite_move.png")`;
+});
+moveBtn.addEventListener("mousedown", () => {
+  moveBtn.style.backgroundImage = `url("sprite_move.png")`;
+  playSelectSfx();
+  createMoveModeBorder();
+  setTimeout(() => {
+    moveBtn.style.backgroundImage = `url("sprite_move_i.png")`;
+  }, 150);
+});
+
+muteBtn.addEventListener("mouseover", () => {
+  if (audioEnabled) {
+    muteBtn.style.backgroundImage = `url("sprite_volume_i.png")`;
+  } else {
+    muteBtn.style.backgroundImage = `url("sprite_mute_i.png")`;
+  }
+  playSelectSfx();
+});
+muteBtn.addEventListener("mouseleave", () => {
+  if (audioEnabled) {
+    muteBtn.style.backgroundImage = `url("sprite_volume.png")`;
+  } else {
+    muteBtn.style.backgroundImage = `url("sprite_mute.png")`;
+  }
+});
+muteBtn.addEventListener("mousedown", () => {
+  if (audioEnabled) {
+    muteBtn.style.backgroundImage = `url("sprite_mute_i.png")`;
+  } else {
+    muteBtn.style.backgroundImage = `url("sprite_volume_i.png")`;
+  }
+  playSelectSfx();
+  audioEnabled = !audioEnabled;
+  setTimeout(() => {
+    if (!audioEnabled) {
+      muteBtn.style.backgroundImage = `url("sprite_mute.png")`;
+    } else {
+      muteBtn.style.backgroundImage = `url("sprite_volume.png")`;
+    }
+  }, 150);
+});
+
+sacrificeBtn.addEventListener("mouseover", () => {
+  sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice_i.png")`;
+  playSelectSfx();
+});
+sacrificeBtn.addEventListener("mouseleave", () => {
+  sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice.png")`;
+});
+sacrificeBtn.addEventListener("mousedown", () => {
+  sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice_i.png")`;
+  popupItem("Sacrifice", true);
+  if (!sacking) {
+    window.electron.send("startSacrifice");
+  }
+  sacking = true;
+  setTimeout(() => {
+    sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice.png")`;
+    setTimeout(() => {
+      sacrificeBtn.style.visibility = "hidden";
+      playAttackSfx();
+      setTimeout(() => {
+        sidebar.style.visibility = "hidden";
+        playAttackSfx();
+        setTimeout(() => {
+          infoBox.style.visibility = "hidden";
+          playAttackSfx();
+        }, 1500)
+      }, 1000)
+    }, 500);
+  }, 150);
+});

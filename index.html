@@ -11,9 +11,9 @@
 <body>
     <div class="scanlines"></div>
     <div class="container">
-        <div class="sidebar">
-            <div class="side_icon">
-                <div class="line-filter" id="infoBtn"></div>
+        <div class="sidebar" id="sidebar">
+            <div class="side_icon" id="infoBtn">
+                <div class="line-filter"></div>
             </div>
             <div class="side_icon side_icon_food" id="foodBtn">
                 <div class="line-filter"></div>
@@ -49,6 +49,9 @@
         <h4 class="info_health" id="info_health">health: [*] [*] [ ]</h4>
         <h4 class="info_health info_food" id="info_food">food: 39%</h4>
         <h4 class="info_health info_energy" id="info_energy">energy: 77%</h4>
+        <div class="info_sacrifice" id="info_sacrifice">
+            <div class="line-filter"></div>
+        </div>
     </div>
     <div id="foodBox" style="visibility: hidden;">
         <div class="food_box" id="foodBox">
@@ -128,6 +131,17 @@
             </div>
             <h4 class="battle_box_dead_h4">BulletPal is Dead.</h4>
             <div class="battle_box_dead_line"></div>
+        </div>
+    </div>
+    <div id="settingsBox" style="visibility: hidden;">
+        <div class="settings_box">
+            <div class="line-filter"></div>
+        </div>
+        <div class="set_icon icon_move" id="moveBtn">
+            <div class="line-filter"></div>
+        </div>
+        <div class="set_icon icon_mute" id="muteBtn">
+            <div class="line-filter"></div>
         </div>
     </div>
 </body>

@@ -817,3 +817,13 @@ body {
   filter: blur(0.5px);
 
 }
+
+/* 
+
+*/
+
+.dedpal_glitch{
+  top: -22px;
+  left: -58px;
+  position: absolute;
+}

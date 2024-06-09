@@ -55,6 +55,9 @@ const muteBtn = document.getElementById("muteBtn");
 const settingsBox = document.getElementById("settingsBox");
 const sacrificeBtn = document.getElementById("info_sacrifice");
 const sidebar = document.getElementById("sidebar");
+const nullEventVid = document.getElementById("nullEventVid");
+const nullEventSfx = document.getElementById("nullEventSfx");
+const dedpal_glitch_div = document.getElementById("dedpal_glitch");
 
 var moveMode = false;
 var isDragging = false;
@@ -1149,6 +1152,13 @@ sacrificeBtn.addEventListener("mousedown", () => {
         setTimeout(() => {
           infoBox.style.visibility = "hidden";
           playAttackSfx();
+          setTimeout(() =>{
+            dedpal_glitch_div.style.display = "block";
+            nullEventVid.currentTime = 0;
+            nullEventVid.play();
+            nullEventSfx.currentTime = 0;
+            nullEventSfx.play();
+          }, 5000);
         }, 1500)
       }, 1000)
     }, 500);

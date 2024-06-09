@@ -1,7 +1,13 @@
 const { app, BrowserWindow, Tray, Menu, screen, ipcMain, contextBridge } = require("electron");
 const path = require("node:path");
 const fs = require("fs");
+const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
 //const electronReload = require("electron-reload");
+
+// Configure logging
+log.transports.file.level = 'info';
+autoUpdater.logger = log;
 
 // Initialize electron-reload with the directory to watch for changes
 //electronReload(__dirname);
@@ -95,6 +101,9 @@ const createWindow = () => {
     win.webContents.send('get-base-dir', __dirname);
     startGameLoop();
   });
+
+   // Check for updates after creating the window
+   autoUpdater.checkForUpdatesAndNotify();
 };
 
 ipcMain.on('base-dir', (event, baseDir) => {
@@ -624,4 +633,26 @@ ipcMain.on('startTTK', (event) => {
       }
     }, 1000);
   }
+});
+
+// ------------------------
+//    Auto-updater Events
+// ------------------------
+// Auto-updater events
+autoUpdater.on('update-available', (info) => {
+  log.info('Update available:', info);
+  mainWindow.webContents.send('update-available', info);
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  log.info('Update downloaded:', info);
+  mainWindow.webContents.send('update-downloaded', info);
+
+  // Optionally prompt the user to install the update
+  autoUpdater.quitAndInstall();
+});
+
+autoUpdater.on('error', (err) => {
+  log.error('Error in auto-updater:', err);
+  mainWindow.webContents.send('update-error', err);
 });

@@ -12,5 +12,22 @@
   "devDependencies": {
     "electron": "^29.3.1",
     "electron-reload": "^2.0.0-alpha.1"
-  }
+  },
+  "dependencies": {
+    "electron-log": "^5.1.5",
+    "electron-updater": "^6.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Eveeko/bullegachi"
+  },
+  "build": {
+    "latest": [
+        {
+            "provider": "github",
+            "owner": "Eveeko",
+            "repo": "bullegachi"
+        }
+    ]
+}
 }

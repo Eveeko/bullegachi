@@ -1,5 +1,7 @@
 const path = window.electronRequire("path");
 
+const scanlines = document.getElementById("scanlines");
+const bPal = document.getElementById("bulletpal");
 const bFace = document.getElementById("bFace");
 const infoBtn = document.getElementById("infoBtn");
 const foodBtn = document.getElementById("foodBtn");
@@ -1152,12 +1154,44 @@ sacrificeBtn.addEventListener("mousedown", () => {
         setTimeout(() => {
           infoBox.style.visibility = "hidden";
           playAttackSfx();
-          setTimeout(() =>{
+          setTimeout(() => {
             dedpal_glitch_div.style.display = "block";
             nullEventVid.currentTime = 0;
             nullEventVid.play();
             nullEventSfx.currentTime = 0;
             nullEventSfx.play();
+            setTimeout(() => {
+              // Blank out the screen and display pals level popup.
+              bPal.style.display = 'none';
+              dedpal_glitch_div.style.display = 'none';
+              setTimeout(() => {
+                var popupElement = document.createElement("h1");
+                popupElement.className = "popupLvl";
+                popupElement.id = "popupLvl";
+                popupElement.textContent = "-Lvl 23";
+                scanlines.appendChild(popupElement);
+                var audioElement = document.createElement("audio");
+                audioElement.src = "foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
+                audioElement.volume = 0.2; // Adjust the volume as needed
+                audioElement.autoplay = true;
+                popupElement.appendChild(audioElement);
+                setTimeout(function () {
+                  console.log("removing popup.")
+                  scanlines.removeChild(popupElement);
+                  setTimeout(() => {
+                    console.log('resetting stage')
+                    sidebar.style.visibility = "visible";
+                    playSelectSfx();
+                    setTimeout(() => {
+                      bFace.src = "faces/default_idle.png";
+                      bFace.style.visibility = "visible";
+                      bPal.style.display = "block";
+                      
+                    }, 2500);
+                  }, 500);
+                }, 1500); // 1500 milliseconds = 1.5 seconds
+              }, 500);
+            }, 7000);
           }, 5000);
         }, 1500)
       }, 1000)

@@ -102,8 +102,8 @@ const createWindow = () => {
     startGameLoop();
   });
 
-   // Check for updates after creating the window
-   autoUpdater.checkForUpdatesAndNotify();
+  // Check for updates after creating the window
+  autoUpdater.checkForUpdatesAndNotify();
 };
 
 ipcMain.on('base-dir', (event, baseDir) => {
@@ -248,6 +248,10 @@ let energy = 100; // Initial energy value (percentage)
 let dead = false; // Initial state of whether the player Fis dead
 let attack = 1; // Attack power per click.
 let nextEnergyCost = 20; // Initial energy cost value.
+let timeSpawned = new Date();
+let trackingIntervalId = null; // Global variable to store the interval ID
+let palLevel = 1; // Current level of the pal (based on time spent alive)
+let palLevelProgress = 0; // Current progress towards the next level (0-100)
 
 // -----------------------------------
 //            COMBAT LOOP
@@ -303,6 +307,7 @@ function startGameLoop() {
   win.webContents.send('setItems', items);
   nextEnergyCost = getRandomValue(10, 25);
   syncEnemy();
+  trackPlayerProgress(timeSpawned);
   if (enemy.health == 0) {
     console.log('enemy loaded dead.');
   } else {
@@ -326,19 +331,19 @@ function startGameLoop() {
   // Function to handle food depletion
   function depleteFood() {
     var foodDepleted;
-    if(energy < 100){
+    if (energy < 100) {
       foodDepleted = getRandomValue(3, 12); // Energy is low, consume more food to replenish.
-    }else{
+    } else {
       foodDepleted = getRandomValue(1, 2); // Energy is full, consume a little food to survive.
     };
-     // Random amount between 1-7%
+    // Random amount between 1-7%
     const timeSinceLastEat = getRandomValue(5, 15); // Random time in minutes (5-15 minutes)
     const multiplier = Math.random() < 0.25 ? timeSinceLastEat * 1.5 : 1;
 
     const foodToSubtract = Math.floor((foodDepleted * multiplier)); // Convert food depletion to percentage
     const foodRound = Math.max(food - foodToSubtract, 0);
     food = foodRound;
-    if(energy < 100){
+    if (energy < 100) {
       console.log(foodToSubtract)
       energy = Math.min(100, (foodToSubtract * 1.5));
     };
@@ -405,6 +410,11 @@ function syncItems() {
 function syncEnemy() {
   win.webContents.send('setEnemy', enemy);
 };
+function syncLevel(level, levelprog) {
+  win.webContents.send('setLevel', ({level: level, levelProgress: levelprog}));
+  palLevel = level;
+  palLevelProgress = levelprog;
+};
 
 // Function to ensure directory and file exist
 function ensureDataFileExists() {
@@ -415,7 +425,7 @@ function ensureDataFileExists() {
   }
   if (!fs.existsSync(filePath)) {
     fs.writeFileSync(filePath, JSON.stringify({
-      food: 100, health: 3, energy: 100, attack: 1, dead: false, foods: [
+      food: 100, health: 3, energy: 100, attack: 1, dead: false, timeSpawned: new Date(), palLevel: 1, palLevelProgress: 0, foods: [
         { id: 1, name: 'Orange', discovered: false, count: 0 },
         { id: 2, name: 'Sweets', discovered: true, count: 1 },
         { id: 3, name: 'Spice', discovered: false, count: 0 }
@@ -446,6 +456,9 @@ function loadVariables() {
     energy = savedData.energy;
     attack = savedData.attack;
     dead = savedData.dead;
+    timeSpawned = new Date(savedData.timeSpawned);
+    palLevel = savedData.palLevel;
+    palLevelProgress = savedData.palLevelProgress;
     foods = savedData.foods;
     items = savedData.items;
     enemy = new Enemy(savedData.enemy);
@@ -462,7 +475,7 @@ function saveVariables() {
   if (enemy) {
     eSer = enemy.serialize();
   }; // Serializing the enemy data if an enemy is present.
-  const gameData = { food, health, energy, attack, dead, foods, items, enemy: eSer };
+  const gameData = { food, health, energy, attack, dead, timeSpawned, palLevel, palLevelProgress, foods, items, enemy: eSer };
   try {
     fs.writeFileSync(filePath, JSON.stringify(gameData));
   } catch (err) {
@@ -635,6 +648,88 @@ ipcMain.on('startTTK', (event) => {
   }
 });
 
+ipcMain.on('startSacrifice', () => {
+  if (dead) {
+    log.info('Pal sacrifice started.');
+
+    win.webContents.send('', level)
+  } else {
+    log.info('Pal is not dead, unable to sacrifice.')
+  }
+});
+
+function trackPlayerProgress(timeSpawned) {
+  // Function to announce the level up
+  function levelUp(newLevel) {
+    console.log(`Congratulations! You have reached level ${newLevel}.`);
+    syncLevel(newLevel, 0);
+    win.webContents.send('levelUp', newLevel);
+  }
+
+  // Function to synchronize the level progress
+  function levelSync(level, percentToNextLevel) {
+    console.log(`You are ${percentToNextLevel}% of the way to the next level.`);
+    syncLevel(level, percentToNextLevel);
+  }
+
+  // Function to calculate the player's level and progress
+  function calculateLevel(minutesAlive) {
+    let level = 1;
+    let minutesToNextLevel = 30; // initial increment is 30 minutes
+    let totalMinutes = 0;
+
+    while (minutesAlive >= totalMinutes + minutesToNextLevel) {
+      totalMinutes += minutesToNextLevel;
+      level++;
+      if (minutesToNextLevel < 360) {
+        minutesToNextLevel += 30;
+      } else {
+        minutesToNextLevel = 360;
+      }
+    }
+
+    let percentToNextLevel = Math.floor((minutesAlive / minutesToNextLevel) * 100);
+    return { level, percentToNextLevel };
+  }
+
+  // Function to calculate time alive and manage the level progression
+  function updateProgress() {
+    let now = new Date();
+    let timeAliveMs = now - timeSpawned; // calculate time alive in milliseconds
+    let timeAliveMinutes = Math.floor(timeAliveMs / 60000); // convert milliseconds to minutes
+
+    let { level, percentToNextLevel } = calculateLevel(timeAliveMinutes);
+
+    if (level !== currentLevel) {
+        currentLevel = level;
+        levelUp(currentLevel);
+    }
+
+    levelSync(level, percentToNextLevel);
+}
+
+  // Clear any existing interval
+  if (trackingIntervalId !== null) {
+    clearInterval(trackingIntervalId);
+    trackingIntervalId = null;
+  }
+
+  // Reset current level
+  let currentLevel = 1;
+
+  // Start the tracking
+  updateProgress();
+  trackingIntervalId = setInterval(updateProgress, 60000); // 60000 milliseconds = 1 minute
+}
+
+// Function to disable tracking
+function disableTracking() {
+  if (trackingIntervalId !== null) {
+    clearInterval(trackingIntervalId);
+    trackingIntervalId = null;
+    console.log("Tracking has been disabled.");
+  }
+}
 // ------------------------
 //    Auto-updater Events
 // ------------------------

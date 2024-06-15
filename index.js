@@ -1077,6 +1077,10 @@ window.electron.receive("nextEnemy", (enemyObj) => {
   }
 });
 
+window.electron.receive('setLevel', (levelData) => {
+  console.log('setLevel', levelData)
+});
+
 /* 
   Settings box stuff
 */
@@ -1138,11 +1142,14 @@ sacrificeBtn.addEventListener("mouseleave", () => {
 });
 sacrificeBtn.addEventListener("mousedown", () => {
   sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice_i.png")`;
-  popupItem("Sacrifice", true);
   if (!sacking) {
     window.electron.send("startSacrifice");
-  }
-  sacking = true;
+    sacking = true;
+  };
+});
+
+window.electron.receive("sacrificePal", (sacObj) => {
+  popupItem("Sacrifice", true);
   setTimeout(() => {
     sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice.png")`;
     setTimeout(() => {
@@ -1186,7 +1193,7 @@ sacrificeBtn.addEventListener("mousedown", () => {
                       bFace.src = "faces/default_idle.png";
                       bFace.style.visibility = "visible";
                       bPal.style.display = "block";
-                      
+
                     }, 2500);
                   }, 500);
                 }, 1500); // 1500 milliseconds = 1.5 seconds
@@ -1197,4 +1204,4 @@ sacrificeBtn.addEventListener("mousedown", () => {
       }, 1000)
     }, 500);
   }, 150);
-});
+})

@@ -60,6 +60,8 @@ const sidebar = document.getElementById("sidebar");
 const nullEventVid = document.getElementById("nullEventVid");
 const nullEventSfx = document.getElementById("nullEventSfx");
 const dedpal_glitch_div = document.getElementById("dedpal_glitch");
+const level = document.getElementById("info_level");
+const levelIndicator = document.getElementById("info_levelProgFill");
 
 var moveMode = false;
 var isDragging = false;
@@ -1078,7 +1080,9 @@ window.electron.receive("nextEnemy", (enemyObj) => {
 });
 
 window.electron.receive('setLevel', (levelData) => {
-  console.log('setLevel', levelData)
+  console.log('setLevel', levelData);
+  level.innerHTML = `lvl: ${levelData.level}`;
+  levelIndicator.style.width = `${levelData.levelProgress}px`;
 });
 
 /* 
@@ -1164,8 +1168,10 @@ window.electron.receive("sacrificePal", (sacObj) => {
           setTimeout(() => {
             dedpal_glitch_div.style.display = "block";
             nullEventVid.currentTime = 0;
+            nullEventVid.volume = 0.7;
             nullEventVid.play();
             nullEventSfx.currentTime = 0;
+            nullEventSfx.volume = 0.7;
             nullEventSfx.play();
             setTimeout(() => {
               // Blank out the screen and display pals level popup.

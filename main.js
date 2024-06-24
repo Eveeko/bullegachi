@@ -388,6 +388,7 @@ function startGameLoop() {
 // Function to start the death sequence
 function startDeath() {
   food = 0;
+  disableTracking();
   win.webContents.send('killPal', true);
   console.log("Bullet has died");
   clearTimeout(foodDepletionTimeout);
@@ -411,7 +412,7 @@ function syncEnemy() {
   win.webContents.send('setEnemy', enemy);
 };
 function syncLevel(level, levelprog) {
-  win.webContents.send('setLevel', ({level: level, levelProgress: levelprog}));
+  win.webContents.send('setLevel', ({ level: level, levelProgress: levelprog }));
   palLevel = level;
   palLevelProgress = levelprog;
 };
@@ -651,8 +652,7 @@ ipcMain.on('startTTK', (event) => {
 ipcMain.on('startSacrifice', () => {
   if (dead) {
     log.info('Pal sacrifice started.');
-
-    win.webContents.send('', level)
+    win.webContents.send('sacrificePal', palLevel)
   } else {
     log.info('Pal is not dead, unable to sacrifice.')
   }
@@ -672,10 +672,10 @@ function trackPlayerProgress(timeSpawned) {
     syncLevel(level, percentToNextLevel);
   }
 
-  // Function to calculate the player's level and progress
+  // Function to calculate the players level and progress.
   function calculateLevel(minutesAlive) {
     let level = 1;
-    let minutesToNextLevel = 30; // initial increment is 30 minutes
+    let minutesToNextLevel = 30; // initial increment is 30 minutPaes
     let totalMinutes = 0;
 
     while (minutesAlive >= totalMinutes + minutesToNextLevel) {
@@ -688,9 +688,13 @@ function trackPlayerProgress(timeSpawned) {
       }
     }
 
-    let percentToNextLevel = Math.floor((minutesAlive / minutesToNextLevel) * 100);
+    // Calculate how far we are into the current level
+    let minutesInCurrentLevel = minutesAlive - totalMinutes;
+    let percentToNextLevel = Math.floor((minutesInCurrentLevel / minutesToNextLevel) * 100);
+
     return { level, percentToNextLevel };
   }
+
 
   // Function to calculate time alive and manage the level progression
   function updateProgress() {
@@ -701,12 +705,12 @@ function trackPlayerProgress(timeSpawned) {
     let { level, percentToNextLevel } = calculateLevel(timeAliveMinutes);
 
     if (level !== currentLevel) {
-        currentLevel = level;
-        levelUp(currentLevel);
+      currentLevel = level;
+      levelUp(currentLevel);
     }
 
     levelSync(level, percentToNextLevel);
-}
+  }
 
   // Clear any existing interval
   if (trackingIntervalId !== null) {

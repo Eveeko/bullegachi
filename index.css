@@ -195,7 +195,7 @@ body {
   border: 3px solid #ffcc00;
   border-radius: 5px;
   width: 180px;
-  height: 60px;
+  height: 70px;
   filter: blur(1px);
 }
 
@@ -826,10 +826,27 @@ body {
 
 .popupLvl {
   top: 84px;
-    left: 124px;
-    position: absolute;
-    font-size: 22px;
-    color: #ffcc0099;
-    filter: blur(1px);
-    animation: flicker-rising 1.5s forwards;
+  left: 124px;
+  position: absolute;
+  font-size: 22px;
+  color: #ffcc0099;
+  filter: blur(1px);
+  animation: flicker-rising 1.5s forwards;
 }
+
+/*
+  Level-up progress.
+*/
+.info_level {
+  top: 45px;
+}
+
+.info_levelProgOutline {
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 180px;
+  height: 70px;
+}
+
+.info_levelProgFill {}

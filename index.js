@@ -1199,7 +1199,8 @@ window.electron.receive("sacrificePal", (sacObj) => {
                       bFace.src = "faces/default_idle.png";
                       bFace.style.visibility = "visible";
                       bPal.style.display = "block";
-
+                      playSelectSfx();
+                      window.electron.send("endSacrifice");
                     }, 2500);
                   }, 500);
                 }, 1500); // 1500 milliseconds = 1.5 seconds

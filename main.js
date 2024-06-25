@@ -317,8 +317,8 @@ var items = [
   { id: 2, name: "BulletTime", discovered: true, count: 0 },
   { id: 3, name: "Soda", discovered: false, count: 0 },
   { id: 4, name: "Sword", discovered: false, count: 0 },
-  { id: 5, name: "Chest", discovered: false, count: 0 },
-  { id: 6, name: "?", discovered: false, count: 0 },
+  { id: 5, name: "Lootbox", discovered: false, count: 0 },
+  { id: 6, name: "HeartChain", discovered: false, count: 0 },
 ];
 
 let foodDepletionTimeout; // Timeout for food depletion.
@@ -383,71 +383,71 @@ function startGameLoop() {
     dead = true;
     startDeath();
   }
-
-  // Function to handle food depletion
-  function depleteFood() {
-    var foodDepleted;
-    if (energy < 100) {
-      foodDepleted = getRandomValue(3, 12); // Energy is low, consume more food to replenish.
-    } else {
-      foodDepleted = getRandomValue(1, 2); // Energy is full, consume a little food to survive.
-    }
-    // Random amount between 1-7%
-    const timeSinceLastEat = getRandomValue(5, 15); // Random time in minutes (5-15 minutes)
-    const multiplier = Math.random() < 0.25 ? timeSinceLastEat * 1.5 : 1;
-
-    const foodToSubtract = Math.floor(foodDepleted * multiplier); // Convert food depletion to percentage
-    const foodRound = Math.max(food - foodToSubtract, 0);
-    food = foodRound;
-    if (energy < 100) {
-      console.log(foodToSubtract);
-      energy = Math.min(100, foodToSubtract * 1.5);
-    }
-    syncStats();
-
-    if (food == 0) {
-      // Food has reached 0, start health check
-      if (health === 0) {
-        checkHealth();
-      } else {
-        healthCheckTimeout = setTimeout(checkHealth, 3000); // Random time in seconds (5-10 minutes)
-        //healthCheckTimeout = setTimeout(checkHealth, getRandomValue(300000, 600000)); // Random time in seconds (5-10 minutes)
-      }
-    } else {
-      // Continue food depletion loop
-      foodDepletionTimeout = setTimeout(
-        depleteFood,
-        getRandomValue(300000, 900000)
-      ); // Random time in seconds (5-15 minutes)
-    }
-
-    // Function to check player's health
-    function checkHealth() {
-      if (health === 0) {
-        // Player is dead
-        dead = true;
-        startDeath();
-      } else {
-        // Subtract 1 from health and restart food depletion loop
-        health--;
-        syncStats();
-        if (health == 0) {
-          foodDepletionTimeout = setTimeout(
-            depleteFood,
-            getRandomValue(3000, 30000)
-          ); // Random time in seconds (5-15 minutes)
-        } else {
-          foodDepletionTimeout = setTimeout(
-            depleteFood,
-            getRandomValue(300000, 900000)
-          ); // Random time in seconds (5-15 minutes)
-        }
-      }
-    }
-  }
   // Start food depletion loop
   foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
   //foodDepletionTimeout = setTimeout(depleteFood, getRandomValue(300000, 900000)); // Random time in seconds (5-15 minutes)
+}
+
+ // Function to handle food depletion
+ function depleteFood() {
+  var foodDepleted;
+  if (energy < 100) {
+    foodDepleted = getRandomValue(3, 12); // Energy is low, consume more food to replenish.
+  } else {
+    foodDepleted = getRandomValue(1, 2); // Energy is full, consume a little food to survive.
+  }
+  // Random amount between 1-7%
+  const timeSinceLastEat = getRandomValue(5, 15); // Random time in minutes (5-15 minutes)
+  const multiplier = Math.random() < 0.25 ? timeSinceLastEat * 1.5 : 1;
+
+  const foodToSubtract = Math.floor(foodDepleted * multiplier); // Convert food depletion to percentage
+  const foodRound = Math.max(food - foodToSubtract, 0);
+  food = foodRound;
+  if (energy < 100) {
+    console.log(foodToSubtract);
+    energy = Math.min(100, foodToSubtract * 1.5);
+  }
+  syncStats();
+
+  if (food == 0) {
+    // Food has reached 0, start health check
+    if (health === 0) {
+      checkHealth();
+    } else {
+      healthCheckTimeout = setTimeout(checkHealth, 3000); // Random time in seconds (5-10 minutes)
+      //healthCheckTimeout = setTimeout(checkHealth, getRandomValue(300000, 600000)); // Random time in seconds (5-10 minutes)
+    }
+  } else {
+    // Continue food depletion loop
+    foodDepletionTimeout = setTimeout(
+      depleteFood,
+      getRandomValue(300000, 900000)
+    ); // Random time in seconds (5-15 minutes)
+  }
+
+  // Function to check player's health
+  function checkHealth() {
+    if (health === 0) {
+      // Player is dead
+      dead = true;
+      startDeath();
+    } else {
+      // Subtract 1 from health and restart food depletion loop
+      health--;
+      syncStats();
+      if (health == 0) {
+        foodDepletionTimeout = setTimeout(
+          depleteFood,
+          getRandomValue(3000, 30000)
+        ); // Random time in seconds (5-15 minutes)
+      } else {
+        foodDepletionTimeout = setTimeout(
+          depleteFood,
+          getRandomValue(300000, 900000)
+        ); // Random time in seconds (5-15 minutes)
+      }
+    }
+  }
 }
 
 // Function to start the death sequence
@@ -882,9 +882,44 @@ ipcMain.on("startSacrifice", () => {
   if (dead) {
     log.info("Pal sacrifice started.");
     win.webContents.send("sacrificePal", palLevel);
+    setTimeout(() => {
+      food = 100;
+      health = 3;
+      energy = 100;
+      dead = false;
+      attack = 1;
+      nextEnergyCost = 20;
+      palLevel = 1;
+      palLevelProgress = 0;
+      enemy = new Enemy();
+      foods = [
+        { id: 1, name: "Orange", discovered: false, count: 0 },
+        { id: 2, name: "Sweets", discovered: true, count: 5 },
+        { id: 3, name: "Spice", discovered: false, count: 0 },
+      ];
+      items = [
+        { id: 1, name: "Medkit", discovered: false, count: 0 },
+        { id: 2, name: "BulletTime", discovered: true, count: 0 },
+        { id: 3, name: "Soda", discovered: false, count: 0 },
+        { id: 4, name: "Sword", discovered: false, count: 0 },
+        { id: 5, name: "Lootbox", discovered: false, count: 0 },
+        { id: 6, name: "HeartChain", discovered: false, count: 0 },
+      ];
+      console.log('Reset all variables to default values.');
+    }, 1500);
   } else {
     log.info("Pal is not dead, unable to sacrifice.");
   }
+});
+
+ipcMain.on('endSacrifice', () =>{
+  console.log('Sacrifice ended. resetting and starting all timers/trackers...');
+  timeSpawned = new Date();
+  trackingIntervalId = null;
+  trackPlayerProgress(timeSpawned);
+  foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
+  saveVariables();
+  saveClientData();
 });
 
 function trackPlayerProgress(timeSpawned) {

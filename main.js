@@ -382,6 +382,8 @@ function startGameLoop() {
     // Loaded as dead.
     dead = true;
     startDeath();
+    disableTracking();
+    console.log('pal loaded in dead.');
   }
   // Start food depletion loop
   foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
@@ -920,6 +922,8 @@ ipcMain.on('endSacrifice', () =>{
   foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
   saveVariables();
   saveClientData();
+  syncFoods();
+  syncItems();
 });
 
 function trackPlayerProgress(timeSpawned) {

@@ -795,7 +795,7 @@ body {
 .set_icon {
   position: relative;
   display: inline-block;
-  left: 40px;
+  left: 44px;
   top: -69px;
   width: 32px;
   height: 32px;
@@ -863,4 +863,8 @@ body {
   height: 8px;
   width: 0px;
   background-color: #ffcc00;
+}
+
+.food_warn_h2 {
+  left: 46px;
 }

@@ -62,6 +62,7 @@ const nullEventSfx = document.getElementById("nullEventSfx");
 const dedpal_glitch_div = document.getElementById("dedpal_glitch");
 const level = document.getElementById("info_level");
 const levelIndicator = document.getElementById("info_levelProgFill");
+const foodWarn2 = document.getElementById("food_warn_2");
 
 var moveMode = false;
 var isDragging = false;
@@ -387,6 +388,7 @@ window.electron.receive("killPal", (bool) => {
   bFace.setAttribute("src", "faces/default_dead.png");
   clearTimeout(moveFaceTimeout);
   battleBoxDead.style.visibility = "";
+  sacrificeBtn.style.visibility = "";
 }); // Kill the pal.
 
 window.electron.receive("alivePal", (bool) => {
@@ -394,6 +396,7 @@ window.electron.receive("alivePal", (bool) => {
   bFace.setAttribute("src", "faces/default_idle.png");
   moveFace();
   battleBoxDead.style.visibility = "hidden";
+  sacrificeBtn.style.visibility = "hidden";
 }); // Alive the pal.
 
 foodIcon1.addEventListener("mouseover", () => {
@@ -1212,3 +1215,17 @@ window.electron.receive("sacrificePal", (sacObj) => {
     }, 500);
   }, 150);
 })
+
+var isWarningFoodDead = false;
+
+window.electron.receive("food_dead", () => {
+  if (isWarningFoodDead == false) {
+    isWarningFoodDead = true;
+    foodWarn2.style.display = "block";
+    playSelectSfx();
+    setTimeout(() => {
+      foodWarn2.style.display = "none";
+      isWarningFoodDead = false;
+    }, 2500);
+  }
+});

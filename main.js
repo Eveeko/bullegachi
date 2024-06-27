@@ -390,8 +390,8 @@ function startGameLoop() {
   //foodDepletionTimeout = setTimeout(depleteFood, getRandomValue(300000, 900000)); // Random time in seconds (5-15 minutes)
 }
 
- // Function to handle food depletion
- function depleteFood() {
+// Function to handle food depletion
+function depleteFood() {
   var foodDepleted;
   if (energy < 100) {
     foodDepleted = getRandomValue(3, 12); // Energy is low, consume more food to replenish.
@@ -783,6 +783,63 @@ function popupFoodStat(int) {
   win.webContents.send("food_popup", int);
 }
 
+ipcMain.on("consume_item", (event, name) => {
+  if (dead == false) {
+    console.log('consuming item.');
+    var x = 0; // Defaults to Medkit
+    switch (name) {
+      case "medkit":
+        break;
+      case "bullettime":
+        x = 1;
+        break;
+      case "soda":
+        x = 2;
+        break;
+      case "sword":
+        x = 3;
+        break;
+      case "lootbox":
+        x = 4;
+        break;
+      case "heartchain":
+        x = 5;
+        break;
+    };
+    if (items[x].count != 0) {
+      p1();
+    } else {
+      p2();
+    }
+    function p1() {
+      // Process item effect.
+      switch (name) {
+        case "medkit":
+          console.log('consuming medkit.');
+          items[0].count = items[0].count - 1;
+          health = 3;
+          syncStats();
+          syncItems();
+          break;
+        case "bullettime":
+          break;
+        case "soda":
+          break;
+        case "sword":
+          break;
+        case "lootbox":
+          break;
+        case "heartchain":
+          break;
+      };
+    };
+    function p2() {
+      console.log(`no ${name}'s to consume.`);
+    };
+  } else {
+    console.log('pal already dead.');
+  };
+});
 // ---------------------
 //      COMBAT LOOP
 // ---------------------
@@ -914,7 +971,7 @@ ipcMain.on("startSacrifice", () => {
   }
 });
 
-ipcMain.on('endSacrifice', () =>{
+ipcMain.on('endSacrifice', () => {
   console.log('Sacrifice ended. resetting and starting all timers/trackers...');
   timeSpawned = new Date();
   trackingIntervalId = null;

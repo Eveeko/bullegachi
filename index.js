@@ -63,6 +63,8 @@ const dedpal_glitch_div = document.getElementById("dedpal_glitch");
 const level = document.getElementById("info_level");
 const levelIndicator = document.getElementById("info_levelProgFill");
 const foodWarn2 = document.getElementById("food_warn_2");
+const itemWarn = document.getElementById("item_warn_1");
+const itemWarnCont = document.getElementById("item_warn_cont");
 
 var moveMode = false;
 var isDragging = false;
@@ -164,7 +166,7 @@ infoBtn.onmouseover = () => {
     playSelectSfx();
     infoBox.style.visibility = "visible";
     infoBtn.style.backgroundImage = `url("sprite_info_i.png")`;
-  };
+  }
 };
 infoBtn.onmouseout = () => {
   if (!infoOpen) {
@@ -179,7 +181,7 @@ infoBtn.onmousedown = () => {
   } else {
     infoOpen = true;
     infoBox.style.visibility = "visible";
-  };
+  }
   if (infoBox.style.visibility == "visible") {
     infoBtn.style.backgroundImage = `url("sprite_info.png")`;
     setTimeout(() => {
@@ -192,7 +194,7 @@ infoBtn.onmousedown = () => {
     }, 150);
   }
   playSelectSfx();
-}
+};
 foodBtn.onmouseover = () => {
   playSelectSfx();
 };
@@ -584,6 +586,7 @@ invIcon1.addEventListener("mousedown", () => {
     invIcon1.style.backgroundImage = `url("sprite_medkit.png")`;
     invIcon1.style.backgroundPosition = "2px";
     invIcon1.style.backgroundSize = "35px 35px";
+    window.electron.send("consume_item", "medkit");
     playSelectSfx();
     setTimeout(() => {
       invIcon1.style.backgroundImage = `url("sprite_medkit_i.png")`;
@@ -612,6 +615,7 @@ invIcon2.addEventListener("mousedown", () => {
     invIcon2.style.backgroundImage = `url("sprite_bulletTime.png")`;
     invIcon2.style.backgroundPosition = "2px";
     invIcon2.style.backgroundSize = "35px 35px";
+    window.electron.send("consume_item", "bullettime");
     playSelectSfx();
     setTimeout(() => {
       invIcon2.style.backgroundImage = `url("sprite_bulletTime_i.png")`;
@@ -640,6 +644,7 @@ invIcon3.addEventListener("mousedown", () => {
     invIcon3.style.backgroundImage = `url("sprite_soda.png")`;
     invIcon3.style.backgroundPosition = "2px";
     invIcon3.style.backgroundSize = "35px 35px";
+    window.electron.send("consume_item", "soda");
     playSelectSfx();
     setTimeout(() => {
       invIcon3.style.backgroundImage = `url("sprite_soda_i.png")`;
@@ -668,6 +673,7 @@ invIcon4.addEventListener("mousedown", () => {
     invIcon4.style.backgroundImage = `url("sprite_sword.png")`;
     invIcon4.style.backgroundPosition = "2px";
     invIcon4.style.backgroundSize = "35px 35px";
+    window.electron.send("consume_item", "sword");
     playSelectSfx();
     setTimeout(() => {
       invIcon4.style.backgroundImage = `url("sprite_sword_i.png")`;
@@ -696,6 +702,7 @@ invIcon5.addEventListener("mousedown", () => {
     invIcon5.style.backgroundImage = `url("sprite_lootbox.png")`;
     invIcon5.style.backgroundPosition = "2px";
     invIcon5.style.backgroundSize = "35px 35px";
+    window.electron.send("consume_item", "lootbox");
     playSelectSfx();
     setTimeout(() => {
       invIcon5.style.backgroundImage = `url("sprite_lootbox_i.png")`;
@@ -724,6 +731,7 @@ invIcon6.addEventListener("mousedown", () => {
     invIcon6.style.backgroundImage = `url("sprite_heartchain.png")`;
     invIcon6.style.backgroundPosition = "2px";
     invIcon6.style.backgroundSize = "35px 35px";
+    window.electron.send("consume_item", "heartchain");
     playSelectSfx();
     setTimeout(() => {
       invIcon6.style.backgroundImage = `url("sprite_heartchain_i.png")`;
@@ -1082,8 +1090,8 @@ window.electron.receive("nextEnemy", (enemyObj) => {
   }
 });
 
-window.electron.receive('setLevel', (levelData) => {
-  console.log('setLevel', levelData);
+window.electron.receive("setLevel", (levelData) => {
+  console.log("setLevel", levelData);
   level.innerHTML = `lvl: ${levelData.level}`;
   levelIndicator.style.width = `${levelData.levelProgress}px`;
 });
@@ -1152,7 +1160,7 @@ sacrificeBtn.addEventListener("mousedown", () => {
   if (!sacking) {
     window.electron.send("startSacrifice");
     sacking = true;
-  };
+  }
 });
 
 window.electron.receive("sacrificePal", (sacObj) => {
@@ -1178,8 +1186,8 @@ window.electron.receive("sacrificePal", (sacObj) => {
             nullEventSfx.play();
             setTimeout(() => {
               // Blank out the screen and display pals level popup.
-              bPal.style.display = 'none';
-              dedpal_glitch_div.style.display = 'none';
+              bPal.style.display = "none";
+              dedpal_glitch_div.style.display = "none";
               setTimeout(() => {
                 var popupElement = document.createElement("h1");
                 popupElement.className = "popupLvl";
@@ -1192,10 +1200,10 @@ window.electron.receive("sacrificePal", (sacObj) => {
                 audioElement.autoplay = true;
                 popupElement.appendChild(audioElement);
                 setTimeout(function () {
-                  console.log("removing popup.")
+                  console.log("removing popup.");
                   scanlines.removeChild(popupElement);
                   setTimeout(() => {
-                    console.log('resetting stage')
+                    console.log("resetting stage");
                     sidebar.style.visibility = "visible";
                     playSelectSfx();
                     setTimeout(() => {
@@ -1210,11 +1218,11 @@ window.electron.receive("sacrificePal", (sacObj) => {
               }, 500);
             }, 7000);
           }, 5000);
-        }, 1500)
-      }, 1000)
+        }, 1500);
+      }, 1000);
     }, 500);
   }, 150);
-})
+});
 
 var isWarningFoodDead = false;
 
@@ -1228,4 +1236,24 @@ window.electron.receive("food_dead", () => {
       isWarningFoodDead = false;
     }, 2500);
   }
+});
+
+window.electron.receive("alertItem", (name) => {
+  console.log('alerting item', name);
+  itemWarn.innerHTML = `${name} consumed`;
+  itemWarnCont.style.display = "block";
+  var audioElement = document.createElement("audio");
+  audioElement.src = "foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
+  audioElement.volume = 0.2; // Adjust the volume as needed
+  if (!audioEnabled) {
+    audioElement.volume = 0;
+  }
+  audioElement.autoplay = true;
+  itemWarnCont.appendChild(audioElement);
+
+  setTimeout(function () {
+    itemWarnCont.removeChild(audioElement);
+    itemWarn.innerHTML = "";
+    itemWarnCont.style.display = "none";
+  }, 1500); // 1500 milliseconds = 1.5 seconds
 });

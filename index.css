@@ -868,3 +868,15 @@ body {
 .food_warn_h2 {
   left: 46px;
 }
+
+.item_warn {
+  position: absolute;
+  left: 41px;
+  top: 62px;
+  height: 20px;
+  width: 213px;
+  background-color: #ffcc00;
+  color: #110d00;
+  filter: blur(1px);
+  animation: blink_rapid 7s;
+}

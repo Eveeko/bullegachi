@@ -817,9 +817,10 @@ ipcMain.on("consume_item", (event, name) => {
         case "medkit":
           console.log('consuming medkit.');
           items[0].count = items[0].count - 1;
-          health = 3;
+          health = 3; 
           syncStats();
           syncItems();
+          win.webContents.send("alertItem", "Medkit");
           break;
         case "bullettime":
           break;

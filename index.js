@@ -1257,3 +1257,13 @@ window.electron.receive("alertItem", (name) => {
     itemWarnCont.style.display = "none";
   }, 1500); // 1500 milliseconds = 1.5 seconds
 });
+
+// Displays the BulletTime graphics and timer.
+window.electron.receive("startBulletTime", (ms) =>{
+
+});
+
+// Removes the BulletTime graphics and timer.
+window.electron.receive("stopBulletTime", () =>{
+
+});

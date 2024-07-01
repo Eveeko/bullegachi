@@ -295,6 +295,8 @@ let timeSpawned = new Date();
 let trackingIntervalId = null; // Global variable to store the interval ID
 let palLevel = 1; // Current level of the pal (based on time spent alive)
 let palLevelProgress = 0; // Current progress towards the next level (0-100)
+var bullettime = false; // BulletTime flag (used for checking if BulletTime is enabled)
+var bullettimeEnd = null; // BulletTime Date MS representing the end time for the effect.
 
 // -----------------------------------
 //            COMBAT LOOP
@@ -387,44 +389,49 @@ function startGameLoop() {
   }
   // Start food depletion loop
   foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
-  //foodDepletionTimeout = setTimeout(depleteFood, getRandomValue(300000, 900000)); // Random time in seconds (5-15 minutes)
 }
 
 // Function to handle food depletion
 function depleteFood() {
-  var foodDepleted;
-  if (energy < 100) {
-    foodDepleted = getRandomValue(3, 12); // Energy is low, consume more food to replenish.
-  } else {
-    foodDepleted = getRandomValue(1, 2); // Energy is full, consume a little food to survive.
-  }
-  // Random amount between 1-7%
-  const timeSinceLastEat = getRandomValue(5, 15); // Random time in minutes (5-15 minutes)
-  const multiplier = Math.random() < 0.25 ? timeSinceLastEat * 1.5 : 1;
-
-  const foodToSubtract = Math.floor(foodDepleted * multiplier); // Convert food depletion to percentage
-  const foodRound = Math.max(food - foodToSubtract, 0);
-  food = foodRound;
-  if (energy < 100) {
-    console.log(foodToSubtract);
-    energy = Math.min(100, foodToSubtract * 1.5);
-  }
-  syncStats();
-
-  if (food == 0) {
-    // Food has reached 0, start health check
-    if (health === 0) {
-      checkHealth();
+  if (!bullettime) {
+    var foodDepleted;
+    if (energy < 100) {
+      foodDepleted = getRandomValue(3, 12); // Energy is low, consume more food to replenish.
     } else {
-      healthCheckTimeout = setTimeout(checkHealth, 3000); // Random time in seconds (5-10 minutes)
-      //healthCheckTimeout = setTimeout(checkHealth, getRandomValue(300000, 600000)); // Random time in seconds (5-10 minutes)
+      foodDepleted = getRandomValue(1, 2); // Energy is full, consume a little food to survive.
     }
-  } else {
+    // Random amount between 1-7%
+    const timeSinceLastEat = getRandomValue(5, 15); // Random time in minutes (5-15 minutes)
+    const multiplier = Math.random() < 0.25 ? timeSinceLastEat * 1.5 : 1;
+
+    const foodToSubtract = Math.floor(foodDepleted * multiplier); // Convert food depletion to percentage
+    const foodRound = Math.max(food - foodToSubtract, 0);
+    food = foodRound;
+    if (energy < 100) {
+      console.log(foodToSubtract);
+      energy = Math.min(100, foodToSubtract * 1.5);
+    }
+    syncStats();
+
+    if (food == 0) {
+      // Food has reached 0, start health check
+      if (health === 0) {
+        checkHealth();
+      } else {
+        healthCheckTimeout = setTimeout(checkHealth, 3000); // Random time in seconds (5-10 minutes)
+        //healthCheckTimeout = setTimeout(checkHealth, getRandomValue(300000, 600000)); // Random time in seconds (5-10 minutes)
+      }
+    } else {
+      // Continue food depletion loop
+      foodDepletionTimeout = setTimeout(
+        depleteFood,
+        getRandomValue(300000, 900000)
+      ); // Random time in seconds (5-15 minutes)
+    }
+  }
+  else {
     // Continue food depletion loop
-    foodDepletionTimeout = setTimeout(
-      depleteFood,
-      getRandomValue(300000, 900000)
-    ); // Random time in seconds (5-15 minutes)
+    foodDepletionTimeout = setTimeout(depleteFood, getRandomValue(300000, 900000)); // Random time in seconds (5-15 minutes) }
   }
 
   // Function to check player's health
@@ -817,12 +824,23 @@ ipcMain.on("consume_item", (event, name) => {
         case "medkit":
           console.log('consuming medkit.');
           items[0].count = items[0].count - 1;
-          health = 3; 
+          health = 3;
           syncStats();
           syncItems();
           win.webContents.send("alertItem", "Medkit");
           break;
         case "bullettime":
+          console.log('consuming bullettime.');
+          items[1].count = items[1].count - 1;
+          bullettime = true; // Turns on bullettime.
+          // Generate a random time offset between 30 minutes (1800000 ms) and 2 hours (7200000 ms)
+          let rto = Math.random() * (7200000 - 1800000) + 1800000;
+          bullettimeEnd = new Date(new Date.now() + rto).getTime(); // Set the end time for the BulletTime effect.
+          let bteMs = (bullettimeEnd - Date.now());
+          win.webContents.send("startBulletTime", bteMs);
+          setTimeout(() =>{
+            win.webContents.send("stopBulletTime");
+          }, bteMs) // Make this function wait until the end time of the effect before triggering.
           break;
         case "soda":
           break;
@@ -1061,6 +1079,7 @@ function disableTracking() {
     console.log("Tracking has been disabled.");
   }
 }
+
 // ------------------------
 //    Auto-updater Events
 // ------------------------

@@ -8,13 +8,12 @@ body {
   padding: 0;
   overflow: hidden;
   background:
-    /* Curved glass effect */ radial-gradient(
-    circle at center,
-    rgb(25, 20, 0) 20%,
-    rgb(14, 11, 0) 70%,
-    rgb(4, 3, 0) 94%,
-    rgb(0, 0, 0) 98%
-  );
+    /* Curved glass effect */
+    radial-gradient(circle at center,
+      rgb(25, 20, 0) 20%,
+      rgb(14, 11, 0) 70%,
+      rgb(4, 3, 0) 94%,
+      rgb(0, 0, 0) 98%);
   position: relative;
   background-size: 260px 210px;
   font-family: "VT220", monospace;
@@ -29,11 +28,9 @@ body {
   left: 0;
   width: 100%;
   height: 210px;
-  background-image: linear-gradient(
-    to bottom,
-    rgba(255, 204, 0, 0.1) 1px,
-    transparent 2px
-  );
+  background-image: linear-gradient(to bottom,
+      rgba(255, 204, 0, 0.1) 1px,
+      transparent 2px);
   z-index: 1;
   pointer-events: none;
   animation: scan 7s linear infinite;
@@ -147,12 +144,10 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(
-    transparent,
-    transparent 2px,
-    rgba(11, 9, 0, 0.3) 3px,
-    rgba(11, 9, 0, 0.3) 4px
-  );
+  background: repeating-linear-gradient(transparent,
+      transparent 2px,
+      rgba(11, 9, 0, 0.3) 3px,
+      rgba(11, 9, 0, 0.3) 4px);
 }
 
 .bulletpal {
@@ -164,8 +159,7 @@ body {
   left: 67px;
   background-repeat: no-repeat;
   background-size: auto 100%;
-  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%)
-    hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
+  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%) hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
   /* Apply the SVG filter to the image */
   filter: url(line-filter.svg#rgb-line-filter);
   /* Apply the line filter to the image */
@@ -758,6 +752,7 @@ body {
 }
 
 @keyframes blink_rapid {
+
   0%,
   20%,
   40%,
@@ -879,4 +874,72 @@ body {
   color: #110d00;
   filter: blur(1px);
   animation: blink_rapid 7s;
+}
+
+/*
+  bullettime shi
+*/
+
+.bullettime_cont {
+  position: absolute;
+  left: 90px;
+  top: 10px;
+  background-color: #ffcc00;
+  width: 100px;
+  height: 20px;
+  filter: blur(0.5px);
+}
+
+@keyframes blink {
+
+  0%,
+  50% {
+    color: #110d00;
+  }
+
+  50.01%,
+  100% {
+    color: transparent;
+  }
+}
+
+.bullettime_h1 {
+  position: absolute;
+  left: 20px;
+  top: -14px;
+  font-size: 22px;
+  color: #110d00;
+  animation: blink 1s steps(1, end) infinite;
+}
+
+.bullettime_h1_1 {
+  position: absolute;
+  left: -40px;
+  top: -20px;
+  font-size: 34px;
+  color: #ffcc00;
+  transform: rotate(90deg);
+  filter: blur(1px);
+}
+
+.bullettime_glitch {
+  width: 100%;
+    height: 3px;
+    filter: blur(3px);
+    animation: big-jump 5ms infinite;
+    position: absolute;
+    background-color: #ffcc00;
+    top: 115px;
+}
+
+@keyframes big-jump {
+	0% { top:115px; }
+ 	10% { top: 100px; }
+	12% { top:115; }
+	54% { top:115; }
+	55% { top: 125px; }
+	56% { top:115; }
+	86% { top:115; }
+	87% { top: 110px; }
+	88% { top:115; }
 }

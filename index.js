@@ -65,6 +65,8 @@ const levelIndicator = document.getElementById("info_levelProgFill");
 const foodWarn2 = document.getElementById("food_warn_2");
 const itemWarn = document.getElementById("item_warn_1");
 const itemWarnCont = document.getElementById("item_warn_cont");
+const bullettimeGlitch = document.getElementById("bullettime_glitch");
+const bullettimeCont = document.getElementById("bullettime_cont");
 
 var moveMode = false;
 var isDragging = false;
@@ -1265,5 +1267,5 @@ window.electron.receive("startBulletTime", (ms) =>{
 
 // Removes the BulletTime graphics and timer.
 window.electron.receive("stopBulletTime", () =>{
-
+  
 });

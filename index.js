@@ -67,6 +67,7 @@ const itemWarn = document.getElementById("item_warn_1");
 const itemWarnCont = document.getElementById("item_warn_cont");
 const bullettimeGlitch = document.getElementById("bullettime_glitch");
 const bullettimeCont = document.getElementById("bullettime_cont");
+const bullettimeTimer = document.getElementById("bullettime_timer");
 
 var moveMode = false;
 var isDragging = false;
@@ -1260,9 +1261,53 @@ window.electron.receive("alertItem", (name) => {
   }, 1500); // 1500 milliseconds = 1.5 seconds
 });
 
-// Displays the BulletTime graphics and timer.
-window.electron.receive("startBulletTime", (ms) =>{
+/**
+ * @param {int} ms the time left in milliseconds
+ * @returns a string formatted to "XX:XX(s/h/m)"
+ */
+function formatTimeLeft(ms) {
+  // Calculate time units
+  const totalSeconds = Math.floor(ms / 1000);
+  const seconds = totalSeconds % 60;
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const minutes = totalMinutes % 60;
+  const hours = Math.floor(totalMinutes / 60);
 
+  let formattedTime;
+
+  if (hours > 0) {
+      // Format as hours:minutes
+      formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}h`;
+  } else if (minutes > 0) {
+      // Format as minutes:seconds
+      formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}m`;
+  } else {
+      // Format as seconds
+      formattedTime = `${String(seconds).padStart(2, '0')}s`;
+  }
+
+  return formattedTime;
+};
+
+function countdown(ms) {
+  let intervalId = setInterval(() => {
+      if (ms <= 0) {
+          clearInterval(intervalId);
+          bullettimeTimer.innerHTML = "00:00s";
+          return;
+      }
+
+      bullettimeTimer.innerHTML = formatTimeLeft(ms);
+      ms -= 1000;
+  }, 1000);
+}
+
+// Displays the BulletTime graphics and timer.
+window.electron.receive("startBulletTime", (ms) =>{;
+  bullettimeTimer.innerHTML = formatTimeLeft(ms);
+  bullettimeGlitch.style.display = "block";
+  bullettimeCont.style.display = "block";
+  countdown(ms);
 });
 
 // Removes the BulletTime graphics and timer.

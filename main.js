@@ -296,7 +296,8 @@ let trackingIntervalId = null; // Global variable to store the interval ID
 let palLevel = 1; // Current level of the pal (based on time spent alive)
 let palLevelProgress = 0; // Current progress towards the next level (0-100)
 var bullettime = false; // BulletTime flag (used for checking if BulletTime is enabled)
-var bullettimeEnd = null; // BulletTime Date MS representing the end time for the effect.
+var bullettimeDateObj= null; // BulletTime Date MS representing the end time for the effect.
+
 
 // -----------------------------------
 //            COMBAT LOOP
@@ -515,6 +516,8 @@ function ensureDataFileExists() {
         timeSpawned: new Date(),
         palLevel: 1,
         palLevelProgress: 0,
+        bullettime: false,
+        bullettimeDateObj: null,
         foods: [
           { id: 1, name: "Orange", discovered: false, count: 0 },
           { id: 2, name: "Sweets", discovered: true, count: 1 },
@@ -835,9 +838,14 @@ ipcMain.on("consume_item", (event, name) => {
           bullettime = true; // Turns on bullettime.
           // Generate a random time offset between 30 minutes (1800000 ms) and 2 hours (7200000 ms)
           let rto = Math.random() * (7200000 - 1800000) + 1800000;
-          bullettimeEnd = new Date(new Date.now() + rto).getTime(); // Set the end time for the BulletTime effect.
+          bted = new Date(new Date().getTime() + rto); // bullet time end date object.
+          bullettimeEnd = bted.getTime(); // Set the end time for the BulletTime effect.
           let bteMs = (bullettimeEnd - Date.now());
           win.webContents.send("startBulletTime", bteMs);
+          syncStats();
+          syncItems();
+          win.webContents.send("alertItem", "BulletTime");
+
           setTimeout(() =>{
             win.webContents.send("stopBulletTime");
           }, bteMs) // Make this function wait until the end time of the effect before triggering.

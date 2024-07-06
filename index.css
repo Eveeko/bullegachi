@@ -923,23 +923,50 @@ body {
 }
 
 .bullettime_glitch {
+  pointer-events: none; /* Makes the element click-through */
   width: 100%;
-    height: 3px;
-    filter: blur(3px);
-    animation: big-jump 5ms infinite;
-    position: absolute;
-    background-color: #ffcc00;
-    top: 115px;
+  height: 3px;
+  filter: blur(3px);
+  animation: big-jump 5ms infinite;
+  position: absolute;
+  background-color: #ffcc00;
+  top: 115px;
 }
 
 @keyframes big-jump {
-	0% { top:115px; }
- 	10% { top: 100px; }
-	12% { top:115; }
-	54% { top:115; }
-	55% { top: 125px; }
-	56% { top:115; }
-	86% { top:115; }
-	87% { top: 110px; }
-	88% { top:115; }
+  0% {
+    top: 115px;
+  }
+
+  10% {
+    top: 100px;
+  }
+
+  12% {
+    top: 115;
+  }
+
+  54% {
+    top: 115;
+  }
+
+  55% {
+    top: 125px;
+  }
+
+  56% {
+    top: 115;
+  }
+
+  86% {
+    top: 115;
+  }
+
+  87% {
+    top: 110px;
+  }
+
+  88% {
+    top: 115;
+  }
 }

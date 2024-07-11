@@ -848,13 +848,17 @@ function playDeathSfx() {
   }
 }
 
-function popupItem(name, bl) {
+function popupItem(name, rand, bl) {
   var popupElement = document.createElement("h1");
   if (bl) {
     popupElement.textContent = `${name}`;
   } else {
-    popupElement.textContent = `+${name}`;
-  }
+    if (rand == 1) {
+      popupElement.textContent = `+${name}`;
+    } else {
+      popupElement.textContent = `+${rand} ${name}`;
+    };
+  };
   popupElement.className = "popupItem";
   popupElement.id = "popupItem";
   battleBox.appendChild(popupElement);
@@ -973,8 +977,16 @@ window.electron.receive("killEnemy", (enemyObj) => {
           itemName = "HeartChain";
           break;
       }
-      popupItem(itemName);
-      window.electron.send("itemDropped", itemId);
+      var rand = Math.random(); // item drop quantity.
+      if (rand < 0.80) {
+        rand = 1;
+      } else if (rand < 0.92) {
+        rand = 2;
+      } else {
+        rand = 3;
+      };
+      popupItem(itemName, rand);
+      window.electron.send("itemDropped", [itemId, rand]);
       battleNextBtn.style.visibility = "";
     }, 1500);
   }, 1000);
@@ -1032,7 +1044,7 @@ window.electron.receive("timerDamage", (currentHealth) => {
 });
 
 window.electron.receive("neEnergy", (str) => {
-  popupItem(str, true);
+  popupItem(str, 1, true);
 });
 
 window.electron.receive("nextEnemy", (enemyObj) => {
@@ -1167,7 +1179,7 @@ sacrificeBtn.addEventListener("mousedown", () => {
 });
 
 window.electron.receive("sacrificePal", (sacObj) => {
-  popupItem("Sacrifice", true);
+  popupItem("Sacrifice", 1, true);
   setTimeout(() => {
     sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice.png")`;
     setTimeout(() => {

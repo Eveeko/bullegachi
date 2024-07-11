@@ -926,32 +926,32 @@ ipcMain.on("battle-click", () => {
   }
 });
 
-ipcMain.on("itemDropped", (event, id) => {
-  console.log("item dropped");
+ipcMain.on("itemDropped", (event, vars) => {
+  console.log("item dropped", vars);
   // handle item drop.
-  switch (id) {
+  switch (vars[0]) {
     case 1:
-      foods[0].count = foods[0].count + 1;
+      foods[0].count = foods[0].count + vars[1];
       foods[0].discovered = true;
       break;
     case 2:
-      foods[1].count = foods[1].count + 1;
+      foods[1].count = foods[1].count + vars[1];
       foods[1].discovered = true;
       break;
     case 3:
-      foods[2].count = foods[2].count + 1;
+      foods[2].count = foods[2].count + vars[1];
       foods[2].discovered = true;
       break;
     case 4:
-      items[1].count = items[1].count + 1;
+      items[1].count = items[1].count + vars[1];
       items[1].discovered = true;
       break;
     case 5:
-      items[4].count = items[4].count + 1;
+      items[4].count = items[4].count + vars[1];
       items[4].discovered = true;
       break;
     case 6:
-      items[5].count = items[5].count + 1;
+      items[5].count = items[5].count + vars[1];
       items[5].discovered = true;
       break;
   }

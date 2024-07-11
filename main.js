@@ -296,7 +296,7 @@ let trackingIntervalId = null; // Global variable to store the interval ID
 let palLevel = 1; // Current level of the pal (based on time spent alive)
 let palLevelProgress = 0; // Current progress towards the next level (0-100)
 var bullettime = false; // BulletTime flag (used for checking if BulletTime is enabled)
-var bullettimeDateObj= null; // BulletTime Date MS representing the end time for the effect.
+var bullettimeDateObj = null; // BulletTime Date MS representing the end time for the effect.
 
 
 // -----------------------------------
@@ -676,6 +676,18 @@ function loadVariables() {
     foods = savedData.foods;
     items = savedData.items;
     enemy = new Enemy(savedData.enemy);
+    bullettime = savedData.bullettime;
+    bullettimeDateObj = savedData.bullettimeDateObj;
+    if (bullettime == true) {
+      console.log("bullettime was previously activated, resuming.");
+      let bteMs = (bullettimeEnd - Date.now());
+      win.webContents.send("startBulletTime", bteMs);
+      syncStats();
+      syncItems();
+      setTimeout(() => {
+        win.webContents.send("stopBulletTime");
+      }, bteMs) // Make this function wait until the end time of the effect before triggering.
+    }
   } catch (err) {
     console.error("Error loading game data:", err);
   }
@@ -701,6 +713,8 @@ function saveVariables() {
     foods,
     items,
     enemy: eSer,
+    bullettime,
+    bullettimeDateObj
   };
   try {
     fs.writeFileSync(filePath, JSON.stringify(gameData));
@@ -825,34 +839,58 @@ ipcMain.on("consume_item", (event, name) => {
       // Process item effect.
       switch (name) {
         case "medkit":
-          console.log('consuming medkit.');
-          items[0].count = items[0].count - 1;
-          health = 3;
-          syncStats();
-          syncItems();
-          win.webContents.send("alertItem", "Medkit");
+          if (health == 3) {
+            console.log('Unable to consume medkit as health is already full.');
+            win.webContents.send("alertItem", "Medkit", true);
+          } else {
+            console.log('consuming medkit.');
+            items[0].count = items[0].count - 1;
+            health = 3;
+            syncStats();
+            syncItems();
+            win.webContents.send("alertItem", "Medkit");
+          }
           break;
         case "bullettime":
-          console.log('consuming bullettime.');
-          items[1].count = items[1].count - 1;
-          bullettime = true; // Turns on bullettime.
-          // Generate a random time offset between 30 minutes (1800000 ms) and 2 hours (7200000 ms)
-          let rto = Math.random() * (7200000 - 1800000) + 1800000;
-          bted = new Date(new Date().getTime() + rto); // bullet time end date object.
-          bullettimeEnd = bted.getTime(); // Set the end time for the BulletTime effect.
-          let bteMs = (bullettimeEnd - Date.now());
-          win.webContents.send("startBulletTime", bteMs);
-          syncStats();
-          syncItems();
-          win.webContents.send("alertItem", "BulletTime");
-
-          setTimeout(() =>{
-            win.webContents.send("stopBulletTime");
-          }, bteMs) // Make this function wait until the end time of the effect before triggering.
+          if (bullettime) {
+            console.log('Unable to consume bullettime as bullettime is already active.');
+            win.webContents.send("alertItem", "BulletTime", true);
+          } else {
+            console.log('consuming bullettime.');
+            items[1].count = items[1].count - 1;
+            bullettime = true; // Turns on bullettime.
+            // Generate a random time offset between 30 minutes (1800000 ms) and 2 hours (7200000 ms)
+            let rto = Math.random() * (7200000 - 1800000) + 1800000;
+            bted = new Date(new Date().getTime() + rto); // bullet time end date object.
+            bullettimeEnd = bted.getTime(); // Set the end time for the BulletTime effect.
+            let bteMs = (bullettimeEnd - Date.now());
+            win.webContents.send("startBulletTime", bteMs);
+            syncStats();
+            syncItems();
+            win.webContents.send("alertItem", "BulletTime");
+            setTimeout(() => {
+              win.webContents.send("stopBulletTime");
+            }, bteMs) // Make this function wait until the end time of the effect before triggering.
+          }
           break;
         case "soda":
+          // Give the player a random amount of energy (100-370) (additive so this can be spammed to exceed energy limit of 100)
+          items[2].count = items[2].count - 1;
+          ren = getRandomValue(100, 370);
+          energy += ren;
+          console.log(`Soda consumed and gave: ${ren} energy.`);
+          syncStats();
+          syncItems();
+          win.webContents.send("alertItem", "Soda");
           break;
         case "sword":
+          // Gives the player a damage bonus per click permanently till death. (+1 additively)
+          items[3].count = items[3].count - 1;
+          attack += 1;
+          console.log(`Attack power increased to: ${attack}`);
+          syncStats();
+          syncItems();
+          win.webContents.send("alertItem", "Sword");
           break;
         case "lootbox":
           break;
@@ -876,7 +914,7 @@ var timerTimeout = null;
 ipcMain.on("battle-click", () => {
   console.log("battle-btn-clicked");
   if (enemy.health > 0) {
-    enemy.health--;
+    enemy.health = Math.max(0, enemy.health - attack);
     syncEnemy();
     if (enemy.health === 0) {
       clearInterval(timerTimeout);

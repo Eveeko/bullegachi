@@ -1241,9 +1241,50 @@ window.electron.receive("food_dead", () => {
   }
 });
 
-window.electron.receive("alertItem", (name) => {
+window.electron.receive("alertItem", (name, failBool) => {
   console.log('alerting item', name);
-  itemWarn.innerHTML = `${name} consumed`;
+  if (failBool) {
+    switch (name) {
+      case "Medkit":
+        itemWarn.innerHTML = "Health full!";
+        itemWarn.style.left = "42px";
+        break;
+      case "BulletTime":
+        itemWarn.innerHTML = "BulletTime active!";
+        itemWarn.style.left = "8px";
+        break;
+      case "Soda":
+        itemWarn.innerHTML = "Energy full!";
+        itemWarn.style.left = "42px";
+        break;
+      case "Heartchain":
+        itemWarn.innerHTML = "Heartchain active!";
+        itemWarn.style.left = "10px";
+        break;
+    };
+  } else {
+    itemWarn.innerHTML = `${name} consumed`;
+    switch (name) {
+      case "Medkit":
+        itemWarn.style.left = "26px";
+        break;
+      case "BulletTime":
+        itemWarn.style.left = "4px";
+        break;
+      case "Soda":
+        itemWarn.style.left = "36px";
+        break;
+      case "Sword":
+        itemWarn.style.left = "32px";
+        break;
+      case "Lootbox":
+        itemWarn.style.left = "20px";
+        break;
+      case "Heartchain":
+        itemWarn.style.left = "4px";
+        break;
+    };
+  };
   itemWarnCont.style.display = "block";
   var audioElement = document.createElement("audio");
   audioElement.src = "foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
@@ -1276,14 +1317,14 @@ function formatTimeLeft(ms) {
   let formattedTime;
 
   if (hours > 0) {
-      // Format as hours:minutes
-      formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}h`;
+    // Format as hours:minutes
+    formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}h`;
   } else if (minutes > 0) {
-      // Format as minutes:seconds
-      formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}m`;
+    // Format as minutes:seconds
+    formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}m`;
   } else {
-      // Format as seconds
-      formattedTime = `${String(seconds).padStart(2, '0')}s`;
+    // Format as seconds
+    formattedTime = `${String(seconds).padStart(2, '0')}s`;
   }
 
   return formattedTime;
@@ -1291,19 +1332,20 @@ function formatTimeLeft(ms) {
 
 function countdown(ms) {
   let intervalId = setInterval(() => {
-      if (ms <= 0) {
-          clearInterval(intervalId);
-          bullettimeTimer.innerHTML = "00:00s";
-          return;
-      }
+    if (ms <= 0) {
+      clearInterval(intervalId);
+      bullettimeTimer.innerHTML = "00:00s";
+      return;
+    }
 
-      bullettimeTimer.innerHTML = formatTimeLeft(ms);
-      ms -= 1000;
+    bullettimeTimer.innerHTML = formatTimeLeft(ms);
+    ms -= 1000;
   }, 1000);
 }
 
 // Displays the BulletTime graphics and timer.
-window.electron.receive("startBulletTime", (ms) =>{;
+window.electron.receive("startBulletTime", (ms) => {
+  ;
   bullettimeTimer.innerHTML = formatTimeLeft(ms);
   bullettimeGlitch.style.display = "block";
   bullettimeCont.style.display = "block";
@@ -1311,6 +1353,6 @@ window.electron.receive("startBulletTime", (ms) =>{;
 });
 
 // Removes the BulletTime graphics and timer.
-window.electron.receive("stopBulletTime", () =>{
-  
+window.electron.receive("stopBulletTime", () => {
+
 });

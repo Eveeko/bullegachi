@@ -221,30 +221,30 @@ class Enemy {
         suffixes: ['bloom', 'flora', 'thorn', 'petal', 'growth']
       }
     };
-  
+
     if (!nameParts[face]) {
       throw new Error('Invalid face. Must be a number between 1 and 5.');
     }
-  
+
     const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  
+
     const { prefixes, suffixes } = nameParts[face];
-  
+
     let name = '';
     let attempts = 0;
-  
+
     while ((name.length > 10 || name.length === 0) && attempts < 10) {
       const prefix = getRandomElement(prefixes);
       const suffix = getRandomElement(suffixes);
       name = prefix + suffix;
-  
+
       if (name.length <= 10) {
         return name;
       }
-  
+
       attempts++;
     }
-  
+
     // Truncate to a maximum of 10 characters after 10 failed attempts
     return name.substring(0, 10);
   }
@@ -951,7 +951,17 @@ ipcMain.on("consume_item", (event, name) => {
         case "lootbox":
           break;
         case "heartchain":
-
+          if (heartChained) {
+            console.log('Unable to consume heartchain as a heartchain is already active.');
+            win.webContents.send("alertItem", "Heartchain", true);
+          } else {
+            // Give the player heartchained.
+            items[5].count = items[5].count - 1;
+            heartChained = true;
+            win.webContents.send("activate_heartchain");
+            syncStats();
+            syncItems();
+          };
           break;
       };
     };

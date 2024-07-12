@@ -69,6 +69,7 @@ const bullettimeGlitch = document.getElementById("bullettime_glitch");
 const bullettimeCont = document.getElementById("bullettime_cont");
 const bullettimeTimer = document.getElementById("bullettime_timer");
 const heartchain = document.getElementById("heartchain");
+const heartchainSfx = document.getElementById("heartchainSound");
 
 var moveMode = false;
 var isDragging = false;
@@ -1377,5 +1378,16 @@ window.electron.receive("startBulletTime", (ms) => {
 
 // Removes the BulletTime graphics and timer.
 window.electron.receive("stopBulletTime", () => {
+  bullettimeGlitch.style.display = "none";
+  bullettimeCont.style.display = "none";
+});
 
+window.electron.receive("activate_heartchain", () =>{
+  heartchain.style.display = "block";
+});
+
+window.electron.receive("disable_heartchain", () =>{
+  heartchainSfx.currentTime = 0;
+  heartchainSfx.play();
+  heartchain.style.display = "none";
 });

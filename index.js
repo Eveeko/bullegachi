@@ -68,6 +68,7 @@ const itemWarnCont = document.getElementById("item_warn_cont");
 const bullettimeGlitch = document.getElementById("bullettime_glitch");
 const bullettimeCont = document.getElementById("bullettime_cont");
 const bullettimeTimer = document.getElementById("bullettime_timer");
+const heartchain = document.getElementById("heartchain");
 
 var moveMode = false;
 var isDragging = false;
@@ -984,6 +985,16 @@ window.electron.receive("killEnemy", (enemyObj) => {
         rand = 2;
       } else {
         rand = 3;
+      };
+      if (enemyObj.boss == true) {
+        rend = Math.random(); // item drop quantity.
+        if (rend < 0.80) {
+          rand += 3;
+        } else if (rend < 0.92) {
+          rand += 5;
+        } else {
+          rand += 7;
+        };
       };
       popupItem(itemName, rand);
       window.electron.send("itemDropped", [itemId, rand]);

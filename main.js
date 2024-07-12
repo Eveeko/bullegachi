@@ -174,8 +174,8 @@ class Enemy {
       this.boss = false;
       this.health = this.calculateHealth();
       this.ttk = this.calculateTimerValue();
-      this.name = this.generateName();
       this.face = Math.floor(Math.random() * 5) + 1; // Skinwalker type shit
+      this.name = this.generateName(this.face);
     }
   }
   calculateHealth() {
@@ -198,60 +198,55 @@ class Enemy {
     // Update the character's health
     return Math.round(scaledHealth);
   }
-  generateName() {
-    const themes = {
-      weaponTitles: {
-        titleParts1: ["Blaze", "Iron", "Steel", "Thunder", "Shadow"],
-        titleParts2: ["Fury", "Edge", "Strike", "Blast", "Bolt"],
-        nameParts1: ["Mord", "Gor", "Thal", "Rag", "Bor"],
-        nameParts2: ["rek", "rim", "nak", "dor", "zak"],
+  generateName(face) {
+    const nameParts = {
+      1: {
+        prefixes: ['Balor', 'Levith', 'Aeron', 'Pneumo', 'Aerial'],
+        suffixes: ['thrax', 'zor', 'gorn', 'thus', 'dor']
       },
-      weaponNames: {
-        titleParts1: ["Sword", "Axe", "Dagger", "Bow", "Spear"],
-        titleParts2: ["Master", "Wielder", "Bearer", "Hunter", "Slayer"],
-        nameParts1: [
-          "Snag",
-          "Drak",
-          "Claw",
-          "Grim",
-          "Spik",
-          "Ar",
-          "Bran",
-          "Cael",
-          "Drax",
-          "Talon",
-        ],
-        nameParts2: [
-          "gle",
-          "gor",
-          "tak",
-          "gle",
-          "unk",
-          "ion",
-          "thor",
-          "blade",
-          "gore",
-          "fire",
-        ],
+      2: {
+        prefixes: ['Fizzar', 'Canis', 'Bubblor', 'Colar', 'Frothar'],
+        suffixes: ['zark', 'gon', 'dar', 'nix', 'zor']
       },
+      3: {
+        prefixes: ['Woden', 'Hingor', 'Knobar', 'Peevor', 'Framix'],
+        suffixes: ['dor', 'lock', 'bane', 'gorn', 'guard']
+      },
+      4: {
+        prefixes: ['Brikor', 'Wallon', 'Mortar', 'Stonox', 'Blocen'],
+        suffixes: ['guard', 'hold', 'shield', 'fort', 'barr']
+      },
+      5: {
+        prefixes: ['Petalus', 'Stemix', 'Budon', 'Leafor', 'Rooton'],
+        suffixes: ['bloom', 'flora', 'thorn', 'petal', 'growth']
+      }
     };
-
-    function getRandomElement(array) {
-      return array[Math.floor(Math.random() * array.length)];
+  
+    if (!nameParts[face]) {
+      throw new Error('Invalid face. Must be a number between 1 and 5.');
     }
-
-    const themeKeys = Object.keys(themes);
-    const selectedTheme = getRandomElement(themeKeys);
-    const selectedParts = themes[selectedTheme];
-
-    const title =
-      getRandomElement(selectedParts.titleParts1) +
-      getRandomElement(selectedParts.titleParts2);
-    const name =
-      getRandomElement(selectedParts.nameParts1) +
-      getRandomElement(selectedParts.nameParts2);
-
-    return title + " " + name; // Sets the name of the enemy.
+  
+    const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  
+    const { prefixes, suffixes } = nameParts[face];
+  
+    let name = '';
+    let attempts = 0;
+  
+    while ((name.length > 10 || name.length === 0) && attempts < 10) {
+      const prefix = getRandomElement(prefixes);
+      const suffix = getRandomElement(suffixes);
+      name = prefix + suffix;
+  
+      if (name.length <= 10) {
+        return name;
+      }
+  
+      attempts++;
+    }
+  
+    // Truncate to a maximum of 10 characters after 10 failed attempts
+    return name.substring(0, 10);
   }
   calculateTimerValue() {
     // Assume the player can click 4.5 times per second
@@ -285,7 +280,7 @@ class Enemy {
 //           GAMEPLAY LOOP
 // ----------------------------------
 
-let food = 70; // Initial food value (percentage)
+let food = 100; // Initial food value (percentage)
 let health = 3; // Initial health value
 let energy = 100; // Initial energy value (percentage)
 let dead = false; // Initial state of whether the player Fis dead
@@ -295,8 +290,9 @@ let timeSpawned = new Date();
 let trackingIntervalId = null; // Global variable to store the interval ID
 let palLevel = 1; // Current level of the pal (based on time spent alive)
 let palLevelProgress = 0; // Current progress towards the next level (0-100)
-var bullettime = false; // BulletTime flag (used for checking if BulletTime is enabled)
-var bullettimeDateObj = null; // BulletTime Date MS representing the end time for the effect.
+let bullettime = false; // BulletTime flag (used for checking if BulletTime is enabled)
+let bullettimeDateObj = null; // BulletTime Date MS representing the end time for the effect.
+let heartChained = false; // Heartchain flag (used for checking if heartchain is enabled)
 
 
 // -----------------------------------
@@ -328,6 +324,10 @@ let foodDepletionTimeout; // Timeout for food depletion.
 let healthCheckTimeout; // Timeout for health check.
 let lastCallTime = 0; // Used to check if 1 second has passed for timer.
 
+/**
+ * Used to tick the bullettime clock consistently.
+ * @returns {Boolean} `true` if time is passed, `false` if time has not.
+ */
 function hasSecondPassed() {
   const currentTime = Date.now();
   if (currentTime - lastCallTime >= 1000) {
@@ -337,11 +337,19 @@ function hasSecondPassed() {
   return false;
 }
 
-// Function to pick a random value between min and max
+/**
+ * Returns a random value inbetween 2 numbers.
+ * @param {Number} min 
+ * @param {Number} max 
+ * @returns {Number} A number inbetween the 2 provided numbers.
+ */
 function getRandomValue(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/**
+ * Initializes the entire game loop to start.
+ */
 function startGameLoop() {
   loadVariables(); // Load saved variables when the game starts
   // Save variables intermittently or before the program closes
@@ -392,7 +400,15 @@ function startGameLoop() {
   foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
 }
 
-// Function to handle food depletion
+/**
+ * Automatically depletes food for the pal and yields energy.
+ * 
+ * `LOW` energy ==> Greater food consumption.
+ * 
+ * `FULL` energy ==< Less food consumption.
+ * 
+ * Energy yield is proportional to food consumed.
+ */
 function depleteFood() {
   if (!bullettime) {
     var foodDepleted;
@@ -460,7 +476,9 @@ function depleteFood() {
   }
 }
 
-// Function to start the death sequence
+/**
+ * Used to start the pal death sequence.
+ */
 function startDeath() {
   food = 0;
   disableTracking();
@@ -474,6 +492,9 @@ function alivePal() {
   console.log("Pal has alived");
   depleteFood();
 }
+/**
+ * Wrapper for win.webContents. Syncs internal pal stats with UI.
+ */
 function syncStats() {
   win.webContents.send("setStats", {
     health: health,
@@ -482,22 +503,38 @@ function syncStats() {
     attack: attack,
   });
 }
+/**
+ * Wrapper for win.webContents. Syncs internal foods with UI.
+ */
 function syncFoods() {
   win.webContents.send("setFoods", foods);
 }
+/**
+ * Wrapper for win.webContents. Syncs internal items with UI.
+ */
 function syncItems() {
   win.webContents.send("setItems", items);
 }
+/**
+ * Wrapper for win.webContents. Syncs internal enemy with UI.
+ */
 function syncEnemy() {
   win.webContents.send("setEnemy", enemy);
 }
+/**
+ * Wrapper for win.webContents. Syncs internal player level with UI.
+ * @param {number} level The current player level.
+ * @param {number} levelprog The current level progress. (0-100)
+ */
 function syncLevel(level, levelprog) {
   win.webContents.send("setLevel", { level: level, levelProgress: levelprog });
   palLevel = level;
   palLevelProgress = levelprog;
 }
 
-// Function to ensure directory and file exist
+/**
+ * Checks if the gameData.json file exists, if not it creates and populates it with default states.
+ */
 function ensureDataFileExists() {
   const userDataPath = app.getPath("userData");
   const filePath = path.join(userDataPath, "gameData.json");
@@ -542,7 +579,10 @@ const clientDataPath = path.join(app.getPath("userData"), "clientData.json");
 // Registry key for auto-run
 const runKey = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
-// Function to check and initialize the client data file
+/**
+ * Checks if the clientData.json file exists, if not it creates and populates it.
+ * @returns JSON object of the client data file.
+ */
 const checkAndInitializeClientData = () => {
   let clientData = { firstRun: false, autoRun: true };
 
@@ -566,7 +606,9 @@ const checkAndInitializeClientData = () => {
   return clientData;
 };
 
-// Function to save client data
+/**
+ * Saves the client unique data (autoRun, firstRun) to the clientData.json file.
+ */
 const saveClientData = () => {
   fs.writeFileSync(
     clientDataPath,
@@ -581,7 +623,9 @@ const saveClientData = () => {
   );
 };
 
-// Function to set the app to run at startup
+/**
+ * Sets the AutoRun registry key on the device and updates the tray menu.
+ */
 const setAutoRun = () => {
   if (autoRun == false) {
     const exePath = app.getPath("exe"); // Path to the app executable
@@ -611,7 +655,9 @@ const setAutoRun = () => {
   }
 };
 
-// Function to remove the app from auto-run
+/**
+ * Removes the AutoRun registry key from the device and updates the tray menu.
+ */
 const removeAutoRun = () => {
   const exePath = `"${app.getPath("exe")}"`; // Get the path to the app executable
 
@@ -657,7 +703,9 @@ const removeAutoRun = () => {
   });
 };
 
-// Function to load variables from file
+/**
+ * Loads the gameData.json file into the appropriate variables.
+ */
 function loadVariables() {
   ensureDataFileExists(); // Ensure directory and file exist
   const userDataPath = app.getPath("userData");
@@ -693,7 +741,9 @@ function loadVariables() {
   }
 }
 
-// Function to save variables to file
+/**
+ * Saves the game state variables to the gameData.json file.
+ */
 function saveVariables() {
   const userDataPath = app.getPath("userData");
   const filePath = path.join(userDataPath, "gameData.json");
@@ -723,7 +773,9 @@ function saveVariables() {
   }
 }
 
-// Function to synchronize tray menu based on autoRun status
+/**
+ * Synchronizes the windows tray menu with the current AutoRun state.
+ */
 function syncTrayMenu() {
   const autoRunLabel = autoRun ? "AutoRun - Enabled" : "AutoRun - Disabled";
   const contextMenu = Menu.buildFromTemplate([
@@ -802,6 +854,10 @@ ipcMain.on("consume_food", (event, name) => {
   }
 });
 
+/**
+ * Wrapper for win.webContents
+ * @param {number} int The number of food % to display as a popup.
+ */
 function popupFoodStat(int) {
   console.log("food popup sent.");
   win.webContents.send("food_popup", int);
@@ -895,6 +951,7 @@ ipcMain.on("consume_item", (event, name) => {
         case "lootbox":
           break;
         case "heartchain":
+
           break;
       };
     };
@@ -1048,6 +1105,10 @@ ipcMain.on('endSacrifice', () => {
   syncItems();
 });
 
+/**
+ * Automatically tracks player level and updates the visual bar accordingly.
+ * @param {number} timeSpawned A Date objects time converted into milliseconds of when the pal was first alive
+ */
 function trackPlayerProgress(timeSpawned) {
   // Function to announce the level up
   function levelUp(newLevel) {
@@ -1117,7 +1178,10 @@ function trackPlayerProgress(timeSpawned) {
   trackingIntervalId = setInterval(updateProgress, 60000); // 60000 milliseconds = 1 minute
 }
 
-// Function to disable tracking
+/**
+ * Disables automatically player progress tracking and visual bar updating.
+ * mainly used for the sacrifice routine.
+ */
 function disableTracking() {
   if (trackingIntervalId !== null) {
     clearInterval(trackingIntervalId);

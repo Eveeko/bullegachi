@@ -70,6 +70,8 @@ const bullettimeCont = document.getElementById("bullettime_cont");
 const bullettimeTimer = document.getElementById("bullettime_timer");
 const heartchain = document.getElementById("heartchain");
 const heartchainSfx = document.getElementById("heartchainSound");
+const heartchainSfx2 = document.getElementById("heartchainSound2");
+const reviveOverlay = document.getElementById("reviveOverlay");
 
 var moveMode = false;
 var isDragging = false;
@@ -1390,4 +1392,12 @@ window.electron.receive("disable_heartchain", () =>{
   heartchainSfx.currentTime = 0;
   heartchainSfx.play();
   heartchain.style.display = "none";
+  setTimeout(()=>{
+    heartchainSfx2.currentTime = 0;
+    heartchainSfx2.play();
+    bPal.style.animation = "fade_in 3s 1"
+    setTimeout(() =>{
+      playSelectSfx();
+    }, 2200);
+  }, 1000);
 });

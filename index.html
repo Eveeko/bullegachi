@@ -36,14 +36,19 @@
             <div class="bulletpal" id="bulletpal">
                 <div class="line-filter"></div>
                 <img src="faces/default_idle.png" class="bulletpal_face" id="bFace">
+                <div class="reviveOverlay" id="reviveOverlay" style="display: block"></div>
                 <div class="line-filter"></div>
                 </img>
                 <img src="elipse.svg" class="bulletpal_shadow">
             </div>
+            <audio id="heartchainSound">
+                <source src="heartchain_shatter_sfx.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="heartchainSound2">
+                <source src="heartchain_revive_sfx.mp3" type="audio/mpeg">
+            </audio>
             <div class="bulletpal_heartchain" id="heartchain" style="display: none;">
-                <audio id="heartchainSound">
-                    <source src="heartchain_shatter_sfx.wav" type="audio/wav">
-                </audio>
+                <div class="line-filter"></div>
             </div>
         </div>
     </div>

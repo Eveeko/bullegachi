@@ -985,4 +985,15 @@ body {
   height: 75px;
   left: 103px;
   top: 134px;
+  filter: blur(0.5px);
+}
+
+@keyframes fade_in {
+  0%  {
+    opacity: 0%;
+  }
+  
+  100%{
+    opacity: 100%;
+  }
 }

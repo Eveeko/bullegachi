@@ -455,8 +455,29 @@ function depleteFood() {
   function checkHealth() {
     if (health === 0) {
       // Player is dead
-      dead = true;
-      startDeath();
+      if (heartChained == true) {
+        console.log("heartchained active, reviving");
+        // Heartchain is active, break it and restore health and energy.
+        heartChained = false;
+        win.webContents.send("disable_heartchain");
+        energy = 100;
+        health = 3;
+        food = 100;
+        dead = false;
+        setTimeout(() =>{
+          syncStats();
+          alivePal();
+          foodDepletionTimeout = setTimeout(
+            depleteFood,
+            getRandomValue(300000, 900000)
+          ); // Random time in seconds (5-15 minutes)
+        }, 2800);
+      } else {
+        // Health has ran out and no heartchain is active, kill em.
+        console.log("bullet ran out of health with no heartchain. killing");
+        dead = true;
+        startDeath();
+      };
     } else {
       // Subtract 1 from health and restart food depletion loop
       health--;
@@ -490,7 +511,6 @@ function startDeath() {
 function alivePal() {
   win.webContents.send("alivePal", true);
   console.log("Pal has alived");
-  depleteFood();
 }
 /**
  * Wrapper for win.webContents. Syncs internal pal stats with UI.
@@ -555,6 +575,7 @@ function ensureDataFileExists() {
         palLevelProgress: 0,
         bullettime: false,
         bullettimeDateObj: null,
+        heartChained: false,
         foods: [
           { id: 1, name: "Orange", discovered: false, count: 0 },
           { id: 2, name: "Sweets", discovered: true, count: 1 },
@@ -726,6 +747,7 @@ function loadVariables() {
     enemy = new Enemy(savedData.enemy);
     bullettime = savedData.bullettime;
     bullettimeDateObj = savedData.bullettimeDateObj;
+    heartChained = savedData.heartChained;
     if (bullettime == true) {
       console.log("bullettime was previously activated, resuming.");
       let bteMs = (bullettimeEnd - Date.now());
@@ -735,6 +757,9 @@ function loadVariables() {
       setTimeout(() => {
         win.webContents.send("stopBulletTime");
       }, bteMs) // Make this function wait until the end time of the effect before triggering.
+    };
+    if (heartChained == true){
+      win.webContents.send("activate_heartchain")
     }
   } catch (err) {
     console.error("Error loading game data:", err);
@@ -764,7 +789,8 @@ function saveVariables() {
     items,
     enemy: eSer,
     bullettime,
-    bullettimeDateObj
+    bullettimeDateObj,
+    heartChained
   };
   try {
     fs.writeFileSync(filePath, JSON.stringify(gameData));
@@ -926,7 +952,7 @@ ipcMain.on("consume_item", (event, name) => {
             win.webContents.send("alertItem", "BulletTime");
             setTimeout(() => {
               win.webContents.send("stopBulletTime");
-            }, bteMs) // Make this function wait until the end time of the effect before triggering.
+            }, bteMs); // Make this function wait until the end time of the effect before triggering.
           }
           break;
         case "soda":
@@ -959,6 +985,7 @@ ipcMain.on("consume_item", (event, name) => {
             items[5].count = items[5].count - 1;
             heartChained = true;
             win.webContents.send("activate_heartchain");
+            win.webContents.send("alertItem", "Heartchain");
             syncStats();
             syncItems();
           };

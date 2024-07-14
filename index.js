@@ -71,7 +71,6 @@ const bullettimeTimer = document.getElementById("bullettime_timer");
 const heartchain = document.getElementById("heartchain");
 const heartchainSfx = document.getElementById("heartchainSound");
 const heartchainSfx2 = document.getElementById("heartchainSound2");
-const reviveOverlay = document.getElementById("reviveOverlay");
 
 var moveMode = false;
 var isDragging = false;

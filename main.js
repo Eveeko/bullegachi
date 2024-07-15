@@ -975,6 +975,10 @@ ipcMain.on("consume_item", (event, name) => {
           win.webContents.send("alertItem", "Sword");
           break;
         case "lootbox":
+          console.log('Rolling lootbox.');
+          var id = getRandomValue(1, 9);
+          id = id - 1;
+          win.webContents.send("roll_lootbox", [id, getRandomValue(1, 5)]);
           break;
         case "heartchain":
           if (heartChained) {

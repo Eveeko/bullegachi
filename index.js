@@ -1383,20 +1383,106 @@ window.electron.receive("stopBulletTime", () => {
   bullettimeCont.style.display = "none";
 });
 
-window.electron.receive("activate_heartchain", () =>{
+window.electron.receive("activate_heartchain", () => {
   heartchain.style.display = "block";
 });
 
-window.electron.receive("disable_heartchain", () =>{
+window.electron.receive("disable_heartchain", () => {
   heartchainSfx.currentTime = 0;
   heartchainSfx.play();
   heartchain.style.display = "none";
-  setTimeout(()=>{
+  setTimeout(() => {
     heartchainSfx2.currentTime = 0;
     heartchainSfx2.play();
     bPal.style.animation = "fade_in 3s 1"
-    setTimeout(() =>{
+    setTimeout(() => {
       playSelectSfx();
     }, 2200);
   }, 1000);
 });
+
+// ---------------------
+//    Lootbox Visuals
+// ---------------------
+
+window.electron.receive("roll_lootbox", (vars) => {
+  var id = vars[0]; // 0-8 int that determines the item/food to display as the reward. (0-5 = items, 6-8 = foods)
+  var quantity = vars[1];
+
+  const items = ['Orange', 'Sweets', 'Spice', 'Medkit', 'BulletTime', 'Soda', 'Sword', 'Lootbox'];
+
+  function generateRandomItems() {
+    const randomItems = [];
+    for (let i = 0; i < 20; i++) {
+      const randomItem = items[Math.floor(Math.random() * items.length)];
+      randomItems.push(randomItem);
+    }
+    return randomItems;
+  }
+  console.log(vars, id);
+  spinLootbox(id);
+
+  function spinLootbox(landingIndex) {
+    const lootboxItems = document.getElementById('lootboxItems');
+    const itemDisplay = document.getElementById('itemDisplay');
+    const landedItemDiv = document.getElementById('landedItem');
+    const itemText = document.getElementById('itemText');
+
+    // Resetting display elements for new spin
+    lootboxItems.innerHTML = '';
+    itemDisplay.style.display = 'none';
+    lootboxItems.style.display = 'flex';
+
+    const randomItems = generateRandomItems();
+    const predeterminedItem = items[landingIndex];
+
+    const additionalItemsBefore = 5; // Number of items to pad before the predetermined item
+    const additionalItemsAfter = 10; // Number of items to pad after the predetermined item
+
+    // Adding items before the predetermined item
+    for (let i = 0; i < additionalItemsBefore; i++) {
+      const randomItem = items[Math.floor(Math.random() * items.length)];
+      randomItems.unshift(randomItem);
+    }
+
+    randomItems.push(predeterminedItem);
+
+    // Adding items after the predetermined item
+    for (let i = 0; i < additionalItemsAfter; i++) {
+      const randomItem = items[Math.floor(Math.random() * items.length)];
+      randomItems.push(randomItem);
+    }
+
+    randomItems.forEach(item => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'lootbox-item';
+      itemDiv.innerText = item;
+      lootboxItems.appendChild(itemDiv);
+    });
+    console.log(randomItems)
+
+    const itemWidth = 50;
+    const totalItems = randomItems.length;
+    const totalWidth = (totalItems - 10) * itemWidth;
+    const spinTimes = 3;
+    const spinDistance = -(totalWidth - itemWidth * 2); // Distance to spin before final landing
+    const finalPosition = -(landingIndex + additionalItemsBefore) * itemWidth; // Adjust final position to land on predetermined item
+
+    lootboxItems.style.transition = 'none';
+    lootboxItems.style.transform = `translateX(0px)`;
+
+    setTimeout(() => {
+      lootboxItems.style.transition = `transform ${spinTimes + 1}s cubic-bezier(0.33, 1, 0.68, 1)`;
+      lootboxItems.style.transform = `translateX(${spinDistance}px)`;
+    }, 50);
+
+
+    setTimeout(() => {
+      lootboxItems.style.display = 'none';
+      landedItemDiv.innerText = predeterminedItem;
+      itemText.innerText = predeterminedItem;
+      itemDisplay.style.display = 'flex';
+    }, (spinTimes + 2) * 1000);
+  }
+});
+

@@ -979,7 +979,7 @@ ipcMain.on("consume_item", (event, name) => {
           var id = getRandomValue(1, 9); // id of the drop (0-2 = food \ 3-8 = items)
           var ct = getRandomValue(1, 5);
           id = id - 1;
-          if(id == undefined){id = 1; ct = 13};
+          if (id == undefined) { id = 1; ct = 13 };
           items[4].count = items[4].count - 1;
           win.webContents.send("roll_lootbox", [id, ct]);
           switch (id) {
@@ -1105,8 +1105,27 @@ ipcMain.on("startTTK", (event) => {
           syncEnemy();
         } else {
           // timer expired.
-          win.webContents.send("timerDamage", health);
           clearInterval(timerTimeout);
+          win.webContents.send("timerDamage", health);
+          health--;
+          syncStats();
+          if (health == 0) {
+            if (heartChained == true) {
+              console.log("heartchained active, reviving");
+              // Heartchain is active, break it and restore health and energy.
+              heartChained = false;
+              win.webContents.send("disable_heartchain");
+              energy = 100;
+              health = 3;
+              food = 100;
+              dead = false;
+            } else {
+              dead = true;
+              startDeath();
+              disableTracking();
+              console.log('pal died in battle.');
+            }
+          };
         }
       }, 1000);
     }

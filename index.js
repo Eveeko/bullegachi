@@ -135,25 +135,40 @@ function playSelectSfx() {
  */
 function closeAnyOpenPanels(selector) {
   switch (selector) {
+    case 0:
+      foodBox.style.visibility = "hidden";
+      foodBtn.style.backgroundImage = "";
+      invBox.style.visibility = "hidden";
+      invBtn.style.backgroundImage = "";
+      battleBox.style.visibility = "hidden";
+      battleBtn.style.backgroundImage = "";
     case 1:
+      infoBox.style.visibility = "hidden";
+      infoBtn.style.backgroundImage = "";
       invBox.style.visibility = "hidden";
       invBtn.style.backgroundImage = "";
       battleBox.style.visibility = "hidden";
       battleBtn.style.backgroundImage = "";
       break;
     case 2:
+      infoBox.style.visibility = "hidden";
+      infoBtn.style.backgroundImage = "";
       foodBox.style.visibility = "hidden";
       foodBtn.style.backgroundImage = "";
       battleBox.style.visibility = "hidden";
       battleBtn.style.backgroundImage = "";
       break;
     case 3:
+      infoBox.style.visibility = "hidden";
+      infoBtn.style.backgroundImage = "";
       invBox.style.visibility = "hidden";
       invBtn.style.backgroundImage = "";
       foodBox.style.visibility = "hidden";
       foodBtn.style.backgroundImage = "";
       break;
     case 4:
+      infoBox.style.visibility = "hidden";
+      infoBtn.style.backgroundImage = "";
       foodBox.style.visibility = "hidden";
       foodBtn.style.backgroundImage = "";
       invBox.style.visibility = "hidden";
@@ -184,6 +199,7 @@ infoBtn.onmouseout = () => {
   }
 };
 infoBtn.onmousedown = () => {
+  closeAnyOpenPanels(0);
   if (infoOpen) {
     infoOpen = false;
     infoBox.style.visibility = "hidden";

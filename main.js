@@ -1114,7 +1114,7 @@ ipcMain.on("startSacrifice", () => {
       palLevel = 1;
       palLevelProgress = 0;
       enemy = new Enemy();
-      foods = [
+      foods = [ 
         { id: 1, name: "Orange", discovered: false, count: 0 },
         { id: 2, name: "Sweets", discovered: true, count: 5 },
         { id: 3, name: "Spice", discovered: false, count: 0 },
@@ -1234,7 +1234,7 @@ function disableTracking() {
 // ------------------------
 //    Auto-updater Events
 // ------------------------
-// Auto-updater events
+
 autoUpdater.on("update-available", (info) => {
   log.info("Update available:", info);
   mainWindow.webContents.send("update-available", info);

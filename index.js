@@ -69,8 +69,8 @@ const bullettimeGlitch = document.getElementById("bullettime_glitch");
 const bullettimeCont = document.getElementById("bullettime_cont");
 const bullettimeTimer = document.getElementById("bullettime_timer");
 const heartchain = document.getElementById("heartchain");
-const heartchainSfx = document.getElementById("heartchainSound");
-const heartchainSfx2 = document.getElementById("heartchainSound2");
+const heartchainSfx = document.getElementById("heartchainSound"); 
+const lootboxBG = document.getElementById("lootbox_background");
 
 var moveMode = false;
 var isDragging = false;
@@ -1420,6 +1420,7 @@ window.electron.receive("roll_lootbox", (vars) => {
     return randomItems;
   }
   console.log(vars, id);
+  lootboxBG.style.display = "block";
   spinLootbox(id);
 
   function spinLootbox(landingIndex) {
@@ -1467,6 +1468,9 @@ window.electron.receive("roll_lootbox", (vars) => {
     const spinTimes = 3;
     const spinDistance = -(totalWidth - itemWidth * 2); // Distance to spin before final landing
     const finalPosition = -(landingIndex + additionalItemsBefore) * itemWidth; // Adjust final position to land on predetermined item
+
+    // Add pixelated effect
+    lootboxItems.classList.add('pixelated');
 
     lootboxItems.style.transition = 'none';
     lootboxItems.style.transform = `translateX(0px)`;

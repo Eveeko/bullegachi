@@ -8,12 +8,13 @@ body {
   padding: 0;
   overflow: hidden;
   background:
-    /* Curved glass effect */
-    radial-gradient(circle at center,
-      rgb(25, 20, 0) 20%,
-      rgb(14, 11, 0) 70%,
-      rgb(4, 3, 0) 94%,
-      rgb(0, 0, 0) 98%);
+    /* Curved glass effect */ radial-gradient(
+    circle at center,
+    rgb(25, 20, 0) 20%,
+    rgb(14, 11, 0) 70%,
+    rgb(4, 3, 0) 94%,
+    rgb(0, 0, 0) 98%
+  );
   position: relative;
   background-size: 260px 210px;
   font-family: "VT220", monospace;
@@ -28,9 +29,11 @@ body {
   left: 0;
   width: 100%;
   height: 210px;
-  background-image: linear-gradient(to bottom,
-      rgba(255, 204, 0, 0.1) 1px,
-      transparent 2px);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 204, 0, 0.1) 1px,
+    transparent 2px
+  );
   z-index: 1;
   pointer-events: none;
   animation: scan 7s linear infinite;
@@ -144,10 +147,12 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(transparent,
-      transparent 2px,
-      rgba(11, 9, 0, 0.3) 3px,
-      rgba(11, 9, 0, 0.3) 4px);
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(11, 9, 0, 0.3) 3px,
+    rgba(11, 9, 0, 0.3) 4px
+  );
 }
 
 .bulletpal {
@@ -159,7 +164,8 @@ body {
   left: 67px;
   background-repeat: no-repeat;
   background-size: auto 100%;
-  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%) hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
+  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%)
+    hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
   /* Apply the SVG filter to the image */
   filter: url(line-filter.svg#rgb-line-filter);
   /* Apply the line filter to the image */
@@ -752,7 +758,6 @@ body {
 }
 
 @keyframes blink_rapid {
-
   0%,
   20%,
   40%,
@@ -891,7 +896,6 @@ body {
 }
 
 @keyframes blink {
-
   0%,
   50% {
     color: #110d00;
@@ -989,11 +993,11 @@ body {
 }
 
 @keyframes fade_in {
-  0%  {
+  0% {
     opacity: 0%;
   }
-  
-  100%{
+
+  100% {
     opacity: 100%;
   }
 }
@@ -1008,8 +1012,8 @@ body {
   overflow: hidden;
   border: 2px solid #ffcc00;
   position: relative;
-  top: -164px;
-  left: 45px;
+  top: 50px;
+  left: 1px;
 }
 
 .lootbox-items {
@@ -1018,6 +1022,8 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+  color: #ffcc00;
+  font-family: VT220;
 }
 
 .lootbox-item {
@@ -1036,6 +1042,9 @@ body {
   justify-content: center;
   margin-top: 20px;
   width: 50px;
+  left: 75px;
+  top: -35px;
+  position: relative;
 }
 
 .landed-item {
@@ -1045,19 +1054,23 @@ body {
   justify-content: center;
   align-items: center;
   border: 2px solid #ffcc00;
+  color: #ffcc00;
+  font-family: VT220;
 }
 
 .item-text {
   margin-top: 10px;
   font-size: 20px;
   text-align: center;
+  color: #ffcc00;
+  font-family: VT220;
 }
 
 .lootbox_background {
   background-color: #100d00;
-  width: 100px;
-  height: 100px;
+  width: 206px;
+  height: 182px;
   position: absolute;
-  left: 10px;
+  left: 45px;
   top: 10px;
 }

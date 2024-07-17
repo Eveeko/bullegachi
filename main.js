@@ -464,7 +464,7 @@ function depleteFood() {
         health = 3;
         food = 100;
         dead = false;
-        setTimeout(() =>{
+        setTimeout(() => {
           syncStats();
           alivePal();
           foodDepletionTimeout = setTimeout(
@@ -758,7 +758,7 @@ function loadVariables() {
         win.webContents.send("stopBulletTime");
       }, bteMs) // Make this function wait until the end time of the effect before triggering.
     };
-    if (heartChained == true){
+    if (heartChained == true) {
       win.webContents.send("activate_heartchain")
     }
   } catch (err) {
@@ -976,9 +976,33 @@ ipcMain.on("consume_item", (event, name) => {
           break;
         case "lootbox":
           console.log('Rolling lootbox.');
-          var id = getRandomValue(1, 9);
+          var id = getRandomValue(1, 9); // id of the drop (0-2 = food \ 3-8 = items)
+          var ct = getRandomValue(1, 5);
           id = id - 1;
-          win.webContents.send("roll_lootbox", [id, getRandomValue(1, 5)]);
+          if(id == undefined){id = 1; ct = 13};
+          items[4].count = items[4].count - 1;
+          win.webContents.send("roll_lootbox", [id, ct]);
+          switch (id) {
+            case 0:
+            case 1:
+            case 2:
+              foods[id].count += ct;
+              break;
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+              items[id - 3].count += ct;
+              break;
+            default:
+              console.log('error, item id not valid:', id);
+              break;
+          };
+          console.log(`lootbox id rolled: ${id} | ct: ${ct}`);
+          syncItems();
+          syncFoods();
           break;
         case "heartchain":
           if (heartChained) {
@@ -1114,7 +1138,7 @@ ipcMain.on("startSacrifice", () => {
       palLevel = 1;
       palLevelProgress = 0;
       enemy = new Enemy();
-      foods = [ 
+      foods = [
         { id: 1, name: "Orange", discovered: false, count: 0 },
         { id: 2, name: "Sweets", discovered: true, count: 5 },
         { id: 3, name: "Spice", discovered: false, count: 0 },

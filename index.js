@@ -69,8 +69,11 @@ const bullettimeGlitch = document.getElementById("bullettime_glitch");
 const bullettimeCont = document.getElementById("bullettime_cont");
 const bullettimeTimer = document.getElementById("bullettime_timer");
 const heartchain = document.getElementById("heartchain");
-const heartchainSfx = document.getElementById("heartchainSound"); 
+const heartchainSfx = document.getElementById("heartchainSound");
 const lootboxBG = document.getElementById("lootbox_background");
+const lootbox = document.getElementById("lootbox");
+const lootboxPointer = document.getElementById("lootbox_pointer");
+const lootboxNextBtn = document.getElementById("lootbox-continue-btn");
 
 var moveMode = false;
 var isDragging = false;
@@ -1428,11 +1431,14 @@ window.electron.receive("roll_lootbox", (vars) => {
     const itemDisplay = document.getElementById('itemDisplay');
     const landedItemDiv = document.getElementById('landedItem');
     const itemText = document.getElementById('itemText');
+    const itemCount = document.getElementById('itemCount');
 
     // Resetting display elements for new spin
     lootboxItems.innerHTML = '';
     itemDisplay.style.display = 'none';
     lootboxItems.style.display = 'flex';
+    lootbox.style.display = "block";
+    lootboxPointer.style.display = "block";
 
     const randomItems = generateRandomItems();
     const predeterminedItem = items[landingIndex];
@@ -1457,7 +1463,7 @@ window.electron.receive("roll_lootbox", (vars) => {
     randomItems.forEach(item => {
       const itemDiv = document.createElement('div');
       itemDiv.className = 'lootbox-item';
-      itemDiv.innerText = item;
+      itemDiv.style.backgroundImage = `url(sprite_${item}.png)`;
       lootboxItems.appendChild(itemDiv);
     });
     console.log(randomItems)
@@ -1482,11 +1488,18 @@ window.electron.receive("roll_lootbox", (vars) => {
 
 
     setTimeout(() => {
+      lootbox.style.display = "none";
+      lootboxPointer.style.display = "none";
       lootboxItems.style.display = 'none';
-      landedItemDiv.innerText = predeterminedItem;
-      itemText.innerText = predeterminedItem;
+      landedItemDiv.style.backgroundImage = `url(sprite_${predeterminedItem}.png)`;
+      itemCount.innerText = `+${quantity}`;
+      itemText.innerHTML = predeterminedItem;
       itemDisplay.style.display = 'flex';
     }, (spinTimes + 2) * 1000);
   }
 });
 
+lootboxNextBtn.onmousedown = () => {
+  lootboxBG.style.display = "none";
+  playSelectSfx();
+};

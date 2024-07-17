@@ -8,13 +8,12 @@ body {
   padding: 0;
   overflow: hidden;
   background:
-    /* Curved glass effect */ radial-gradient(
-    circle at center,
-    rgb(25, 20, 0) 20%,
-    rgb(14, 11, 0) 70%,
-    rgb(4, 3, 0) 94%,
-    rgb(0, 0, 0) 98%
-  );
+    /* Curved glass effect */
+    radial-gradient(circle at center,
+      rgb(25, 20, 0) 20%,
+      rgb(14, 11, 0) 70%,
+      rgb(4, 3, 0) 94%,
+      rgb(0, 0, 0) 98%);
   position: relative;
   background-size: 260px 210px;
   font-family: "VT220", monospace;
@@ -29,11 +28,9 @@ body {
   left: 0;
   width: 100%;
   height: 210px;
-  background-image: linear-gradient(
-    to bottom,
-    rgba(255, 204, 0, 0.1) 1px,
-    transparent 2px
-  );
+  background-image: linear-gradient(to bottom,
+      rgba(255, 204, 0, 0.1) 1px,
+      transparent 2px);
   z-index: 1;
   pointer-events: none;
   animation: scan 7s linear infinite;
@@ -147,12 +144,10 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(
-    transparent,
-    transparent 2px,
-    rgba(11, 9, 0, 0.3) 3px,
-    rgba(11, 9, 0, 0.3) 4px
-  );
+  background: repeating-linear-gradient(transparent,
+      transparent 2px,
+      rgba(11, 9, 0, 0.3) 3px,
+      rgba(11, 9, 0, 0.3) 4px);
 }
 
 .bulletpal {
@@ -164,8 +159,7 @@ body {
   left: 67px;
   background-repeat: no-repeat;
   background-size: auto 100%;
-  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%)
-    hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
+  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%) hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
   /* Apply the SVG filter to the image */
   filter: url(line-filter.svg#rgb-line-filter);
   /* Apply the line filter to the image */
@@ -758,6 +752,7 @@ body {
 }
 
 @keyframes blink_rapid {
+
   0%,
   20%,
   40%,
@@ -896,6 +891,7 @@ body {
 }
 
 @keyframes blink {
+
   0%,
   50% {
     color: #110d00;
@@ -1014,6 +1010,7 @@ body {
   position: relative;
   top: 50px;
   left: 1px;
+  filter: blur(0.5px);
 }
 
 .lootbox-items {
@@ -1033,6 +1030,11 @@ body {
   justify-content: center;
   align-items: center;
   border-right: 1px solid #ffcc00;
+  background-image: url("sprite_food.png");
+  background-position: 7px 7px;
+  background-size: 35px 35px;
+  background-repeat: no-repeat;
+  filter: blur(0.5px);
 }
 
 .item-display {
@@ -1043,8 +1045,9 @@ body {
   margin-top: 20px;
   width: 50px;
   left: 75px;
-  top: -35px;
+  top: 8px;
   position: relative;
+  filter: blur(0.5px);
 }
 
 .landed-item {
@@ -1055,7 +1058,9 @@ body {
   align-items: center;
   border: 2px solid #ffcc00;
   color: #ffcc00;
-  font-family: VT220;
+  background-position: 7px 7px;
+  background-size: 35px 35px;
+  background-repeat: no-repeat;
 }
 
 .item-text {
@@ -1073,4 +1078,41 @@ body {
   position: absolute;
   left: 45px;
   top: 10px;
+}
+
+.lootbox_pointer {
+  color: #ffcc00;
+  position: relative;
+  top: 20px;
+  left: 94px;
+}
+
+.item-count {
+  margin-top: 10px;
+  font-size: 20px;
+  text-align: center;
+  color: #ffcc00;
+  font-family: VT220;
+  position: relative;
+  left: 50px;
+  top: -78px;
+}
+
+.lootbox-continue-btn {
+  position: absolute;
+  top: 94px;
+  left: 2px;
+  width: 50px;
+  height: 50px;
+  background-image: url("sprite_next_btn.png");
+  background-repeat: no-repeat;
+  background-size: 45px 45px;
+}
+
+.lootbox-continue-btn:hover {
+  background-image: url("sprite_next_btn_i.png");
+}
+
+.lootbox-continue-btn:active {
+  background-image: url("sprite_next_btn.png");
 }

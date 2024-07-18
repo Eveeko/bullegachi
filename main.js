@@ -765,7 +765,7 @@ function loadVariables() {
     } catch (err) {
       console.error("Error loading game data:", err);
     }
-  }else{
+  } else {
     console.log('no crypto key found. resetting data...');
     ensureDataFileExists(true);
     syncStats();
@@ -1319,8 +1319,8 @@ function genChk() {
     const hash = crypto.createHash('sha256');
     hash.update(data);
     const hashedData = hash.digest('hex');
-    fs.writeFile(`${userDataPath}/pal.bgh`, hashedData, (err =>{
-      if(err){
+    fs.writeFile(`${userDataPath}/pal.bgh`, hashedData, (err => {
+      if (err) {
         console.log(`crypto write error, yep.`, err);
       };
     }));

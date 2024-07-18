@@ -84,58 +84,58 @@ body {
   top: 0px;
   left: 0px;
   color: transparent;
-  background-image: url("sprite_info.png");
+  background-image: url("sprite/sprite_info.png");
   background-position: center;
   transform: rotateY(10deg) translateZ(5px);
   /* Adjust rotation and translation values for the desired effect */
 }
 
 .side_icon:hover {
-  background-image: url("sprite_info_i.png");
+  background-image: url("sprite/sprite_info_i.png");
 }
 
 .side_icon_food {
-  background-image: url("sprite_food.png");
+  background-image: url("sprite/sprite_food.png");
 }
 
 .side_icon_food:hover {
-  background-image: url("sprite_food_i.png");
+  background-image: url("sprite/sprite_food_i.png");
 }
 
 .side_icon_inv {
-  background-image: url("sprite_inv.png");
+  background-image: url("sprite/sprite_inv.png");
 }
 
 .side_icon_inv:hover {
-  background-image: url("sprite_inv_i.png");
+  background-image: url("sprite/sprite_inv_i.png");
 }
 
 .side_icon_inv:active {
-  background-image: url("sprite_inv.png");
+  background-image: url("sprite/sprite_inv.png");
 }
 
 .side_icon_battle {
-  background-image: url("sprite_battle.png");
+  background-image: url("sprite/sprite_battle.png");
 }
 
 .side_icon_battle:hover {
-  background-image: url("sprite_battle_i.png");
+  background-image: url("sprite/sprite_battle_i.png");
 }
 
 .side_icon_battle:active {
-  background-image: url("sprite_battle.png");
+  background-image: url("sprite/sprite_battle.png");
 }
 
 .side_icon_settings {
-  background-image: url("sprite_settings.png");
+  background-image: url("sprite/sprite_settings.png");
 }
 
 .side_icon_settings:hover {
-  background-image: url("sprite_settings_i.png");
+  background-image: url("sprite/sprite_settings_i.png");
 }
 
 .side_icon_settings:active {
-  background-image: url("sprite_settings.png");
+  background-image: url("sprite/sprite_settings.png");
 }
 
 .line-filter {
@@ -151,7 +151,7 @@ body {
 }
 
 .bulletpal {
-  background-image: url("sprite_bulletpal.png");
+  background-image: url("sprite/sprite_bulletpal.png");
   width: 160px;
   height: 148px;
   position: relative;
@@ -355,7 +355,7 @@ body {
   width: 40px;
   height: 40px;
   filter: blur(1px);
-  background-image: url("sprite_unknown_food.png");
+  background-image: url("sprite/sprite_unknown_food.png");
   background-size: 35px 35px;
   background-position: 2px;
   background-repeat: no-repeat;
@@ -367,7 +367,7 @@ body {
   height: 45px;
   top: 48px;
   background-position: 4px;
-  background-image: url("sprite_sweets.png");
+  background-image: url("sprite/sprite_sweets.png");
   background-size: 40px 40px;
 }
 
@@ -513,7 +513,7 @@ body {
 }
 
 .battle_enemy {
-  background-image: url("sprite_enemy_1.png");
+  background-image: url("sprite/sprite_enemy_1.png");
   width: 130px;
   height: 148px;
   position: absolute;
@@ -551,7 +551,7 @@ body {
 }
 
 .battle_pal {
-  background-image: url("sprite_bulletpal_f.png");
+  background-image: url("sprite/sprite_bulletpal_f.png");
   width: 130px;
   height: 148px;
   position: absolute;
@@ -589,7 +589,7 @@ body {
 }
 
 .battle_click_btn {
-  background-image: url("sprite_battle.png");
+  background-image: url("sprite/sprite_battle.png");
   width: 50px;
   height: 50px;
   position: absolute;
@@ -616,7 +616,7 @@ body {
 }
 
 .battle_next_btn {
-  background-image: url("sprite_next_btn.png");
+  background-image: url("sprite/sprite_next_btn.png");
   width: 50px;
   height: 50px;
   position: absolute;
@@ -705,7 +705,7 @@ body {
   position: absolute;
   left: 55px;
   top: 20px;
-  background-image: url(sprite_pal_dead.png);
+  background-image: url(sprite/sprite_pal_dead.png);
   background-size: 65px 65px;
   background-repeat: no-repeat;
   width: 65px;
@@ -795,15 +795,15 @@ body {
   width: 32px;
   height: 32px;
   background-color: #110d00;
-  background-image: url(sprite_move.png);
+  background-image: url(sprite/sprite_move.png);
 }
 
 .icon_mute {
-  background-image: url("sprite_mute.png");
+  background-image: url("sprite/sprite_mute.png");
 }
 
 .info_sacrifice {
-  background-image: url("sprite_sacrifice.png");
+  background-image: url("sprite/sprite_sacrifice.png");
   width: 32px;
   height: 32px;
   position: relative;
@@ -977,7 +977,7 @@ body {
 */
 
 .bulletpal_heartchain {
-  background-image: url(sprite_heartchain.png);
+  background-image: url(sprite/sprite_heartchain.png);
   background-repeat: no-repeat;
   background-size: 76px 35px;
   position: absolute;
@@ -1030,7 +1030,7 @@ body {
   justify-content: center;
   align-items: center;
   border-right: 1px solid #ffcc00;
-  background-image: url("sprite_food.png");
+  background-image: url("sprite/sprite_food.png");
   background-position: 7px 7px;
   background-size: 35px 35px;
   background-repeat: no-repeat;
@@ -1104,15 +1104,15 @@ body {
   left: 2px;
   width: 50px;
   height: 50px;
-  background-image: url("sprite_next_btn.png");
+  background-image: url("sprite/sprite_next_btn.png");
   background-repeat: no-repeat;
   background-size: 45px 45px;
 }
 
 .lootbox-continue-btn:hover {
-  background-image: url("sprite_next_btn_i.png");
+  background-image: url("sprite/sprite_next_btn_i.png");
 }
 
 .lootbox-continue-btn:active {
-  background-image: url("sprite_next_btn.png");
+  background-image: url("sprite/sprite_next_btn.png");
 }

@@ -189,13 +189,13 @@ infoBtn.onmouseover = () => {
   if (!infoOpen) {
     playSelectSfx();
     infoBox.style.visibility = "visible";
-    infoBtn.style.backgroundImage = `url("sprite_info_i.png")`;
+    infoBtn.style.backgroundImage = `url("sprite/sprite_info_i.png")`;
   }
 };
 infoBtn.onmouseout = () => {
   if (!infoOpen) {
     infoBox.style.visibility = "hidden";
-    infoBtn.style.backgroundImage = `url("sprite_info.png")`;
+    infoBtn.style.backgroundImage = `url("sprite/sprite_info.png")`;
   }
 };
 infoBtn.onmousedown = () => {
@@ -208,14 +208,14 @@ infoBtn.onmousedown = () => {
     infoBox.style.visibility = "visible";
   }
   if (infoBox.style.visibility == "visible") {
-    infoBtn.style.backgroundImage = `url("sprite_info.png")`;
+    infoBtn.style.backgroundImage = `url("sprite/sprite_info.png")`;
     setTimeout(() => {
-      infoBtn.style.backgroundImage = `url("sprite_info_i.png")`;
+      infoBtn.style.backgroundImage = `url("sprite/sprite_info_i.png")`;
     }, 150);
   } else {
-    infoBtn.style.backgroundImage = `url("sprite_info_i.png")`;
+    infoBtn.style.backgroundImage = `url("sprite/sprite_info_i.png")`;
     setTimeout(() => {
-      infoBtn.style.backgroundImage = `url("sprite_info.png")`;
+      infoBtn.style.backgroundImage = `url("sprite/sprite_info.png")`;
     }, 150);
   }
   playSelectSfx();
@@ -227,15 +227,15 @@ foodBtn.onmousedown = () => {
   closeAnyOpenPanels(1);
   if (foodBox.style.visibility == "visible") {
     foodBox.style.visibility = "hidden";
-    foodBtn.style.backgroundImage = `url("sprite_food.png")`;
+    foodBtn.style.backgroundImage = `url("sprite/sprite_food.png")`;
     setTimeout(() => {
       foodBtn.style.backgroundImage = "";
     }, 150);
   } else {
     foodBox.style.visibility = "visible";
-    foodBtn.style.backgroundImage = `url("sprite_food.png")`;
+    foodBtn.style.backgroundImage = `url("sprite/sprite_food.png")`;
     setTimeout(() => {
-      foodBtn.style.backgroundImage = `url("sprite_food_i.png")`;
+      foodBtn.style.backgroundImage = `url("sprite/sprite_food_i.png")`;
     }, 150);
   }
   playSelectSfx();
@@ -247,15 +247,15 @@ invBtn.onmousedown = () => {
   closeAnyOpenPanels(2);
   if (invBox.style.visibility == "visible") {
     invBox.style.visibility = "hidden";
-    invBtn.style.backgroundImage = `url("sprite_inv.png")`;
+    invBtn.style.backgroundImage = `url("sprite/sprite_inv.png")`;
     setTimeout(() => {
       invBtn.style.backgroundImage = "";
     }, 150);
   } else {
     invBox.style.visibility = "visible";
-    invBtn.style.backgroundImage = `url("sprite_inv.png")`;
+    invBtn.style.backgroundImage = `url("sprite/sprite_inv.png")`;
     setTimeout(() => {
-      invBtn.style.backgroundImage = `url("sprite_inv_i.png")`;
+      invBtn.style.backgroundImage = `url("sprite/sprite_inv_i.png")`;
     }, 150);
   }
   playSelectSfx();
@@ -267,15 +267,15 @@ battleBtn.onmousedown = () => {
   closeAnyOpenPanels(3);
   if (battleBox.style.visibility == "visible") {
     battleBox.style.visibility = "hidden";
-    battleBtn.style.backgroundImage = `url("sprite_battle.png")`;
+    battleBtn.style.backgroundImage = `url("sprite/sprite_battle.png")`;
     setTimeout(() => {
       battleBtn.style.backgroundImage = "";
     }, 150);
   } else {
     battleBox.style.visibility = "visible";
-    battleBtn.style.backgroundImage = `url("sprite_battle.png")`;
+    battleBtn.style.backgroundImage = `url("sprite/sprite_battle.png")`;
     setTimeout(() => {
-      battleBtn.style.backgroundImage = `url("sprite_battle_i.png")`;
+      battleBtn.style.backgroundImage = `url("sprite/sprite_battle_i.png")`;
     }, 150);
   }
   playSelectSfx();
@@ -286,15 +286,15 @@ settingsBtn.onmouseover = () => {
 settingsBtn.onmousedown = () => {
   if (settingsBox.style.visibility == "visible") {
     settingsBox.style.visibility = "hidden";
-    settingsBtn.style.backgroundImage = `url("sprite_settings.png")`;
+    settingsBtn.style.backgroundImage = `url("sprite/sprite_settings.png")`;
     setTimeout(() => {
       settingsBtn.style.backgroundImage = "";
     }, 150);
   } else {
     settingsBox.style.visibility = "visible";
-    settingsBtn.style.backgroundImage = `url("sprite_settings.png")`;
+    settingsBtn.style.backgroundImage = `url("sprite/sprite_settings.png")`;
     setTimeout(() => {
-      settingsBtn.style.backgroundImage = `url("sprite_settings_i.png")`;
+      settingsBtn.style.backgroundImage = `url("sprite/sprite_settings_i.png")`;
     }, 150);
   }
   playSelectSfx();
@@ -397,15 +397,15 @@ window.electron.receive("setFoods", (foodsObj) => {
   console.log(`Foods object updated:`);
   console.log(foodsObj);
   if (foodsObj[0].discovered == true) {
-    foodIcon1.style.backgroundImage = `url("sprite_orange.png")`;
+    foodIcon1.style.backgroundImage = `url("sprite/sprite_orange.png")`;
     foodCounter1.innerHTML = foods[0].count;
   }
   if (foodsObj[1].discovered == true) {
-    foodIcon2.style.backgroundImage = `url("sprite_sweets.png")`;
+    foodIcon2.style.backgroundImage = `url("sprite/sprite_sweets.png")`;
     foodCounter2.innerHTML = foods[1].count;
   }
   if (foodsObj[2].discovered == true) {
-    foodIcon3.style.backgroundImage = `url("sprite_spice.png")`;
+    foodIcon3.style.backgroundImage = `url("sprite/sprite_spice.png")`;
     foodCounter3.innerHTML = foods[2].count;
   }
 });
@@ -428,7 +428,7 @@ window.electron.receive("alivePal", (bool) => {
 
 foodIcon1.addEventListener("mouseover", () => {
   if (foods[0].discovered == true) {
-    foodIcon1.style.backgroundImage = `url("sprite_orange_i.png")`;
+    foodIcon1.style.backgroundImage = `url("sprite/sprite_orange_i.png")`;
     foodIcon1.style.backgroundPosition = "0px";
     foodIcon1.style.backgroundSize = "40px 40px";
     playSelectSfx();
@@ -436,20 +436,20 @@ foodIcon1.addEventListener("mouseover", () => {
 });
 foodIcon1.addEventListener("mouseleave", () => {
   if (foods[0].discovered == true) {
-    foodIcon1.style.backgroundImage = `url("sprite_orange.png")`;
+    foodIcon1.style.backgroundImage = `url("sprite/sprite_orange.png")`;
     foodIcon1.style.backgroundPosition = "2px";
     foodIcon1.style.backgroundSize = "35px 35px";
   }
 });
 foodIcon1.addEventListener("mousedown", () => {
   if (foods[0].discovered == true) {
-    foodIcon1.style.backgroundImage = `url("sprite_orange.png")`;
+    foodIcon1.style.backgroundImage = `url("sprite/sprite_orange.png")`;
     foodIcon1.style.backgroundPosition = "2px";
     foodIcon1.style.backgroundSize = "35px 35px";
     playSelectSfx();
     window.electron.send("consume_food", "orange");
     setTimeout(() => {
-      foodIcon1.style.backgroundImage = `url("sprite_orange_i.png")`;
+      foodIcon1.style.backgroundImage = `url("sprite/sprite_orange_i.png")`;
       foodIcon1.style.backgroundPosition = "0px";
       foodIcon1.style.backgroundSize = "40px 40px";
     }, 150);
@@ -457,7 +457,7 @@ foodIcon1.addEventListener("mousedown", () => {
 });
 foodIcon2.addEventListener("mouseover", () => {
   if (foods[1].discovered == true) {
-    foodIcon2.style.backgroundImage = `url("sprite_sweets_i.png")`;
+    foodIcon2.style.backgroundImage = `url("sprite/sprite_sweets_i.png")`;
     foodIcon2.style.backgroundPosition = "0px";
     foodIcon2.style.backgroundSize = "45px 45px";
     playSelectSfx();
@@ -465,20 +465,20 @@ foodIcon2.addEventListener("mouseover", () => {
 });
 foodIcon2.addEventListener("mouseleave", () => {
   if (foods[1].discovered == true) {
-    foodIcon2.style.backgroundImage = `url("sprite_sweets.png")`;
+    foodIcon2.style.backgroundImage = `url("sprite/sprite_sweets.png")`;
     foodIcon2.style.backgroundPosition = "4px";
     foodIcon2.style.backgroundSize = "40px 40px";
   }
 });
 foodIcon2.addEventListener("mousedown", () => {
   if (foods[1].discovered == true) {
-    foodIcon2.style.backgroundImage = `url("sprite_sweets.png")`;
+    foodIcon2.style.backgroundImage = `url("sprite/sprite_sweets.png")`;
     foodIcon2.style.backgroundPosition = "4px";
     foodIcon2.style.backgroundSize = "40px 40px";
     playSelectSfx();
     window.electron.send("consume_food", "sweets");
     setTimeout(() => {
-      foodIcon2.style.backgroundImage = `url("sprite_sweets_i.png")`;
+      foodIcon2.style.backgroundImage = `url("sprite/sprite_sweets_i.png")`;
       foodIcon2.style.backgroundPosition = "0px";
       foodIcon2.style.backgroundSize = "45px 45px";
     }, 150);
@@ -486,7 +486,7 @@ foodIcon2.addEventListener("mousedown", () => {
 });
 foodIcon3.addEventListener("mouseover", () => {
   if (foods[2].discovered == true) {
-    foodIcon3.style.backgroundImage = `url("sprite_spice_i.png")`;
+    foodIcon3.style.backgroundImage = `url("sprite/sprite_spice_i.png")`;
     foodIcon3.style.backgroundPosition = "0px";
     foodIcon3.style.backgroundSize = "40px 40px";
     playSelectSfx();
@@ -494,20 +494,20 @@ foodIcon3.addEventListener("mouseover", () => {
 });
 foodIcon3.addEventListener("mouseleave", () => {
   if (foods[2].discovered == true) {
-    foodIcon3.style.backgroundImage = `url("sprite_spice.png")`;
+    foodIcon3.style.backgroundImage = `url("sprite/sprite_spice.png")`;
     foodIcon3.style.backgroundPosition = "2px";
     foodIcon3.style.backgroundSize = "35px 35px";
   }
 });
 foodIcon3.addEventListener("mousedown", () => {
   if (foods[2].discovered == true) {
-    foodIcon3.style.backgroundImage = `url("sprite_spice.png")`;
+    foodIcon3.style.backgroundImage = `url("sprite/sprite_spice.png")`;
     foodIcon3.style.backgroundPosition = "2px";
     foodIcon3.style.backgroundSize = "35px 35px";
     playSelectSfx();
     window.electron.send("consume_food", "spice");
     setTimeout(() => {
-      foodIcon3.style.backgroundImage = `url("sprite_spice_i.png")`;
+      foodIcon3.style.backgroundImage = `url("sprite/sprite_spice_i.png")`;
       foodIcon3.style.backgroundPosition = "0px";
       foodIcon3.style.backgroundSize = "40px 40px";
     }, 150);
@@ -567,33 +567,33 @@ window.electron.receive("setItems", (itemsObj) => {
   console.log(`Items object updated:`);
   console.log(itemsObj);
   if (itemsObj[0].discovered == true) {
-    invIcon1.style.backgroundImage = `url("sprite_medkit.png")`;
+    invIcon1.style.backgroundImage = `url("sprite/sprite_medkit.png")`;
     invCounter1.innerHTML = items[0].count;
   }
   if (itemsObj[1].discovered == true) {
-    invIcon2.style.backgroundImage = `url("sprite_bulletTime.png")`;
+    invIcon2.style.backgroundImage = `url("sprite/sprite_bulletTime.png")`;
     invCounter2.innerHTML = items[1].count;
   }
   if (itemsObj[2].discovered == true) {
-    invIcon3.style.backgroundImage = `url("sprite_soda.png")`;
+    invIcon3.style.backgroundImage = `url("sprite/sprite_soda.png")`;
     invCounter3.innerHTML = items[2].count;
   }
   if (itemsObj[3].discovered == true) {
-    invIcon4.style.backgroundImage = `url("sprite_sword.png")`;
+    invIcon4.style.backgroundImage = `url("sprite/sprite_sword.png")`;
     invCounter4.innerHTML = items[3].count;
   }
   if (itemsObj[4].discovered == true) {
-    invIcon5.style.backgroundImage = `url("sprite_lootbox.png")`;
+    invIcon5.style.backgroundImage = `url("sprite/sprite_lootbox.png")`;
     invCounter5.innerHTML = items[4].count;
   }
   if (itemsObj[5].discovered == true) {
-    invIcon6.style.backgroundImage = `url("sprite_heartchain.png")`;
+    invIcon6.style.backgroundImage = `url("sprite/sprite_heartchain.png")`;
     invCounter6.innerHTML = items[5].count;
   }
 });
 invIcon1.addEventListener("mouseover", () => {
   if (items[0].discovered == true) {
-    invIcon1.style.backgroundImage = `url("sprite_medkit_i.png")`;
+    invIcon1.style.backgroundImage = `url("sprite/sprite_medkit_i.png")`;
     invIcon1.style.backgroundPosition = "0px";
     invIcon1.style.backgroundSize = "40px 40px";
     playSelectSfx();
@@ -601,20 +601,20 @@ invIcon1.addEventListener("mouseover", () => {
 });
 invIcon1.addEventListener("mouseleave", () => {
   if (items[0].discovered == true) {
-    invIcon1.style.backgroundImage = `url("sprite_medkit.png")`;
+    invIcon1.style.backgroundImage = `url("sprite/sprite_medkit.png")`;
     invIcon1.style.backgroundPosition = "2px";
     invIcon1.style.backgroundSize = "35px 35px";
   }
 });
 invIcon1.addEventListener("mousedown", () => {
   if (items[0].discovered == true) {
-    invIcon1.style.backgroundImage = `url("sprite_medkit.png")`;
+    invIcon1.style.backgroundImage = `url("sprite/sprite_medkit.png")`;
     invIcon1.style.backgroundPosition = "2px";
     invIcon1.style.backgroundSize = "35px 35px";
     window.electron.send("consume_item", "medkit");
     playSelectSfx();
     setTimeout(() => {
-      invIcon1.style.backgroundImage = `url("sprite_medkit_i.png")`;
+      invIcon1.style.backgroundImage = `url("sprite/sprite_medkit_i.png")`;
       invIcon1.style.backgroundPosition = "0px";
       invIcon1.style.backgroundSize = "40px 40px";
     }, 150);
@@ -622,7 +622,7 @@ invIcon1.addEventListener("mousedown", () => {
 });
 invIcon2.addEventListener("mouseover", () => {
   if (items[1].discovered == true) {
-    invIcon2.style.backgroundImage = `url("sprite_bulletTime_i.png")`;
+    invIcon2.style.backgroundImage = `url("sprite/sprite_bulletTime_i.png")`;
     invIcon2.style.backgroundPosition = "0px";
     invIcon2.style.backgroundSize = "40px 40px";
     playSelectSfx();
@@ -630,20 +630,20 @@ invIcon2.addEventListener("mouseover", () => {
 });
 invIcon2.addEventListener("mouseleave", () => {
   if (items[1].discovered == true) {
-    invIcon2.style.backgroundImage = `url("sprite_bulletTime.png")`;
+    invIcon2.style.backgroundImage = `url("sprite/sprite_bulletTime.png")`;
     invIcon2.style.backgroundPosition = "2px";
     invIcon2.style.backgroundSize = "35px 35px";
   }
 });
 invIcon2.addEventListener("mousedown", () => {
   if (items[1].discovered == true) {
-    invIcon2.style.backgroundImage = `url("sprite_bulletTime.png")`;
+    invIcon2.style.backgroundImage = `url("sprite/sprite_bulletTime.png")`;
     invIcon2.style.backgroundPosition = "2px";
     invIcon2.style.backgroundSize = "35px 35px";
     window.electron.send("consume_item", "bullettime");
     playSelectSfx();
     setTimeout(() => {
-      invIcon2.style.backgroundImage = `url("sprite_bulletTime_i.png")`;
+      invIcon2.style.backgroundImage = `url("sprite/sprite_bulletTime_i.png")`;
       invIcon2.style.backgroundPosition = "0px";
       invIcon2.style.backgroundSize = "40px 40px";
     }, 150);
@@ -651,7 +651,7 @@ invIcon2.addEventListener("mousedown", () => {
 });
 invIcon3.addEventListener("mouseover", () => {
   if (items[2].discovered == true) {
-    invIcon3.style.backgroundImage = `url("sprite_soda_i.png")`;
+    invIcon3.style.backgroundImage = `url("sprite/sprite_soda_i.png")`;
     invIcon3.style.backgroundPosition = "0px";
     invIcon3.style.backgroundSize = "40px 40px";
     playSelectSfx();
@@ -659,20 +659,20 @@ invIcon3.addEventListener("mouseover", () => {
 });
 invIcon3.addEventListener("mouseleave", () => {
   if (items[2].discovered == true) {
-    invIcon3.style.backgroundImage = `url("sprite_soda.png")`;
+    invIcon3.style.backgroundImage = `url("sprite/sprite_soda.png")`;
     invIcon3.style.backgroundPosition = "2px";
     invIcon3.style.backgroundSize = "35px 35px";
   }
 });
 invIcon3.addEventListener("mousedown", () => {
   if (items[2].discovered == true) {
-    invIcon3.style.backgroundImage = `url("sprite_soda.png")`;
+    invIcon3.style.backgroundImage = `url("sprite/sprite_soda.png")`;
     invIcon3.style.backgroundPosition = "2px";
     invIcon3.style.backgroundSize = "35px 35px";
     window.electron.send("consume_item", "soda");
     playSelectSfx();
     setTimeout(() => {
-      invIcon3.style.backgroundImage = `url("sprite_soda_i.png")`;
+      invIcon3.style.backgroundImage = `url("sprite/sprite_soda_i.png")`;
       invIcon3.style.backgroundPosition = "0px";
       invIcon3.style.backgroundSize = "40px 40px";
     }, 150);
@@ -680,7 +680,7 @@ invIcon3.addEventListener("mousedown", () => {
 });
 invIcon4.addEventListener("mouseover", () => {
   if (items[3].discovered == true) {
-    invIcon4.style.backgroundImage = `url("sprite_sword_i.png")`;
+    invIcon4.style.backgroundImage = `url("sprite/sprite_sword_i.png")`;
     invIcon4.style.backgroundPosition = "0px";
     invIcon4.style.backgroundSize = "40px 40px";
     playSelectSfx();
@@ -688,20 +688,20 @@ invIcon4.addEventListener("mouseover", () => {
 });
 invIcon4.addEventListener("mouseleave", () => {
   if (items[3].discovered == true) {
-    invIcon4.style.backgroundImage = `url("sprite_sword.png")`;
+    invIcon4.style.backgroundImage = `url("sprite/sprite_sword.png")`;
     invIcon4.style.backgroundPosition = "2px";
     invIcon4.style.backgroundSize = "35px 35px";
   }
 });
 invIcon4.addEventListener("mousedown", () => {
   if (items[3].discovered == true) {
-    invIcon4.style.backgroundImage = `url("sprite_sword.png")`;
+    invIcon4.style.backgroundImage = `url("sprite/sprite_sword.png")`;
     invIcon4.style.backgroundPosition = "2px";
     invIcon4.style.backgroundSize = "35px 35px";
     window.electron.send("consume_item", "sword");
     playSelectSfx();
     setTimeout(() => {
-      invIcon4.style.backgroundImage = `url("sprite_sword_i.png")`;
+      invIcon4.style.backgroundImage = `url("sprite/sprite_sword_i.png")`;
       invIcon4.style.backgroundPosition = "0px";
       invIcon4.style.backgroundSize = "40px 40px";
     }, 150);
@@ -709,7 +709,7 @@ invIcon4.addEventListener("mousedown", () => {
 });
 invIcon5.addEventListener("mouseover", () => {
   if (items[4].discovered == true) {
-    invIcon5.style.backgroundImage = `url("sprite_lootbox_i.png")`;
+    invIcon5.style.backgroundImage = `url("sprite/sprite_lootbox_i.png")`;
     invIcon5.style.backgroundPosition = "0px";
     invIcon5.style.backgroundSize = "40px 40px";
     playSelectSfx();
@@ -717,20 +717,20 @@ invIcon5.addEventListener("mouseover", () => {
 });
 invIcon5.addEventListener("mouseleave", () => {
   if (items[4].discovered == true) {
-    invIcon5.style.backgroundImage = `url("sprite_lootbox.png")`;
+    invIcon5.style.backgroundImage = `url("sprite/sprite_lootbox.png")`;
     invIcon5.style.backgroundPosition = "2px";
     invIcon5.style.backgroundSize = "35px 35px";
   }
 });
 invIcon5.addEventListener("mousedown", () => {
   if (items[4].discovered == true) {
-    invIcon5.style.backgroundImage = `url("sprite_lootbox.png")`;
+    invIcon5.style.backgroundImage = `url("sprite/sprite_lootbox.png")`;
     invIcon5.style.backgroundPosition = "2px";
     invIcon5.style.backgroundSize = "35px 35px";
     window.electron.send("consume_item", "lootbox");
     playSelectSfx();
     setTimeout(() => {
-      invIcon5.style.backgroundImage = `url("sprite_lootbox_i.png")`;
+      invIcon5.style.backgroundImage = `url("sprite/sprite_lootbox_i.png")`;
       invIcon5.style.backgroundPosition = "0px";
       invIcon5.style.backgroundSize = "40px 40px";
     }, 150);
@@ -738,7 +738,7 @@ invIcon5.addEventListener("mousedown", () => {
 });
 invIcon6.addEventListener("mouseover", () => {
   if (items[5].discovered == true) {
-    invIcon6.style.backgroundImage = `url("sprite_heartchain_i.png")`;
+    invIcon6.style.backgroundImage = `url("sprite/sprite_heartchain_i.png")`;
     invIcon6.style.backgroundPosition = "0px";
     invIcon6.style.backgroundSize = "40px 40px";
     playSelectSfx();
@@ -746,20 +746,20 @@ invIcon6.addEventListener("mouseover", () => {
 });
 invIcon6.addEventListener("mouseleave", () => {
   if (items[5].discovered == true) {
-    invIcon6.style.backgroundImage = `url("sprite_heartchain.png")`;
+    invIcon6.style.backgroundImage = `url("sprite/sprite_heartchain.png")`;
     invIcon6.style.backgroundPosition = "2px";
     invIcon6.style.backgroundSize = "35px 35px";
   }
 });
 invIcon6.addEventListener("mousedown", () => {
   if (items[5].discovered == true) {
-    invIcon6.style.backgroundImage = `url("sprite_heartchain.png")`;
+    invIcon6.style.backgroundImage = `url("sprite/sprite_heartchain.png")`;
     invIcon6.style.backgroundPosition = "2px";
     invIcon6.style.backgroundSize = "35px 35px";
     window.electron.send("consume_item", "heartchain");
     playSelectSfx();
     setTimeout(() => {
-      invIcon6.style.backgroundImage = `url("sprite_heartchain_i.png")`;
+      invIcon6.style.backgroundImage = `url("sprite/sprite_heartchain_i.png")`;
       invIcon6.style.backgroundPosition = "0px";
       invIcon6.style.backgroundSize = "40px 40px";
     }, 150);
@@ -846,19 +846,19 @@ function shake(selector) {
 }
 
 battleClickBtn.addEventListener("mouseover", () => {
-  battleClickBtn.style.backgroundImage = `url("sprite_battle_i.png")`;
+  battleClickBtn.style.backgroundImage = `url("sprite/sprite_battle_i.png")`;
   playSelectSfx();
 });
 battleClickBtn.addEventListener("mouseleave", () => {
-  battleClickBtn.style.backgroundImage = `url("sprite_battle.png")`;
+  battleClickBtn.style.backgroundImage = `url("sprite/sprite_battle.png")`;
 });
 battleClickBtn.addEventListener("mousedown", () => {
   playAttackSfx();
   window.electron.send("battle-click");
-  battleClickBtn.style.backgroundImage = `url("sprite_battle.png")`;
+  battleClickBtn.style.backgroundImage = `url("sprite/sprite_battle.png")`;
   shake();
   setTimeout(() => {
-    battleClickBtn.style.backgroundImage = `url("sprite_battle_i.png")`;
+    battleClickBtn.style.backgroundImage = `url("sprite/sprite_battle_i.png")`;
   }, 50);
   // send a click event to the main script.
 });
@@ -915,17 +915,17 @@ function popupItem(name, rand, bl) {
 }
 
 battleNextBtn.addEventListener("mouseover", () => {
-  battleNextBtn.style.backgroundImage = `url("sprite_next_btn_i.png")`;
+  battleNextBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
   playSelectSfx();
 });
 battleNextBtn.addEventListener("mouseleave", () => {
-  battleNextBtn.style.backgroundImage = `url("sprite_next_btn.png")`;
+  battleNextBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
 });
 battleNextBtn.addEventListener("mousedown", () => {
-  battleNextBtn.style.backgroundImage = `url("sprite_next_btn.png")`;
+  battleNextBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
   playSelectSfx();
   setTimeout(() => {
-    battleNextBtn.style.backgroundImage = `url("sprite_next_btn_i.png")`;
+    battleNextBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
     window.electron.send("advanceEnemy");
   }, 150);
 });
@@ -948,7 +948,7 @@ window.electron.receive("setEnemy", (enemyObj) => {
     // enemy still alive, process.
     battleEnemyHP.innerHTML = `HP: ${enemyObj.health}`;
     battleEnemyName.innerHTML = `${enemyObj.name}`;
-    battleEnemy.style.backgroundImage = `url("sprite_enemy_${enemyObj.face}.png")`;
+    battleEnemy.style.backgroundImage = `url("sprite/sprite_enemy_${enemyObj.face}.png")`;
     battleTimer.innerHTML = `${enemyObj.ttk}s`;
     console.log("Enemy updated.");
   }
@@ -966,7 +966,7 @@ window.electron.receive("killEnemy", (enemyObj) => {
   battleTimer.innerHTML = "--";
   playDeathSfx();
   setTimeout(() => {
-    battleEnemy.style.backgroundImage = `url("sprite_enemy_dead_1.png")`;
+    battleEnemy.style.backgroundImage = `url("sprite/sprite_enemy_dead_1.png")`;
     battleEnemy.style.visibility = "";
     setTimeout(() => {
       // Wrap up current enemy and generate new.
@@ -1104,7 +1104,7 @@ window.electron.receive("nextEnemy", (enemyObj) => {
     // Modify all elements to comply with new enemy.
     battleEnemyHP.innerHTML = `HP: ${enemy.health}`;
     battleEnemyName.innerHTML = enemy.name;
-    battleEnemy.style.backgroundImage = `url("sprite_enemy_${enemy.face}.png")`;
+    battleEnemy.style.backgroundImage = `url("sprite/sprite_enemy_${enemy.face}.png")`;
     // Reshow all elements.
     battleEnemyStatbox.style.visibility = "";
     battleEnemyName.style.visibility = "";
@@ -1148,62 +1148,62 @@ window.electron.receive("setLevel", (levelData) => {
 */
 
 moveBtn.addEventListener("mouseover", () => {
-  moveBtn.style.backgroundImage = `url("sprite_move_i.png")`;
+  moveBtn.style.backgroundImage = `url("sprite/sprite_move_i.png")`;
   playSelectSfx();
 });
 moveBtn.addEventListener("mouseleave", () => {
-  moveBtn.style.backgroundImage = `url("sprite_move.png")`;
+  moveBtn.style.backgroundImage = `url("sprite/sprite_move.png")`;
 });
 moveBtn.addEventListener("mousedown", () => {
-  moveBtn.style.backgroundImage = `url("sprite_move.png")`;
+  moveBtn.style.backgroundImage = `url("sprite/sprite_move.png")`;
   playSelectSfx();
   createMoveModeBorder();
   setTimeout(() => {
-    moveBtn.style.backgroundImage = `url("sprite_move_i.png")`;
+    moveBtn.style.backgroundImage = `url("sprite/sprite_move_i.png")`;
   }, 150);
 });
 
 muteBtn.addEventListener("mouseover", () => {
   if (audioEnabled) {
-    muteBtn.style.backgroundImage = `url("sprite_volume_i.png")`;
+    muteBtn.style.backgroundImage = `url("sprite/sprite_volume_i.png")`;
   } else {
-    muteBtn.style.backgroundImage = `url("sprite_mute_i.png")`;
+    muteBtn.style.backgroundImage = `url("sprite/sprite_mute_i.png")`;
   }
   playSelectSfx();
 });
 muteBtn.addEventListener("mouseleave", () => {
   if (audioEnabled) {
-    muteBtn.style.backgroundImage = `url("sprite_volume.png")`;
+    muteBtn.style.backgroundImage = `url("sprite/sprite_volume.png")`;
   } else {
-    muteBtn.style.backgroundImage = `url("sprite_mute.png")`;
+    muteBtn.style.backgroundImage = `url("sprite/sprite_mute.png")`;
   }
 });
 muteBtn.addEventListener("mousedown", () => {
   if (audioEnabled) {
-    muteBtn.style.backgroundImage = `url("sprite_mute_i.png")`;
+    muteBtn.style.backgroundImage = `url("sprite/sprite_mute_i.png")`;
   } else {
-    muteBtn.style.backgroundImage = `url("sprite_volume_i.png")`;
+    muteBtn.style.backgroundImage = `url("sprite/sprite_volume_i.png")`;
   }
   playSelectSfx();
   audioEnabled = !audioEnabled;
   setTimeout(() => {
     if (!audioEnabled) {
-      muteBtn.style.backgroundImage = `url("sprite_mute.png")`;
+      muteBtn.style.backgroundImage = `url("sprite/sprite_mute.png")`;
     } else {
-      muteBtn.style.backgroundImage = `url("sprite_volume.png")`;
+      muteBtn.style.backgroundImage = `url("sprite/sprite_volume.png")`;
     }
   }, 150);
 });
 
 sacrificeBtn.addEventListener("mouseover", () => {
-  sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice_i.png")`;
+  sacrificeBtn.style.backgroundImage = `url("sprite/sprite_sacrifice_i.png")`;
   playSelectSfx();
 });
 sacrificeBtn.addEventListener("mouseleave", () => {
-  sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice.png")`;
+  sacrificeBtn.style.backgroundImage = `url("sprite/sprite_sacrifice.png")`;
 });
 sacrificeBtn.addEventListener("mousedown", () => {
-  sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice_i.png")`;
+  sacrificeBtn.style.backgroundImage = `url("sprite/sprite_sacrifice_i.png")`;
   if (!sacking) {
     window.electron.send("startSacrifice");
     sacking = true;
@@ -1213,7 +1213,7 @@ sacrificeBtn.addEventListener("mousedown", () => {
 window.electron.receive("sacrificePal", (sacObj) => {
   popupItem("Sacrifice", 1, true);
   setTimeout(() => {
-    sacrificeBtn.style.backgroundImage = `url("sprite_sacrifice.png")`;
+    sacrificeBtn.style.backgroundImage = `url("sprite/sprite_sacrifice.png")`;
     setTimeout(() => {
       sacrificeBtn.style.visibility = "hidden";
       playAttackSfx();
@@ -1479,7 +1479,7 @@ window.electron.receive("roll_lootbox", (vars) => {
     randomItems.forEach(item => {
       const itemDiv = document.createElement('div');
       itemDiv.className = 'lootbox-item';
-      itemDiv.style.backgroundImage = `url(sprite_${item}.png)`;
+      itemDiv.style.backgroundImage = `url(sprite/sprite_${item}.png)`;
       lootboxItems.appendChild(itemDiv);
     });
     console.log(randomItems)
@@ -1507,7 +1507,7 @@ window.electron.receive("roll_lootbox", (vars) => {
       lootbox.style.display = "none";
       lootboxPointer.style.display = "none";
       lootboxItems.style.display = 'none';
-      landedItemDiv.style.backgroundImage = `url(sprite_${predeterminedItem}.png)`;
+      landedItemDiv.style.backgroundImage = `url(sprite/sprite_${predeterminedItem}.png)`;
       itemCount.innerText = `+${quantity}`;
       itemText.innerHTML = predeterminedItem;
       itemDisplay.style.display = 'flex';

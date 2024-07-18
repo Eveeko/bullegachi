@@ -308,14 +308,14 @@ var enemy = new Enemy(); // The enemy object that is for the current enemy.
 // Track food data
 var foods = [
   { id: 1, name: "Orange", discovered: false, count: 0 },
-  { id: 2, name: "Sweets", discovered: false, count: 1 },
+  { id: 2, name: "Sweets", discovered: true, count: 3 },
   { id: 3, name: "Spice", discovered: false, count: 0 },
 ];
 
 // Track item data
 var items = [
   { id: 1, name: "Medkit", discovered: false, count: 0 },
-  { id: 2, name: "BulletTime", discovered: true, count: 0 },
+  { id: 2, name: "BulletTime", discovered: false, count: 0 },
   { id: 3, name: "Soda", discovered: false, count: 0 },
   { id: 4, name: "Sword", discovered: false, count: 0 },
   { id: 5, name: "Lootbox", discovered: false, count: 0 },
@@ -579,7 +579,7 @@ function ensureDataFileExists(flag) {
         heartChained: false,
         foods: [
           { id: 1, name: "Orange", discovered: false, count: 0 },
-          { id: 2, name: "Sweets", discovered: true, count: 1 },
+          { id: 2, name: "Sweets", discovered: true, count: 3 },
           { id: 3, name: "Spice", discovered: false, count: 0 },
         ],
         items: [

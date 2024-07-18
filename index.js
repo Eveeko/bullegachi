@@ -531,7 +531,7 @@ window.electron.receive("food_popup", (num) => {
   popupElement.style.top = totalHeight + "px";
 
   var audioElement = document.createElement("audio");
-  audioElement.src = "foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
+  audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
   audioElement.autoplay = true;
   audioElement.volume = 0.2; // Adjust the volume as needed
   if (!audioEnabled) {
@@ -896,10 +896,10 @@ function popupItem(name, rand, bl) {
 
   var audioElement = document.createElement("audio");
   if (bl) {
-    audioElement.src = "ne_sfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
+    audioElement.src = "sfx/ne_sfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
     audioElement.volume = 1.0; // Adjust the volume as needed
   } else {
-    audioElement.src = "foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
+    audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
     audioElement.volume = 0.2; // Adjust the volume as needed
   }
   if (!audioEnabled) {
@@ -1242,7 +1242,7 @@ window.electron.receive("sacrificePal", (sacObj) => {
                 popupElement.textContent = "-Lvl 23";
                 scanlines.appendChild(popupElement);
                 var audioElement = document.createElement("audio");
-                audioElement.src = "foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
+                audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
                 audioElement.volume = 0.2; // Adjust the volume as needed
                 audioElement.autoplay = true;
                 popupElement.appendChild(audioElement);
@@ -1331,7 +1331,7 @@ window.electron.receive("alertItem", (name, failBool) => {
   };
   itemWarnCont.style.display = "block";
   var audioElement = document.createElement("audio");
-  audioElement.src = "foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
+  audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
   audioElement.volume = 0.2; // Adjust the volume as needed
   if (!audioEnabled) {
     audioElement.volume = 0;

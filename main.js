@@ -12,6 +12,7 @@ const fs = require("fs");
 const regedit = require("regedit");
 const { autoUpdater } = require("electron-updater");
 const log = require("electron-log");
+const crypto = require("crypto");
 //const electronReload = require("electron-reload");
 
 // Configure logging
@@ -29,6 +30,7 @@ let offset = { x: 0, y: 0 };
 var firstRun = true;
 var autoRun = true;
 const appVersion = app.getVersion();
+const userDataPath = app.getPath("userData");
 
 // modify your existing createWindow() function
 const createWindow = () => {
@@ -555,13 +557,12 @@ function syncLevel(level, levelprog) {
 /**
  * Checks if the gameData.json file exists, if not it creates and populates it with default states.
  */
-function ensureDataFileExists() {
-  const userDataPath = app.getPath("userData");
+function ensureDataFileExists(flag) {
   const filePath = path.join(userDataPath, "gameData.json");
   if (!fs.existsSync(userDataPath)) {
     fs.mkdirSync(userDataPath, { recursive: true });
   }
-  if (!fs.existsSync(filePath)) {
+  if (!fs.existsSync(filePath) || flag) {
     fs.writeFileSync(
       filePath,
       JSON.stringify({
@@ -729,48 +730,57 @@ const removeAutoRun = () => {
  */
 function loadVariables() {
   ensureDataFileExists(); // Ensure directory and file exist
-  const userDataPath = app.getPath("userData");
-  const filePath = path.join(userDataPath, "gameData.json");
-  try {
-    const data = fs.readFileSync(filePath, "utf-8");
-    const savedData = JSON.parse(data);
-    food = savedData.food;
-    health = savedData.health;
-    energy = savedData.energy;
-    attack = savedData.attack;
-    dead = savedData.dead;
-    timeSpawned = new Date(savedData.timeSpawned);
-    palLevel = savedData.palLevel;
-    palLevelProgress = savedData.palLevelProgress;
-    foods = savedData.foods;
-    items = savedData.items;
-    enemy = new Enemy(savedData.enemy);
-    bullettime = savedData.bullettime;
-    bullettimeDateObj = savedData.bullettimeDateObj;
-    heartChained = savedData.heartChained;
-    if (bullettime == true) {
-      console.log("bullettime was previously activated, resuming.");
-      let bteMs = (bullettimeEnd - Date.now());
-      win.webContents.send("startBulletTime", bteMs);
-      syncStats();
-      syncItems();
-      setTimeout(() => {
-        win.webContents.send("stopBulletTime");
-      }, bteMs) // Make this function wait until the end time of the effect before triggering.
-    };
-    if (heartChained == true) {
-      win.webContents.send("activate_heartchain")
+  if (valChk()) {
+    const filePath = path.join(userDataPath, "gameData.json");
+    try {
+      const data = fs.readFileSync(filePath, "utf-8");
+      const savedData = JSON.parse(data);
+      food = savedData.food;
+      health = savedData.health;
+      energy = savedData.energy;
+      attack = savedData.attack;
+      dead = savedData.dead;
+      timeSpawned = new Date(savedData.timeSpawned);
+      palLevel = savedData.palLevel;
+      palLevelProgress = savedData.palLevelProgress;
+      foods = savedData.foods;
+      items = savedData.items;
+      enemy = new Enemy(savedData.enemy);
+      bullettime = savedData.bullettime;
+      bullettimeDateObj = savedData.bullettimeDateObj;
+      heartChained = savedData.heartChained;
+      if (bullettime == true) {
+        console.log("bullettime was previously activated, resuming.");
+        let bteMs = (bullettimeEnd - Date.now());
+        win.webContents.send("startBulletTime", bteMs);
+        syncStats();
+        syncItems();
+        setTimeout(() => {
+          win.webContents.send("stopBulletTime");
+        }, bteMs) // Make this function wait until the end time of the effect before triggering.
+      };
+      if (heartChained == true) {
+        win.webContents.send("activate_heartchain");
+      }
+    } catch (err) {
+      console.error("Error loading game data:", err);
     }
-  } catch (err) {
-    console.error("Error loading game data:", err);
+  }else{
+    console.log('no crypto key found. resetting data...');
+    ensureDataFileExists(true);
+    syncStats();
+    syncItems();
+    syncFoods();
+    syncEnemy();
+    syncLevel();
+    genChk();
   }
-}
+};
 
 /**
  * Saves the game state variables to the gameData.json file.
  */
 function saveVariables() {
-  const userDataPath = app.getPath("userData");
   const filePath = path.join(userDataPath, "gameData.json");
   var eSer = null; // Enemy serialized data.
   if (enemy) {
@@ -794,6 +804,7 @@ function saveVariables() {
   };
   try {
     fs.writeFileSync(filePath, JSON.stringify(gameData));
+    genChk();
   } catch (err) {
     console.error("Error saving game data:", err);
   }
@@ -1295,3 +1306,48 @@ autoUpdater.on("error", (err) => {
   log.error("Error in auto-updater:", err);
   mainWindow.webContents.send("update-error", err);
 });
+
+// -------------------------------------------
+//                Crypto shit
+// -------------------------------------------
+// may seem pointless but even the slightest
+// inconvenience to cheat disuades most people
+// (even if you can read the source code :p)
+
+function genChk() {
+  fs.readFile(`${userDataPath}/gameData.json`, (err, data) => {
+    const hash = crypto.createHash('sha256');
+    hash.update(data);
+    const hashedData = hash.digest('hex');
+    fs.writeFile(`${userDataPath}/pal.bgh`, hashedData, (err =>{
+      if(err){
+        console.log(`crypto write error, yep.`, err);
+      };
+    }));
+    return (hashedData);
+  });
+};
+
+function valChk() {
+  fs.readFile(`${userDataPath}/pal.bgh`, (err, data) => {
+    if (err) {
+      return (false);
+    } else {
+      const bHash = crypto.createHash('sha256');
+      bHash.update(data);
+      const bHashData = bHash.digest('hex');
+      fs.readFile(`${userDataPath}/gameData.json`, (err, bdata) => {
+        if (err) {
+          genChk();
+        } else {
+          const aHash = crypto.createHash('sha256');
+          aHash.update(bdata);
+          const aHashData = aHash.digest('hex');
+          if (bHashData == aHashData) {
+            return (true);
+          } else { return (false) };
+        };
+      });
+    };
+  });
+};

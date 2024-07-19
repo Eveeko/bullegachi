@@ -1,19 +1,12 @@
-const {
-  app,
-  BrowserWindow,
-  Tray,
-  Menu,
-  screen,
-  ipcMain,
-  contextBridge,
-} = require("electron");
+const { app, BrowserWindow, Tray, Menu, screen, ipcMain } = require("electron");
 const path = require("node:path");
 const fs = require("fs");
 const regedit = require("regedit");
 const { autoUpdater } = require("electron-updater");
 const log = require("electron-log");
 const crypto = require("crypto");
-//const electronReload = require("electron-reload");
+const ping = require('ping');
+const http = require('http');
 
 // Configure logging
 log.transports.file.level = "info";
@@ -606,7 +599,7 @@ const runKey = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
  * @returns JSON object of the client data file.
  */
 const checkAndInitializeClientData = () => {
-  let clientData = { firstRun: false, autoRun: true };
+  let clientData = { firstRun: false, autoRun: true, palConnected: false };
 
   // Check if the file exists
   if (fs.existsSync(clientDataPath)) {
@@ -615,11 +608,16 @@ const checkAndInitializeClientData = () => {
     clientData = JSON.parse(data);
     firstRun = clientData.firstRun;
     autoRun = clientData.autoRun;
+    palConnected = clientData.palConnected;
+    if(palConnected){
+      connectPal();
+    };
     syncTrayMenu();
   } else {
     // Create the file with initial data
     fs.writeFileSync(clientDataPath, JSON.stringify(clientData, null, 2));
     firstRun = true;
+    connectPal();
     setAutoRun();
     syncTrayMenu();
     saveClientData();
@@ -638,6 +636,7 @@ const saveClientData = () => {
       {
         firstRun,
         autoRun,
+        palConnected,
       },
       null,
       2
@@ -810,14 +809,126 @@ function saveVariables() {
   }
 }
 
+// -------------------------
+//  Pal connection sequence
+// -------------------------
+
+var palConnected = false; // Used as a flag for checking whether to send HTTP traffic to a IP.
+var palConnecting = false; // Used to prevent double running connection function.
+var palIP = null; // Currently connected Pal's IP address. (populated once the connectPal() is called)
+
+/**
+ * Starts the discovery phase to connect to a local Pal (same WiFi).
+ */
+function connectPal() {
+  palConnecting = true;
+  syncTrayMenu();
+  // Define your IP range and scan
+  const baseIp = '192.168.1'; // Networks base IP
+  const start = 1; // Starting IP in the range
+  const end = 254; // Ending IP in the range
+  // Function to check if an endpoint responds with a 200 status code
+  function checkEndpoint(ip, callback) {
+    const url = `http://${ip}:8080/isPal.php`;
+
+    const req = http.get(url, (res) => {
+      if (res.statusCode === 200) {
+        callback(null, ip);
+      } else {
+        callback(new Error(`Failed with status code: ${res.statusCode}`));
+      }
+    });
+
+    req.on('error', (e) => {
+      callback(e);
+    });
+  }
+
+  // Function to scan a range of IPs
+  function scanRange(baseIp, start, end, callback) {
+    let pending = end - start + 1;
+    let results = [];
+    var found = false;
+
+    for (let i = start; i <= end; i++) {
+      const ip = `${baseIp}.${i}`;
+
+      ping.promise.probe(ip).then((res) => {
+        if (res.alive) {
+          console.log(`Device found at ${ip}`);
+          results.push(ip);
+
+          // Check the /isPal endpoint
+          checkEndpoint(ip, (err, foundIp) => {
+            if (err) {
+              //console.error(`Error checking ${ip}:`, err.message);
+            } else {
+              console.log(`Device with /isPal found at ${foundIp}`);
+              found = true;
+              return callback(foundIp);
+            }
+          });
+        }
+
+        if (--pending === 0 && found == false) {
+          return callback(false);
+        }
+      });
+    }
+  }
+
+  scanRange(baseIp, start, end, (foundIp) => {
+    if (!foundIp) {
+      // BulletPal not found on the network. return a error visual.
+      console.log("Scan complete. BulletPal found?: \x1b[31mFALSE\x1b[0m")
+      palConnecting = false;
+      palConnected = false;
+      palIP = null;
+      saveClientData();
+      syncTrayMenu();
+    } else {
+      // BulletPal found on network, proceed with setup.
+      console.log(`Scan complete. BulletPal found?: \x1b[32mTRUE | ${foundIp}\x1b[0m`)
+      palConnected = true;
+      palConnecting = false;
+      palIP = foundIp;
+      saveClientData();
+      syncTrayMenu();
+      console.log("\x1b[32mPal connected successfully!\x1b[0m");
+      // TODO: Add in the proper endpoint to put the pal into dev mode.
+      // TOOD: Add in the interval that pings the heartbeat endpoint on the pal every 5 seconds to keep dev mode active.
+      // TODO: fuck the amount of time iv put into this gift.
+    }
+  });
+};
+
+/**
+ * Removes the connected Pal from the software. (deletes the remembered IP and resets the auto-reconnect bool)
+ */
+function removePal() {
+  // TODO: Add in the proper endpoint for the disconnect function for the Pal. (ie /dc triggers the pal to display a visual and exits dev mode)
+  palConnected = false;
+  palConnecting = true;
+  palIP = false;
+  saveClientData();
+  syncTrayMenu();
+  console.log("\x1b[31mPal disconnected successfully :(\x1b[0m");
+  setTimeout(() =>{
+    palConnecting = false;
+    syncTrayMenu();
+  }, 5000); // Give the Pal time to display the disconnect effects or whatever shit fully.
+};
+
 /**
  * Synchronizes the windows tray menu with the current AutoRun state.
  */
 function syncTrayMenu() {
   const autoRunLabel = autoRun ? "AutoRun - Enabled" : "AutoRun - Disabled";
+  const palConnectLabel = palConnected ? "Pal - Connected" : "Connect to Pal";
   const contextMenu = Menu.buildFromTemplate([
     { label: `Version ${appVersion}      `, enabled: false }, // Version label
     { type: "separator" }, // Separator
+    { label: palConnectLabel, click: palConnected ? removePal : connectPal, enabled: !palConnecting },
     { label: autoRunLabel, click: autoRun ? removeAutoRun : setAutoRun },
     { label: "      Quit", click: () => app.quit() }, // Quit option
   ]);

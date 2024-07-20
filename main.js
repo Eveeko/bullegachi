@@ -272,6 +272,45 @@ class Enemy {
 }
 
 // ----------------------------------
+//        Pal HTTP Wrapper
+// ----------------------------------
+
+/**
+ * Sets the face of the bulletpal ONLY if a pal is connected, otherwise does nothing.
+ * @param {string} name id of the face as used internally by the bulletpal (`idle, idle_blink, etc`)
+ */
+function setFace(name) {
+  if (palConnected) {
+    var req = http.request(`http://${palIP}:8080/setemotion?emotion=${name}`, { method: 'POST', }, (res) => {
+      res.on('data', (chunk) => {
+        console.log(`BODY: ${chunk}`);
+      });
+      res.on('end', () => {
+        console.log('No more data in response.');
+        console.log('face set:', name);
+      });
+    });
+    req.on('error', (e) => {
+      console.error(`problem with request: ${e.message}`);
+    });
+  };
+};
+/**
+ * Sets the face of the bulletpal ONLY if a pal is connected, otherwise does nothing.
+ * @param {string} name id of the raw face image as used internally by the bulletpal (`idle, sleep_zzz_1, etc`)
+ */
+function setRawFace(name) {
+
+};// image byte array 128x64
+/**
+ * Displays a custom image through a provided byte array ONLY if a pal is connected, otherwise does nothing. `resolution= (128x64px)`
+ * @param {Array} imageArr A byte array of the image. 0 = off, 1 = on.
+ */
+function customFace(imageArr) {
+
+};
+
+// ----------------------------------
 //           GAMEPLAY LOOP
 // ----------------------------------
 
@@ -609,7 +648,7 @@ const checkAndInitializeClientData = () => {
     firstRun = clientData.firstRun;
     autoRun = clientData.autoRun;
     palConnected = clientData.palConnected;
-    if(palConnected){
+    if (palConnected) {
       connectPal();
     };
     syncTrayMenu();
@@ -816,10 +855,39 @@ function saveVariables() {
 var palConnected = false; // Used as a flag for checking whether to send HTTP traffic to a IP.
 var palConnecting = false; // Used to prevent double running connection function.
 var palIP = null; // Currently connected Pal's IP address. (populated once the connectPal() is called)
+var palDevInterval = null; // Interval storage used to clear dev mode heartbeat interval when pal is dcd.
 
 /**
  * Starts the discovery phase to connect to a local Pal (same WiFi).
  */
+
+
+function tickHeartbeat(ip) {
+  const options = {
+    hostname: ip,
+    port: 8080,
+    path: '/heartbeat.php',
+    method: 'GET'
+  };
+
+  const interval = setInterval(() => {
+    const url = `http://${ip}:8080/heartbeat`;
+
+    const req = http.get(url, (res) => {
+      if (res.statusCode === 200) {
+        console.log('heartbeat thumped')
+      } else {
+        console.log('error heartbeating', res);
+      };
+    });
+    req.on('error', (e) => {
+      console.log('error heartbeating2', e); s
+    });
+  }, 4500);
+
+  return interval;
+}
+
 function connectPal() {
   palConnecting = true;
   syncTrayMenu();
@@ -829,7 +897,7 @@ function connectPal() {
   const end = 254; // Ending IP in the range
   // Function to check if an endpoint responds with a 200 status code
   function checkEndpoint(ip, callback) {
-    const url = `http://${ip}:8080/isPal.php`;
+    const url = `http://${ip}:8080/isPal`;
 
     const req = http.get(url, (res) => {
       if (res.statusCode === 200) {
@@ -894,10 +962,20 @@ function connectPal() {
       palIP = foundIp;
       saveClientData();
       syncTrayMenu();
-      console.log("\x1b[32mPal connected successfully!\x1b[0m");
-      // TODO: Add in the proper endpoint to put the pal into dev mode.
-      // TOOD: Add in the interval that pings the heartbeat endpoint on the pal every 5 seconds to keep dev mode active.
-      // TODO: fuck the amount of time iv put into this gift.
+
+      var req = http.get(`http://${palIP}:8080/setdev?mode=dev`, (res) => {
+        if (res.statusCode === 200) {
+          console.log("\x1b[32mPal connected successfully!\x1b[0m");
+          palDevInterval = tickHeartbeat(palIP);
+        } else {
+          console.log(`Failed with status code: ${res.statusCode}`);
+          palDevInterval = tickHeartbeat(palIP);
+        }
+      });
+      req.on('error', (e) => {
+        console.log("err", e);
+      });
+      // TODO: Add in error handling for the pal not going into dev mode.
     }
   });
 };
@@ -909,11 +987,22 @@ function removePal() {
   // TODO: Add in the proper endpoint for the disconnect function for the Pal. (ie /dc triggers the pal to display a visual and exits dev mode)
   palConnected = false;
   palConnecting = true;
-  palIP = false;
   saveClientData();
   syncTrayMenu();
+  clearInterval(palDevInterval);
+  var req = http.get(`http://${palIP}/setdev?mode=default`, (res) => {
+    if (res.statusCode === 200) {
+      console.log("Pal mode set to default.");
+    } else {
+      console.log(`Failed with status code: ${res.statusCode}`);
+    };
+  });
+  req.on('error', (e) => {
+    console.log("err", e);
+  });
+  palIP = false;
   console.log("\x1b[31mPal disconnected successfully :(\x1b[0m");
-  setTimeout(() =>{
+  setTimeout(() => {
     palConnecting = false;
     syncTrayMenu();
   }, 5000); // Give the Pal time to display the disconnect effects or whatever shit fully.

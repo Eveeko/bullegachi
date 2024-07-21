@@ -271,9 +271,23 @@ class Enemy {
   }
 }
 
-// ----------------------------------
+// ---------------------------------
 //        Pal HTTP Wrapper
-// ----------------------------------
+// ---------------------------------
+
+
+/**
+ * Handles the idle animation state.
+ */
+function idleHandler() {
+  if((palFaceUpdate + 3000) < Date.now()){
+    // its been longer than 3 seconds since the last face update, proceed with idle animation
+
+  }else{
+    // it has not been longer than 3 seconds since the last face update, wait another 5 seconds.
+
+  }
+}; // Handles the idle animation states.
 
 /**
  * Sets the face of the bulletpal ONLY if a pal is connected, otherwise does nothing.
@@ -281,6 +295,8 @@ class Enemy {
  */
 function setFace(name) {
   if (palConnected) {
+    palFace = name;
+    palFaceUpdate = Date.now();
     var req = http.request(`http://${palIP}:8080/setemotion?emotion=${name}`, { method: 'POST', }, (res) => {
       res.on('data', (chunk) => {
         console.log(`BODY: ${chunk}`);
@@ -327,7 +343,9 @@ let palLevelProgress = 0; // Current progress towards the next level (0-100)
 let bullettime = false; // BulletTime flag (used for checking if BulletTime is enabled)
 let bullettimeDateObj = null; // BulletTime Date MS representing the end time for the effect.
 let heartChained = false; // Heartchain flag (used for checking if heartchain is enabled)
-
+let palFace = "idle"; // The current pal face (for the bullet pal), used for the idle animation handler.
+let palFaceUpdate = null; // The time of when the face was last updated, (used to prevent idle animations from being instantly played on face change.).
+let palIdleInterval = null; // Storage for the idle animation interval (used so it can be cleared once a pal is dcd)
 
 // -----------------------------------
 //            COMBAT LOOP
@@ -541,6 +559,7 @@ function startDeath() {
   console.log("Bullet has died");
   clearTimeout(foodDepletionTimeout);
   clearTimeout(healthCheckTimeout);
+  setFace("dead");
 }
 function alivePal() {
   win.webContents.send("alivePal", true);

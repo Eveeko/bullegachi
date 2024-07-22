@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, screen, ipcMain } = require("electron");
+const { app, BrowserWindow, Tray, Menu, screen, ipcMain, Notification } = require("electron");
 const path = require("node:path");
 const fs = require("fs");
 const regedit = require("regedit");
@@ -463,6 +463,8 @@ function startGameLoop() {
   win.webContents.send("setFoods", foods);
   win.webContents.send("setItems", items);
   nextEnergyCost = getRandomValue(10, 25);
+  // TODO: Add in conditional that puts a splash infront of the battleebox when the user has just launchede the program and preevents battle box from starting until button inside splash is clicked.
+  // TODO: Add in first time startup intro screen with clickable buttons to advance through tutorial. (like a picture ewith arrrows and thee arrows movee depending on the stage of the tutorial. simple shit)
   syncEnemy();
   trackPlayerProgress(timeSpawned);
   if (enemy.health == 0) {
@@ -825,7 +827,7 @@ const removeAutoRun = () => {
  */
 function loadVariables() {
   ensureDataFileExists(); // Ensure directory and file exist
-  if (valChk()) {
+  if (true) { // TODO: Change this back to valChk() for production (currently bypasses anti-cheat for deev purposes)
     const filePath = path.join(userDataPath, "gameData.json");
     try {
       const data = fs.readFileSync(filePath, "utf-8");
@@ -1011,6 +1013,7 @@ function connectPal() {
       palIP = null;
       saveClientData();
       syncTrayMenu();
+      new Notification({ title: "Bullegachi", body: "Connect to Pal failed to connect. Unable to detect a Pal on your local network. Make sure you and the Pal are on the same network!" }).show()
     } else {
       // BulletPal found on network, proceed with setup.
       console.log(`Scan complete. BulletPal found?: \x1b[32mTRUE | ${foundIp}\x1b[0m`)
@@ -1375,7 +1378,7 @@ ipcMain.on("startTTK", (event) => {
           // timer expired.
           clearInterval(timerTimeout);
           win.webContents.send("timerDamage", health);
-          health--;
+          health = health - 1;
           syncStats();
           if (health == 0) {
             if (heartChained == true) {
@@ -1387,6 +1390,7 @@ ipcMain.on("startTTK", (event) => {
               health = 3;
               food = 100;
               dead = false;
+              syncStats();
             } else {
               dead = true;
               startDeath();

@@ -27,7 +27,7 @@
             <div class="side_icon side_icon_settings" id="settingsBtn">
                 <div class="line-filter"></div>
             </div>
-            <audio id="hoverSound">
+            <audio id="hoverSound" preload="auto">
                 <source src="sfx/select_sfx.wav" type="audio/wav">
                 <!-- Add additional source elements for other audio formats if needed -->
             </audio>
@@ -40,10 +40,11 @@
                 </img>
                 <img src="elipse.svg" class="bulletpal_shadow">
             </div>
-            <audio id="heartchainSound">
+            <audio id="heartchainSound" preload="auto">
                 <source src="sfx/heartchain_shatter_sfx.wav" type="audio/wav">
+
             </audio>
-            <audio id="heartchainSound2">
+            <audio id="heartchainSound2"  preload="auto">
                 <source src="sfx/heartchain_revive_sfx.wav" type="audio/wav">
             </audio>
             <div class="bulletpal_heartchain" id="heartchain" style="display: none;">
@@ -146,7 +147,7 @@
                 <h4 class="battle_pal_hp" id="battle_pal_hp">HP: 3</h4>
             </div>
         </div>
-        <audio id="deathSound">
+        <audio id="deathSound" preload="auto">
             <source src="sfx/death_sfx.wav" type="audio/wav">
             <!-- Add additional source elements for other audio formats if needed -->
         </audio>
@@ -162,7 +163,7 @@
         <div class="battle_next_btn" id="battle_next_btn" style="visibility: hidden;"></div>
         <div class="banner" id="bossBanner" style="display: none;">
             <h4 class="banner-h4">BOSS ALERT BOSS ALERT BOSS ALERT BOSS ALERT BOSS ALERT</h4>
-            <audio id="bossAlertSound">
+            <audio id="bossAlertSound" preload="auto">
                 <source src="sfx/boss_alert_sfx.wav" type="audio/wav">
             </audio>
         </div>
@@ -189,7 +190,7 @@
         <video width="400" height="240" id="nullEventVid">
             <source src="nullVid.mp4".mp4" type="video/mp4">
         </video>
-        <audio id="nullEventSfx">
+        <audio id="nullEventSfx" preload="auto">
             <source src="nullEvent.mp3" type="audio/mpeg">
         </audio>
     </div>

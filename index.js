@@ -70,6 +70,7 @@ const bullettimeCont = document.getElementById("bullettime_cont");
 const bullettimeTimer = document.getElementById("bullettime_timer");
 const heartchain = document.getElementById("heartchain");
 const heartchainSfx = document.getElementById("heartchainSound");
+const heartchainSfx2 = document.getElementById("heartchainSound2")
 const lootboxBG = document.getElementById("lootbox_background");
 const lootbox = document.getElementById("lootbox");
 const lootboxPointer = document.getElementById("lootbox_pointer");

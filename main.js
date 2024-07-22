@@ -275,18 +275,56 @@ class Enemy {
 //        Pal HTTP Wrapper
 // ---------------------------------
 
-
 /**
- * Handles the idle animation state.
+ * Handles the idle animation state for the pal.
  */
 function idleHandler() {
-  if((palFaceUpdate + 3000) < Date.now()){
-    // its been longer than 3 seconds since the last face update, proceed with idle animation
-
-  }else{
-    // it has not been longer than 3 seconds since the last face update, wait another 5 seconds.
-
-  }
+  if (palConnected) {
+    if ((palFaceUpdate + 3000) < Date.now()) {
+      // its been longer than 3 seconds since the last face update, proceed with idle animation
+      let i = getRandomValue(1, 2);
+      switch (palFace) {
+        case "idle":
+          setFace("idle_blink");
+          break;
+        case "dead":
+          setFace("dead_drool");
+          break;
+        case "angry":
+          setFace("angry_symbol");
+          break;
+        case "happy_1":
+          if (i == 1) {
+            setFace("happy_1_blink");
+          } else {
+            setFace("happy_1_wink");
+          };
+          break;
+        case "happy_2":
+          if (i == 1) {
+            setFace("happy_2_blink");
+          } else {
+            setFace("happy_2_wink");
+          };
+          break;
+        case "sleep":
+          setFace("sleep_zzz");
+          break;
+        case "sad":
+          if (i == 1) {
+            setFace("sad_tear");
+          } else {
+            setFace("sad_hungry");
+          };
+          break;
+      };
+      // Sets the next time to do a idle animation between 5-18 seconds.
+      palIdleInterval = setTimeout(idleHandler, (getRandomValue(5, 18) * 1000));
+    } else {
+      // it has not been longer than 3 seconds since the last face update, wait another 3-5 seconds. *could make it the difference but it adds a randomness to it by not*
+      palIdleInterval = setTimeout(idleHandler, (getRandomValue(3, 5) * 1000));
+    };
+  }; // Checks if pal is connected before doing all this bs.
 }; // Handles the idle animation states.
 
 /**

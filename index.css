@@ -1116,3 +1116,47 @@ body {
 .lootbox-continue-btn:active {
   background-image: url("sprite/sprite_next_btn.png");
 }
+
+/*
+  Tutorial shi
+*/
+
+.tutorialH1 {
+  font-size: 20px;
+  text-align: center;
+  color: #ffcc00;
+  font-family: VT220;
+  position: absolute;
+  left: 24px;
+  top: 10px;
+  background-color: #110d00;
+}
+
+.tutorialNxtBtn {
+  background-image: url(sprite/sprite_next_btn.png);
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 90px;
+  left: 30px;
+  background-repeat: no-repeat;
+  background-size: 50px;
+  filter: blur(0.5px);
+}
+
+.tutorialArrow {
+  position: absolute;
+  top: -1px;
+  left: 26px;
+  font-size: 20px;
+  color: #ffcc00;
+  background-color: #110d00;
+}
+.tutorialSidebar {
+  height: 200px;
+  width: 40px;
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}

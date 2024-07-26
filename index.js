@@ -75,6 +75,12 @@ const lootboxBG = document.getElementById("lootbox_background");
 const lootbox = document.getElementById("lootbox");
 const lootboxPointer = document.getElementById("lootbox_pointer");
 const lootboxNextBtn = document.getElementById("lootbox-continue-btn");
+const tutorialCont = document.getElementById("tutorialCont");
+const tutorialNxtBtn = document.getElementById("tutorialNxtBtn");
+const tutorialArrow = document.getElementById("tutorialArrow");
+const tutorialH1 = document.getElementById("tutorialH1");
+const tutorialSidebar = document.getElementById("tutorialSidebar");
+const tutorialBackgroundSfx = document.getElementById("tutorialBackgroundSfx");
 
 var moveMode = false;
 var isDragging = false;
@@ -1520,3 +1526,160 @@ lootboxNextBtn.onmousedown = () => {
   lootboxBG.style.display = "none";
   playSelectSfx();
 };
+
+// -------------------------
+//      Tutorial mechanics
+// -------------------------
+
+var username;
+var tutCt = -1;
+
+tutorialNxtBtn.addEventListener("mouseover", () => {
+  tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+  playSelectSfx();
+});
+tutorialNxtBtn.addEventListener("mouseleave", () => {
+  tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+});
+tutorialNxtBtn.addEventListener("mousedown", () => {
+  tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+  playSelectSfx();
+  setTimeout(() => {
+    tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+    tutCt++;
+    tutAdvance();
+    tutorialNxtBtn.style.display = "none";
+  }, 150);
+});
+
+function playTutorialBackground() {
+  tutorialBackgroundSfx.currentTime = 0;
+  tutorialBackgroundSfx.play();
+}
+
+window.electron.receive("startTutorial", (name) => {
+  username = name;
+  sidebar.style.display = "none";
+  tutorialH1.style.display = "block";
+  playSelectSfx();
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 1500)
+});
+
+function tutAdvance() {
+  var tutorials = [tut1, tut2, tut3, tut35, tut4, tut5, tut6, tut7, tut8, tut9, tut10, tut11, tut12, tut13]; // tutorial series script.
+  tutorials[tutCt]();
+};
+
+function tut1() {
+  playSelectSfx();
+  tutorialH1.innerHTML = "I don't recognize you?";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 1500)
+};
+
+function tut2() {
+  playSelectSfx();
+  tutorialH1.innerHTML = "";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+};
+
+function tut3() {
+  playSelectSfx();
+  tutorialH1.innerHTML = `${username}...`
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  bFace.src = "faces/tutorial_1.png";
+  bFace.style.left = "24px";
+};
+function tut35() {
+  tutorialH1.innerHTML = "";
+  tutCt++;
+  setTimeout(() => { tutAdvance() }, 2500)
+}
+
+function tut4() {
+  playSelectSfx();
+  playTutorialBackground();
+  tutorialH1.innerHTML = `Well Hi there!!!`;
+  bFace.src = "faces/default_happy_2.png";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+};
+
+function tut5() {
+  playSelectSfx();
+  tutorialH1.innerHTML = `I'm your Bullegachi, Your PC BulletPal companion!`;
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+};
+
+function tut6() {
+  playSelectSfx();
+  tutorialNxtBtn.style.top = "112px"
+  tutorialH1.innerHTML = `Before you can start keeping me alive there are a few things you should know..`
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+}
+function tut7() {
+  playSelectSfx();
+  infoBox.style.visibility = "";
+  tutorialNxtBtn.style.top = "92px";
+  tutorialH1.style.fontSize = "14px";
+  tutorialH1.style.left = "22px";
+  tutorialH1.style.top = "142px";
+  tutorialH1.style.width = "220px";
+  tutorialH1.innerHTML = `1. Health, If it gets to 0 I will die shortly after.`
+  tutorialArrow.style.display = "block";
+  bFace.src = "faces/default_dead.png"
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+}
+
+function tut8() {
+  playSelectSfx();
+  tutorialH1.innerHTML = `2. Food, If it gets to 0 I will lose health slowly.`
+  bFace.src = "faces/default_sad_2.png"
+  tutorialArrow.style.top = "13px";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+}
+function tut9() {
+  playSelectSfx();
+  tutorialH1.innerHTML = `3. Energy, Used to fight enemies to gain loot, everytime I eat my Energy will refill`
+  bFace.src = "faces/default_angry.png"
+  tutorialArrow.style.top = "28px";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+}
+function tut10() {
+  playSelectSfx();
+  tutorialH1.innerHTML = `4. Level, How long you have kept me alive!`;
+  tutorialArrow.style.top = "43px";
+  bFace.src = "faces/default_happy_2.png";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+}
+function tut11() {
+  playSelectSfx();
+  infoBox.style.visibility = "hidden";
+  tutorialNxtBtn.style.top = "92px";
+  tutorialH1.style.fontSize = "14px";
+  tutorialH1.style.left = "22px";
+  tutorialH1.style.top = "142px";
+  tutorialH1.style.width = "220px";
+  tutorialH1.innerHTML = `Now last thing that you need to know!`;
+  tutorialArrow.style.display = "none";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+}
+
+function tut12() {
+  sidebar.style.display = "flex";
+  tutorialArrow.innerHTML = "<-";
+  tutorialArrow.style.left = "52px";
+  tutorialArrow.style.top = "117px";
+  tutorialArrow.style.display = "block";
+  tutorialNxtBtn.style.left = "193px";
+  tutorialNxtBtn.style.top = "90px";
+  tutorialH1.style.top = "2px";
+  tutorialH1.style.left = "50px";
+  tutorialH1.style.width = "200px";
+  tutorialH1.innerHTML = `Battles, This is how you get new food and items for me!`;
+  tutorialSidebar.style.display = "block";
+  battleBtn.style.backgroundImage = "url(sprite/sprite_battle_i.png)";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+};
+
+function tut13() {
+
+}

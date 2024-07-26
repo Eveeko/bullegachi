@@ -11,7 +11,7 @@
 <body>
     <div class="scanlines" id="scanlines"></div>
     <div class="container">
-        <div class="sidebar" id="sidebar">
+        <div class="sidebar" id="sidebar" style="display: none;">
             <div class="side_icon" id="infoBtn">
                 <div class="line-filter"></div>
             </div>
@@ -44,7 +44,7 @@
                 <source src="sfx/heartchain_shatter_sfx.wav" type="audio/wav">
 
             </audio>
-            <audio id="heartchainSound2"  preload="auto">
+            <audio id="heartchainSound2" preload="auto">
                 <source src="sfx/heartchain_revive_sfx.wav" type="audio/wav">
             </audio>
             <div class="bulletpal_heartchain" id="heartchain" style="display: none;">
@@ -62,9 +62,9 @@
         <div class="info_box" id="infoBox">
             <div class="line-filter"></div>
         </div>
-        <h4 class="info_health" id="info_health">health: [-] [-] [-]</h4>
-        <h4 class="info_health info_food" id="info_food">food: LOA%</h4>
-        <h4 class="info_health info_energy" id="info_energy">energy: DING%</h4>
+        <h4 class="info_health" id="info_health">health: [*] [*] []</h4>
+        <h4 class="info_health info_food" id="info_food">food: 100%</h4>
+        <h4 class="info_health info_energy" id="info_energy">energy: 50%</h4>
         <h4 class="info_health info_level" id="info_level">lvl: 1</h4>
         <div class="info_levelProgOutline" id="info_levelProgOutline">
             <div class="info_levelProgFill" id="info_levelProgFill">
@@ -119,20 +119,21 @@
             <h1 class="food_warn_h1 food_warn_h2" id="item_warn_1" style="left: 28px">item used.</h1>
         </div>
         <!-- Lootbox html -->
-         <div class="lootbox_background" id="lootbox_background" style="display: none;">
-        <div class="lootbox" id="lootbox">
-            <div class="lootbox-items" id="lootboxItems">
-                <!-- Items will be dynamically added here -->
+        <div class="lootbox_background" id="lootbox_background" style="display: none;">
+            <div class="lootbox" id="lootbox">
+                <div class="lootbox-items" id="lootboxItems">
+                    <!-- Items will be dynamically added here -->
+                </div>
             </div>
+            <h1 class="lootbox_pointer" id="lootbox_pointer">^</h1>
+            <div class="item-display" id="itemDisplay" style="display: none;">
+                <div class="landed-item" id="landedItem"></div>
+                <div class="item-text" id="itemText"></div>
+                <h1 class="item-count" id="itemCount"></h1>
+                <div class="lootbox-continue-btn" id="lootbox-continue-btn"></div>
+            </div>
+            <!-- End of Lootbox html -->
         </div>
-        <h1 class="lootbox_pointer" id="lootbox_pointer">^</h1>
-        <div class="item-display" id="itemDisplay" style="display: none;">
-            <div class="landed-item" id="landedItem"></div>
-            <div class="item-text" id="itemText"></div>
-            <h1 class="item-count" id="itemCount"></h1>
-            <div class="lootbox-continue-btn" id="lootbox-continue-btn"></div>
-        </div>
-        <!-- End of Lootbox html -->
     </div>
     <div id="battleBox" style="visibility: hidden;">
         <div class="battle_box" id="battleBox">
@@ -188,10 +189,19 @@
     </div>
     <div class="dedpal_glitch" id="dedpal_glitch" style="display: none">
         <video width="400" height="240" id="nullEventVid">
-            <source src="nullVid.mp4".mp4" type="video/mp4">
+            <source src="nullVid.mp4" .mp4" type="video/mp4">
         </video>
         <audio id="nullEventSfx" preload="auto">
             <source src="nullEvent.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+    <div id="tutorialCont" style="display: block">
+        <h1 id="tutorialH1" class="tutorialH1">Hi.</h1>
+        <div id="tutorialNxtBtn" class="tutorialNxtBtn"></div>
+        <h1 id="tutorialArrow" class="tutorialArrow" style="display: none">-></h1>
+        <div id="tutorialSidebar" class="tutorialSidebar"></div>
+        <audio preload="auto" id="tutorialBackgroundSfx">
+            <source src="sfx/tutorial_background_sfx.wav" type="audio/wav">
         </audio>
     </div>
 </body>

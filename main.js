@@ -7,10 +7,32 @@ const log = require("electron-log");
 const crypto = require("crypto");
 const ping = require('ping');
 const http = require('http');
+const os = require('os');
+const { exec } = require('child_process');
 
 // Configure logging
 log.transports.file.level = "info";
 autoUpdater.logger = log;
+
+function getUserName(callback) {
+  exec('wmic useraccount where name="%username%" get fullname', (error, stdout, stderr) => {
+      if (error || stderr) {
+          console.warn(`Failed to get full name, falling back to basic username: ${error || stderr}`);
+          const userInfo = os.userInfo();
+          callback(userInfo.username);
+      } else {
+          const lines = stdout.split('\n');
+          const fullName = lines.length > 1 ? lines[1].trim() : null;
+          if (fullName) {
+              const firstName = fullName.split(' ')[0];
+              callback(firstName);
+          } else {
+              const userInfo = os.userInfo();
+              callback(userInfo.username);
+          }
+      }
+  });
+}; // gets the current windows user account name.
 
 // Initialize electron-reload with the directory to watch for changes
 //electronReload(__dirname);
@@ -24,6 +46,12 @@ var firstRun = true;
 var autoRun = true;
 const appVersion = app.getVersion();
 const userDataPath = app.getPath("userData");
+var username;
+
+getUserName((usrname) => {
+  console.log(`User's name: ${usrname}`);
+  username = usrname;
+});
 
 // modify your existing createWindow() function
 const createWindow = () => {
@@ -102,7 +130,13 @@ const createWindow = () => {
   win.webContents.on("did-finish-load", () => {
     win.webContents.send("move-mode", moveModeEnabled);
     win.webContents.send("get-base-dir", __dirname);
-    startGameLoop();
+    checkAndInitializeClientData().then(res => {
+      if (!res.firstRun) {
+        startGameLoop();
+      } else {
+        win.webContents.send("startTutorial", username);
+      };
+    });
   });
 
   // Check for updates after creating the window
@@ -463,7 +497,7 @@ function startGameLoop() {
   win.webContents.send("setFoods", foods);
   win.webContents.send("setItems", items);
   nextEnergyCost = getRandomValue(10, 25);
-  // TODO: Add in conditional that puts a splash infront of the battleebox when the user has just launchede the program and preevents battle box from starting until button inside splash is clicked.
+  // TODO: Add in conditional that puts a splash infront of the battleebox when the user has just launched the program and preevents battle box from starting until button inside splash is clicked.
   // TODO: Add in first time startup intro screen with clickable buttons to advance through tutorial. (like a picture ewith arrrows and thee arrows movee depending on the stage of the tutorial. simple shit)
   syncEnemy();
   trackPlayerProgress(timeSpawned);
@@ -697,31 +731,33 @@ const runKey = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
  * @returns JSON object of the client data file.
  */
 const checkAndInitializeClientData = () => {
-  let clientData = { firstRun: false, autoRun: true, palConnected: false };
+  return new Promise(resolve => {
+    let clientData = { firstRun: false, autoRun: true, palConnected: false };
 
-  // Check if the file exists
-  if (fs.existsSync(clientDataPath)) {
-    // Read the existing file
-    const data = fs.readFileSync(clientDataPath);
-    clientData = JSON.parse(data);
-    firstRun = clientData.firstRun;
-    autoRun = clientData.autoRun;
-    palConnected = clientData.palConnected;
-    if (palConnected) {
+    // Check if the file exists
+    if (fs.existsSync(clientDataPath)) {
+      // Read the existing file
+      const data = fs.readFileSync(clientDataPath);
+      clientData = JSON.parse(data);
+      firstRun = clientData.firstRun;
+      autoRun = clientData.autoRun;
+      palConnected = clientData.palConnected;
+      if (palConnected) {
+        connectPal();
+      };
+      syncTrayMenu();
+      resolve(clientData);
+    } else {
+      // Create the file with initial data
+      fs.writeFileSync(clientDataPath, JSON.stringify(clientData, null, 2));
+      firstRun = true;
       connectPal();
-    };
-    syncTrayMenu();
-  } else {
-    // Create the file with initial data
-    fs.writeFileSync(clientDataPath, JSON.stringify(clientData, null, 2));
-    firstRun = true;
-    connectPal();
-    setAutoRun();
-    syncTrayMenu();
-    saveClientData();
-  }
-
-  return clientData;
+      setAutoRun();
+      syncTrayMenu();
+      saveClientData();
+      resolve(clientData);
+    }
+  });
 };
 
 /**

@@ -1142,6 +1142,7 @@ body {
   background-repeat: no-repeat;
   background-size: 50px;
   filter: blur(0.5px);
+  background-color: #110d00;
 }
 
 .tutorialArrow {

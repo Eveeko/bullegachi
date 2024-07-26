@@ -1536,14 +1536,12 @@ var tutCt = -1;
 
 tutorialNxtBtn.addEventListener("mouseover", () => {
   tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
-  playSelectSfx();
 });
 tutorialNxtBtn.addEventListener("mouseleave", () => {
   tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
 });
 tutorialNxtBtn.addEventListener("mousedown", () => {
   tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-  playSelectSfx();
   setTimeout(() => {
     tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
     tutCt++;
@@ -1559,10 +1557,12 @@ function playTutorialBackground() {
 
 window.electron.receive("startTutorial", (name) => {
   username = name;
-  sidebar.style.display = "none";
-  tutorialH1.style.display = "block";
-  playSelectSfx();
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 1500)
+  setTimeout(()=>{
+    sidebar.style.display = "none";
+    tutorialH1.style.display = "block";
+    playSelectSfx();
+    setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 1500)
+  }, 500)
 });
 
 function tutAdvance() {
@@ -1605,6 +1605,9 @@ function tut4() {
 
 function tut5() {
   playSelectSfx();
+  tutorialH1.style.top = "2px";
+  tutorialH1.style.left = "28px";
+  tutorialH1.style.width = "210px";
   tutorialH1.innerHTML = `I'm your Bullegachi, Your PC BulletPal companion!`;
   setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
 };
@@ -1613,6 +1616,10 @@ function tut6() {
   playSelectSfx();
   tutorialNxtBtn.style.top = "112px"
   tutorialH1.innerHTML = `Before you can start keeping me alive there are a few things you should know..`
+  tutorialH1.style.top = "2px";
+  tutorialH1.style.left = "22px";
+  tutorialH1.style.width = "220px";
+  tutorialH1.style.fontSize = "18px";
   setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
 }
 function tut7() {
@@ -1666,7 +1673,7 @@ function tut11() {
 function tut12() {
   sidebar.style.display = "flex";
   tutorialArrow.innerHTML = "<-";
-  tutorialArrow.style.left = "52px";
+  tutorialArrow.style.left = "46px";
   tutorialArrow.style.top = "117px";
   tutorialArrow.style.display = "block";
   tutorialNxtBtn.style.left = "193px";
@@ -1681,5 +1688,7 @@ function tut12() {
 };
 
 function tut13() {
-
+  battleBox.style.visibility = "";
+  tutorialNxtBtn.style.top = "132px";
+  tutorialNxtBtn.style.left = "193px";
 }

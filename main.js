@@ -311,6 +311,8 @@ class Enemy {
 //        Pal HTTP Wrapper
 // ---------------------------------
 
+var palHungry = false;
+
 /**
  * Handles the idle animation state for the pal.
  */
@@ -347,11 +349,7 @@ function idleHandler() {
           setFace("sleep_zzz");
           break;
         case "sad":
-          if (i == 1) {
-            setFace("sad_tear");
-          } else {
-            setFace("sad_hungry");
-          };
+          setFace("sad_tear");
           break;
       };
       // Sets the next time to do a idle animation between 5-18 seconds.
@@ -390,7 +388,22 @@ function setFace(name) {
  * @param {string} name id of the raw face image as used internally by the bulletpal (`idle, sleep_zzz_1, etc`)
  */
 function setRawFace(name) {
-
+  if (palConnected) {
+    palFace = name;
+    palFaceUpdate = Date.now();
+    var req = http.request(`http://${palIP}:8080/setrawemotion?emotion=${name}`, { method: 'POST', }, (res) => {
+      res.on('data', (chunk) => {
+        console.log(`BODY: ${chunk}`);
+      });
+      res.on('end', () => {
+        console.log('No more data in response.');
+        console.log('face set:', name);
+      });
+    });
+    req.on('error', (e) => {
+      console.error(`problem with request: ${e.message}`);
+    });
+  };
 };// image byte array 128x64
 /**
  * Displays a custom image through a provided byte array ONLY if a pal is connected, otherwise does nothing. `resolution= (128x64px)`
@@ -398,6 +411,39 @@ function setRawFace(name) {
  */
 function customFace(imageArr) {
 
+};
+function setFaceByHealth() {
+  if (palHungry) {
+    switch (health) {
+      case 0:
+        setFace("dead");
+        break;
+      case 1:
+        setRawFace("sad_tear_hungry");
+        break;
+      case 2:
+        setRawFace("sad_hungry");
+        break;
+      case 3:
+        setRawFace("idle_hungry");
+        break;
+    };
+  } else {
+    switch (health) {
+      case 0:
+        setFace("dead");
+        break;
+      case 1:
+        setRawFace("sad_tear_1");
+        break;
+      case 2:
+        setFace("sad");
+        break;
+      case 3:
+        setFace("idle");
+        break;
+    };
+  };
 };
 
 // ----------------------------------
@@ -518,6 +564,7 @@ function startGameLoop() {
   //     }
   //   }, 1000);
   // }
+  setFaceByHealth();
   if (health == 0) {
     // Loaded as dead.
     dead = true;
@@ -630,6 +677,7 @@ function depleteFood() {
  * Used to start the pal death sequence.
  */
 function startDeath() {
+  setFace("dead")
   food = 0;
   disableTracking();
   win.webContents.send("killPal", true);
@@ -639,7 +687,8 @@ function startDeath() {
   setFace("dead");
 }
 function alivePal() {
-  win.webContents.send("alivePal", true);
+  win.webContents.send("alivePal", true);;
+  setFace("idle");
   console.log("Pal has alived");
 }
 /**
@@ -652,6 +701,10 @@ function syncStats() {
     energy: energy,
     attack: attack,
   });
+  if (food < 25) {
+    palHungry = true;
+  } else { palHungry = false };
+  setFaceByHealth();
 }
 /**
  * Wrapper for win.webContents. Syncs internal foods with UI.
@@ -866,7 +919,7 @@ const removeAutoRun = () => {
  */
 function loadVariables() {
   ensureDataFileExists(); // Ensure directory and file exist
-  if (true) { // TODO: Change this back to valChk() for production (currently bypasses anti-cheat for deev purposes)
+  if (valChk()) {
     const filePath = path.join(userDataPath, "gameData.json");
     try {
       const data = fs.readFileSync(filePath, "utf-8");
@@ -1083,7 +1136,6 @@ function connectPal() {
  * Removes the connected Pal from the software. (deletes the remembered IP and resets the auto-reconnect bool)
  */
 function removePal() {
-  // TODO: Add in the proper endpoint for the disconnect function for the Pal. (ie /dc triggers the pal to display a visual and exits dev mode)
   palConnected = false;
   palConnecting = true;
   saveClientData();
@@ -1348,9 +1400,11 @@ ipcMain.on("battle-click", () => {
   if (enemy.health > 0) {
     enemy.health = Math.max(0, enemy.health - attack);
     syncEnemy();
+    setFace("angry_shake");
     if (enemy.health === 0) {
       clearInterval(timerTimeout);
       win.webContents.send("killEnemy", enemy);
+      setFace("angry_symbol");
     }
     console.log("enemy values updated.");
   } else {
@@ -1390,6 +1444,7 @@ ipcMain.on("itemDropped", (event, vars) => {
   syncFoods();
   syncItems();
   syncStats();
+  setFace("happy_1");
 });
 
 ipcMain.on("advanceEnemy", (event) => {
@@ -1419,6 +1474,7 @@ ipcMain.on("startTTK", (event) => {
           win.webContents.send("timerDamage", health);
           health = health - 1;
           syncStats();
+          setFaceByHealth();
           if (health == 0) {
             if (heartChained == true) {
               console.log("heartchained active, reviving");

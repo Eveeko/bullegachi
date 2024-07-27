@@ -19,3 +19,8 @@ Due to the nature of this repository I will be housing `part two` on this page a
 The Bullegachi desktop application is written in (`javascript`, `html` and `css`) and is utilizing [Electron](https://www.electronjs.org/) for the actual application functionality(a window, [tray menu](https://www.electronjs.org/docs/latest/api/tray), etc).
 
 
+## Attributions
+
+Tutorial background music- [SethMakesSounds](https://www.patreon.com/sethmakessounds)
+Bullet Kin concept- [Dodge Roll](https://www.enterthegungeon.com/)
+Sfx generator- [ChipTone](https://sfbgames.itch.io/chiptone)

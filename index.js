@@ -81,6 +81,8 @@ const tutorialArrow = document.getElementById("tutorialArrow");
 const tutorialH1 = document.getElementById("tutorialH1");
 const tutorialSidebar = document.getElementById("tutorialSidebar");
 const tutorialBackgroundSfx = document.getElementById("tutorialBackgroundSfx");
+const battleBoxSplashCont = document.getElementById("battleBoxSplashCont");
+const battleBoxSplashBtn = document.getElementById("battleBoxSplashBtn");
 
 var moveMode = false;
 var isDragging = false;
@@ -938,6 +940,30 @@ battleNextBtn.addEventListener("mousedown", () => {
 });
 
 var killingEnemy = false;
+var battleSplashClick = false;
+
+battleBoxSplashBtn.addEventListener("mouseover", () => {
+  battleBoxSplashBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+});
+battleBoxSplashBtn.addEventListener("mouseleave", () => {
+  battleBoxSplashBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+});
+battleBoxSplashBtn.addEventListener("mousedown", () => {
+  battleBoxSplashBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+  if(!battleSplashClick){
+  battleBoxSplashClick = true;
+  setTimeout(() => {
+    battleBoxSplashBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+    window.electron.send("battleBoxStarted");
+    battleBoxSplashClick = false;
+    battleBoxSplashCont.style.display = "none";
+  }, 150);}
+});
+
+window.electron.receive("initBattlebox", () =>{
+  // Adds a splash infront of battlebox to allow the user to start the first battle(instead of it auto starting).
+  battleBoxSplashCont.style.display = "block";
+});
 
 window.electron.receive("setEnemy", (enemyObj) => {
   enemy = enemyObj;

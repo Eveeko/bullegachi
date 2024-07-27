@@ -16,21 +16,21 @@ autoUpdater.logger = log;
 
 function getUserName(callback) {
   exec('wmic useraccount where name="%username%" get fullname', (error, stdout, stderr) => {
-      if (error || stderr) {
-          console.warn(`Failed to get full name, falling back to basic username: ${error || stderr}`);
-          const userInfo = os.userInfo();
-          callback(userInfo.username);
+    if (error || stderr) {
+      console.warn(`Failed to get full name, falling back to basic username: ${error || stderr}`);
+      const userInfo = os.userInfo();
+      callback(userInfo.username);
+    } else {
+      const lines = stdout.split('\n');
+      const fullName = lines.length > 1 ? lines[1].trim() : null;
+      if (fullName) {
+        const firstName = fullName.split(' ')[0];
+        callback(firstName);
       } else {
-          const lines = stdout.split('\n');
-          const fullName = lines.length > 1 ? lines[1].trim() : null;
-          if (fullName) {
-              const firstName = fullName.split(' ')[0];
-              callback(firstName);
-          } else {
-              const userInfo = os.userInfo();
-              callback(userInfo.username);
-          }
+        const userInfo = os.userInfo();
+        callback(userInfo.username);
       }
+    }
   });
 }; // gets the current windows user account name.
 
@@ -420,6 +420,7 @@ let heartChained = false; // Heartchain flag (used for checking if heartchain is
 let palFace = "idle"; // The current pal face (for the bullet pal), used for the idle animation handler.
 let palFaceUpdate = null; // The time of when the face was last updated, (used to prevent idle animations from being instantly played on face change.).
 let palIdleInterval = null; // Storage for the idle animation interval (used so it can be cleared once a pal is dcd)
+let battleBoxOpened = false;
 
 // -----------------------------------
 //            COMBAT LOOP
@@ -499,23 +500,24 @@ function startGameLoop() {
   win.webContents.send("setFoods", foods);
   win.webContents.send("setItems", items);
   nextEnergyCost = getRandomValue(10, 25);
-  // TODO: Add in conditional that puts a splash infront of the battleebox when the user has just launched the program and preevents battle box from starting until button inside splash is clicked.
+  win.webContents.send("initBattlebox");
   syncEnemy();
   trackPlayerProgress(timeSpawned);
-  if (enemy.health == 0) {
-    console.log("enemy loaded dead.");
-  } else {
-    timerTimeout = setInterval(() => {
-      if (enemy.ttk > 0) {
-        enemy.ttk--;
-        syncEnemy();
-      } else {
-        // timer expired.
-        win.webContents.send("timerDamage", health);
-        clearInterval(timerTimeout);
-      }
-    }, 1000);
-  }
+  // if (enemy.health == 0) {
+  //   console.log("enemy loaded dead.");
+  // } else {
+
+  //   timerTimeout = setInterval(() => {
+  //     if (enemy.ttk > 0) {
+  //       enemy.ttk--;
+  //       syncEnemy();
+  //     } else {
+  //       // timer expired.
+  //       win.webContents.send("timerDamage", health);
+  //       clearInterval(timerTimeout);
+  //     }
+  //   }, 1000);
+  // }
   if (health == 0) {
     // Loaded as dead.
     dead = true;
@@ -1583,12 +1585,33 @@ function disableTracking() {
   }
 }
 
-ipcMain.on("tutorialEnded", () =>{
+ipcMain.on("tutorialEnded", () => {
   startGameLoop();
   console.log("Tutorial ended, starting game loop.");
   firstRun = false;
   saveClientData();
 });
+
+ipcMain.on("battleBoxStarted", () => {
+  if (battleBoxOpened == false) {
+    battleBoxOpened = true;
+    console.log('battlebox has been started by the user.');
+    if (enemy.health == 0) {
+      console.log("enemy loaded dead.");
+    } else {
+      timerTimeout = setInterval(() => {
+        if (enemy.ttk > 0) {
+          enemy.ttk--;
+          syncEnemy();
+        } else {
+          // timer expired.
+          win.webContents.send("timerDamage", health);
+          clearInterval(timerTimeout);
+        }
+      }, 1000);
+    }
+  };
+})
 
 // ------------------------
 //    Auto-updater Events

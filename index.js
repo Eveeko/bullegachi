@@ -782,7 +782,7 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let attackSoundBuffer;
 
 // Load the audio file
-fetch("attack_sfx.wav")
+fetch("sfx/attack_sfx.wav")
   .then((response) => response.arrayBuffer())
   .then((data) => audioContext.decodeAudioData(data))
   .then((buffer) => {
@@ -1533,6 +1533,7 @@ lootboxNextBtn.onmousedown = () => {
 
 var username;
 var tutCt = -1;
+var tutClick = false;
 
 tutorialNxtBtn.addEventListener("mouseover", () => {
   tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
@@ -1542,31 +1543,39 @@ tutorialNxtBtn.addEventListener("mouseleave", () => {
 });
 tutorialNxtBtn.addEventListener("mousedown", () => {
   tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+  if(!tutClick){
+  tutClick = true;
   setTimeout(() => {
     tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
     tutCt++;
     tutAdvance();
     tutorialNxtBtn.style.display = "none";
-  }, 150);
+    tutClick = false;
+  }, 150);}
 });
 
 function playTutorialBackground() {
   tutorialBackgroundSfx.currentTime = 0;
   tutorialBackgroundSfx.play();
-}
+};
+
+function stopTutorialBackground() {
+  tutorialBackgroundSfx.pause();
+};
 
 window.electron.receive("startTutorial", (name) => {
   username = name;
-  setTimeout(()=>{
+  setTimeout(() => {
     sidebar.style.display = "none";
     tutorialH1.style.display = "block";
+    tutorialCont.style.display = "block";
     playSelectSfx();
     setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 1500)
   }, 500)
 });
 
 function tutAdvance() {
-  var tutorials = [tut1, tut2, tut3, tut35, tut4, tut5, tut6, tut7, tut8, tut9, tut10, tut11, tut12, tut13]; // tutorial series script.
+  var tutorials = [tut1, tut2, tut3, tut35, tut4, tut5, tut6, tut7, tut8, tut9, tut10, tut11, tut12, tut13, tut14, tut15, tut16, tut17, tut18, tut19, tut20, tut21]; // tutorial series script.
   tutorials[tutCt]();
 };
 
@@ -1671,6 +1680,7 @@ function tut11() {
 }
 
 function tut12() {
+  playSelectSfx();
   sidebar.style.display = "flex";
   tutorialArrow.innerHTML = "<-";
   tutorialArrow.style.left = "46px";
@@ -1684,11 +1694,125 @@ function tut12() {
   tutorialH1.innerHTML = `Battles, This is how you get new food and items for me!`;
   tutorialSidebar.style.display = "block";
   battleBtn.style.backgroundImage = "url(sprite/sprite_battle_i.png)";
+  battleClickBtn.style.display = "none";
   setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
 };
 
 function tut13() {
+  playSelectSfx();
   battleBox.style.visibility = "";
   tutorialNxtBtn.style.top = "132px";
   tutorialNxtBtn.style.left = "193px";
-}
+  tutorialArrow.style.top = "28px";
+  tutorialArrow.style.left = "80px";
+  tutorialArrow.style.transform = "rotate(270deg)";
+  tutorialH1.innerHTML = "This is me, if my HP hits 0 I will die.";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+};
+
+function tut14() {
+  playSelectSfx();
+  tutorialArrow.style.top = "36px";
+  tutorialArrow.style.left = "128px";
+  tutorialArrow.style.transform = "rotate(180deg)";
+  tutorialH1.innerHTML = "This is the enemy, if their HP hits 0 they die!";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+};
+
+function tut15() {
+  playSelectSfx();
+  battleClickBtn.style.display = "block";
+  tutorialArrow.style.top = "94px";
+  tutorialArrow.style.left = "137px";
+  tutorialArrow.style.transform = "rotate(270deg)";
+  tutorialH1.innerHTML = "This is the attack btn, click it to deal damage to the enemy!";
+  tutorialSidebar.style.width = "180px";
+  battleEnemyName.style.color = "#100c00";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+};
+
+function tut16() {
+  playSelectSfx();
+  battleEnemyName.style.color = "#ffcc00";
+  tutorialArrow.style.top = "76px";
+  tutorialArrow.style.left = "138px";
+  tutorialArrow.style.transform = "rotate(180deg)";
+  tutorialH1.innerHTML = "Each time you kill an enemy, something will drop!";
+  battleEnemyHP.innerHTML = "HP: 0"
+  battleEnemyName.innerHTML = "D E A D"
+  battleEnemy.style.display = "none";
+  battleClickBtn.style.display = "none";
+  playDeathSfx();
+  setTimeout(() => {
+    popupItem("Sweets", 1, false);
+    setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  }, 2500)
+};
+
+function tut17() {
+  playSelectSfx();
+  tutorialArrow.style.display = "none";
+  tutorialH1.innerHTML = "Some things are rarer than others..";
+  battleClickBtn.style.display = "none";
+  setTimeout(() => {
+    popupItem("?", 1, true);
+    setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  }, 1500);
+};
+
+function tut18() {
+  playSelectSfx();
+  battleBox.style.visibility = "hidden";
+  battleBtn.style.backgroundImage = "sprite/sprite_battle.png";
+  sidebar.style.display = "none";
+  tutorialSidebar.style.display = "none";
+  tutorialNxtBtn.style.top = "92px";
+  tutorialNxtBtn.style.left = "36px";
+  tutorialH1.style.fontSize = "14px";
+  tutorialH1.style.left = "22px";
+  tutorialH1.style.top = "142px";
+  tutorialH1.style.width = "220px";
+  tutorialH1.innerHTML = "That seems to be everything!";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500);
+};
+
+function tut19() {
+  playSelectSfx();
+  tutorialH1.innerHTML = "I hope you enjoy this adventure with me :D";
+  bFace.src = "faces/default_happy_2_blink_1.png";
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500);
+};
+
+function tut20() {
+  playSelectSfx();
+  stopTutorialBackground();
+  bFace.src = "faces/tutorial_1.png";
+  tutorialH1.innerHTML = `Don't let me die ${username}.`;
+  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 4500);
+};
+
+function tut21() {
+  playSelectSfx();
+  // End tutorial and initialize main game.
+  tutorialCont.style.display = "none";
+  setTimeout(() =>{
+    bPal.style.display = "none";
+    setTimeout(() =>{
+      sidebar.style.visibility = "visible";
+      sidebar.style.display = "flex";
+      playSelectSfx();
+      setTimeout(() =>{
+        bFace.src = "faces/default_idle.png";
+        bPal.style.display = "block";
+        battleClickBtn.style.display = "block";
+        playSelectSfx();
+        window.electron.send("tutorialEnded", true);
+      }, 500);
+    });
+  }, 2500)
+};
+
+window.electron.receive("wipeTutorial", () =>{
+  tutorialCont.style.display = "none";
+  sidebar.style.display = "flex";
+});

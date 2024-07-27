@@ -131,7 +131,9 @@ const createWindow = () => {
     win.webContents.send("move-mode", moveModeEnabled);
     win.webContents.send("get-base-dir", __dirname);
     checkAndInitializeClientData().then(res => {
-      if (!res.firstRun) {
+      console.log("RES", res, res.firstRun)
+      if (res.firstRun == false) {
+        win.webContents.send("wipeTutorial")
         startGameLoop();
       } else {
         win.webContents.send("startTutorial", username);
@@ -498,7 +500,6 @@ function startGameLoop() {
   win.webContents.send("setItems", items);
   nextEnergyCost = getRandomValue(10, 25);
   // TODO: Add in conditional that puts a splash infront of the battleebox when the user has just launched the program and preevents battle box from starting until button inside splash is clicked.
-  // TODO: Add in first time startup intro screen with clickable buttons to advance through tutorial. (like a picture ewith arrrows and thee arrows movee depending on the stage of the tutorial. simple shit)
   syncEnemy();
   trackPlayerProgress(timeSpawned);
   if (enemy.health == 0) {
@@ -1581,6 +1582,13 @@ function disableTracking() {
     console.log("Tracking has been disabled.");
   }
 }
+
+ipcMain.on("tutorialEnded", () =>{
+  startGameLoop();
+  console.log("Tutorial ended, starting game loop.");
+  firstRun = false;
+  saveClientData();
+});
 
 // ------------------------
 //    Auto-updater Events

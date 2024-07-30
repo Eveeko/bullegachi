@@ -94,7 +94,7 @@ const createWindow = () => {
   win.webContents.openDevTools({ mode: "detach" });
 
   // Create a tray icon
-  const iconPath = path.join(__dirname, "icon.png"); // Replace 'icon.png' with your actual icon file
+  const iconPath = path.join(__dirname, "icon_s.png"); // Replace 'icon.png' with your actual icon file
   tray = new Tray(iconPath);
 
   // Create a context menu for the tray icon

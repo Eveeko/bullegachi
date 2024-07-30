@@ -1,17 +1,20 @@
 {
   "name": "bullegachi",
   "version": "1.0.0",
-  "description": "A companion app for BulletPal",
+  "description": "A companion app for the BulletPal",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "author": "Eveeko",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "electron": "^29.3.1",
-    "electron-reload": "^2.0.0-alpha.1"
+    "electron-builder": "^24.13.3"
   },
   "dependencies": {
     "electron-log": "^5.1.5",
@@ -25,7 +28,40 @@
     "url": "https://github.com/Eveeko/bullegachi"
   },
   "build": {
-    "latest": [
+    "productName": "Bullegachi",
+    "appId": "com.wckdstudios.electron.bullegachi",
+    "directories": {
+      "buildResources": "resources",
+      "output": "dist"
+    },
+    "files": [
+      "nullVid.mp4",
+      "nullEvent.mp4",
+      "elipse.svg",
+      "grayscale.svg",
+      "icon.png",
+      "line-filter.svg",
+      "sfx/*",
+      "sprite/*",
+      "faces/*",
+      "index.css",
+      "index.html",
+      "index.js",
+      "main.js",
+      "preload.js",
+      "VT220.ttf"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "publish": [
       {
         "provider": "github",
         "owner": "Eveeko",

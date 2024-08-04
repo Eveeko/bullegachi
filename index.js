@@ -1841,4 +1841,10 @@ function tut21() {
 window.electron.receive("wipeTutorial", () =>{
   tutorialCont.style.display = "none";
   sidebar.style.display = "flex";
+  battleEnemy.display = "block";
 });
+
+// ---------------------
+// Bullenomicon Skeleton
+// ----------0.0--------
+

@@ -80,7 +80,7 @@ const createWindow = () => {
   // Set the position of the window
   win.setPosition(x, y);
 
-  win.loadFile("index.html");
+  win.loadFile(path.join(__dirname, 'index.html'));
 
   // Open DevTools in a separate window
   const devToolsWindow = new BrowserWindow({
@@ -88,13 +88,15 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
+      webSecurity: false, // This will allow loading local resources but is not recommended for production
+      allowRunningInsecureContent: true
     },
   });
   win.webContents.setDevToolsWebContents(devToolsWindow.webContents);
   win.webContents.openDevTools({ mode: "detach" });
 
   // Create a tray icon
-  const iconPath = path.join(__dirname, "icon_s.png"); // Replace 'icon.png' with your actual icon file
+  const iconPath = path.join(__dirname, "icon.ico");
   tray = new Tray(iconPath);
 
   // Create a context menu for the tray icon
@@ -1673,6 +1675,10 @@ ipcMain.on("battleBoxStarted", () => {
 //    Auto-updater Events
 // ------------------------
 
+ipcMain.on('updateConfirmed', () =>{
+  autoUpdater.downloadUpdate();
+});
+
 autoUpdater.on("update-available", (info) => {
   log.info("Update available:", info);
   mainWindow.webContents.send("update-available", info);
@@ -1681,9 +1687,9 @@ autoUpdater.on("update-available", (info) => {
 autoUpdater.on("update-downloaded", (info) => {
   log.info("Update downloaded:", info);
   mainWindow.webContents.send("update-downloaded", info);
-
-  // Optionally prompt the user to install the update
-  autoUpdater.quitAndInstall();
+  setTimeout(() =>{
+    autoUpdater.quitAndInstall();
+  }, 4500)
 });
 
 autoUpdater.on("error", (err) => {

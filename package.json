@@ -8,7 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
   },
   "author": "Eveeko",
   "license": "GPL-3.0-or-later",
@@ -29,17 +31,18 @@
   },
   "build": {
     "productName": "Bullegachi",
-    "appId": "com.wckdstudios.electron.bullegachi",
+    "appId": "com.wckdstudios.bullegachi",
     "directories": {
       "buildResources": "resources",
       "output": "dist"
     },
     "files": [
       "nullVid.mp4",
-      "nullEvent.mp4",
+      "nullEvent.mp3",
       "elipse.svg",
       "grayscale.svg",
-      "icon.png",
+      "icon.ico",
+      "icon_uninstall.ico",
       "line-filter.svg",
       "sfx/*",
       "sprite/*",
@@ -53,13 +56,14 @@
     ],
     "win": {
       "target": [
-        "nsis",
-        "msi"
+        "nsis"
       ]
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "oneClick": true,
+      "runAfterFinish": true,
+      "createStartMenuShortcut": true,
+      "uninstallerIcon": "icon_uninstall.ico"
     },
     "publish": [
       {

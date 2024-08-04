@@ -68,7 +68,8 @@
       {
         "provider": "github",
         "owner": "Eveeko",
-        "repo": "bullegachi"
+        "repo": "bullegachi",
+        "token": "${GH_TOKEN}"
       }
     ]
   }

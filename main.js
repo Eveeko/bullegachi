@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, screen, ipcMain, Notification } = require("electron");
+const { app, BrowserWindow, Tray, Menu, screen, ipcMain, Notification, shell } = require("electron");
 const path = require("node:path");
 const fs = require("fs");
 const regedit = require("regedit");
@@ -47,11 +47,16 @@ var autoRun = true;
 const appVersion = app.getVersion();
 const userDataPath = app.getPath("userData");
 var username;
+const gotTheLock = app.requestSingleInstanceLock()
 
 getUserName((usrname) => {
   console.log(`User's name: ${usrname}`);
   username = usrname;
 });
+
+if (!gotTheLock) {
+  app.quit()
+}; // If a instance is already running of the program, kill the current program.
 
 // modify your existing createWindow() function
 const createWindow = () => {
@@ -1671,9 +1676,17 @@ ipcMain.on("battleBoxStarted", () => {
   };
 })
 
+ipcMain.on('open-external', (event, url) => {
+  shell.openExternal(url);
+});
+
 // ------------------------
 //    Auto-updater Events
 // ------------------------
+
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion();
+});
 
 ipcMain.on('updateConfirmed', () =>{
   autoUpdater.downloadUpdate();
@@ -1681,20 +1694,24 @@ ipcMain.on('updateConfirmed', () =>{
 
 autoUpdater.on("update-available", (info) => {
   log.info("Update available:", info);
-  mainWindow.webContents.send("update-available", info);
+  win.webContents.send("update-available", info);
 });
 
 autoUpdater.on("update-downloaded", (info) => {
   log.info("Update downloaded:", info);
-  mainWindow.webContents.send("update-downloaded", info);
+  win.webContents.send("update-downloaded", info);
   setTimeout(() =>{
     autoUpdater.quitAndInstall();
   }, 4500)
 });
 
+autoUpdater.on("download-progress", (info) =>{
+  win.webContents.send("updateProgress", info);
+})
+
 autoUpdater.on("error", (err) => {
   log.error("Error in auto-updater:", err);
-  mainWindow.webContents.send("update-error", err);
+  win.webContents.send("update-error", err);
 });
 
 // -------------------------------------------

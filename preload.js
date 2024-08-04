@@ -5,15 +5,16 @@ contextBridge.exposeInMainWorld(
   'electron', {
     send: (channel, data) => {
       // Whitelist channels
-      let validChannels = ['move-mode', 'drag-window', 'get-base-dir', 'consume_food', 'alivePal', 'killPal', 'battle-click', 'itemDropped', 'advanceEnemy', 'startTTK', 'startSacrifice', 'endSacrifice', 'consume_item', 'tutorialEnded', 'battleBoxStarted', 'updateConfirmed'];
+      let validChannels = ['move-mode', 'drag-window', 'get-base-dir', 'consume_food', 'alivePal', 'killPal', 'battle-click', 'itemDropped', 'advanceEnemy', 'startTTK', 'startSacrifice', 'endSacrifice', 'consume_item', 'tutorialEnded', 'battleBoxStarted', 'updateConfirmed', 'updateDeclined'];
       if (validChannels.includes(channel)) {
         ipcRenderer.send(channel, data);
       }
     },
     receive: (channel, func) => {
       ipcRenderer.on(channel, (event, ...args) => func(...args));
-    } 
-    // Additional methods as needed
+    },
+    openExternal: (url) => ipcRenderer.send('open-external', url),
+    getAppVersion: () => ipcRenderer.invoke('get-app-version')
   }
 );
 

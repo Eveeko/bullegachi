@@ -83,6 +83,12 @@ const tutorialSidebar = document.getElementById("tutorialSidebar");
 const tutorialBackgroundSfx = document.getElementById("tutorialBackgroundSfx");
 const battleBoxSplashCont = document.getElementById("battleBoxSplashCont");
 const battleBoxSplashBtn = document.getElementById("battleBoxSplashBtn");
+const updateNotes = document.getElementById("updateNotes");
+const updateBtn = document.getElementById("updateBtn");
+const updateBtnSkip = document.getElementById("updateBtnSkip");
+const updateCont = document.getElementById("updateCont");
+const updateLoading = document.getElementById("updateLoading");
+const updateVer = document.getElementById("updateH1_1");
 
 var moveMode = false;
 var isDragging = false;
@@ -950,17 +956,18 @@ battleBoxSplashBtn.addEventListener("mouseleave", () => {
 });
 battleBoxSplashBtn.addEventListener("mousedown", () => {
   battleBoxSplashBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-  if(!battleSplashClick){
-  battleBoxSplashClick = true;
-  setTimeout(() => {
-    battleBoxSplashBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
-    window.electron.send("battleBoxStarted");
-    battleBoxSplashClick = false;
-    battleBoxSplashCont.style.display = "none";
-  }, 150);}
+  if (!battleSplashClick) {
+    battleBoxSplashClick = true;
+    setTimeout(() => {
+      battleBoxSplashBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      window.electron.send("battleBoxStarted");
+      battleBoxSplashClick = false;
+      battleBoxSplashCont.style.display = "none";
+    }, 150);
+  }
 });
 
-window.electron.receive("initBattlebox", () =>{
+window.electron.receive("initBattlebox", () => {
   // Adds a splash infront of battlebox to allow the user to start the first battle(instead of it auto starting).
   battleBoxSplashCont.style.display = "block";
 });
@@ -1569,15 +1576,16 @@ tutorialNxtBtn.addEventListener("mouseleave", () => {
 });
 tutorialNxtBtn.addEventListener("mousedown", () => {
   tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-  if(!tutClick){
-  tutClick = true;
-  setTimeout(() => {
-    tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
-    tutCt++;
-    tutAdvance();
-    tutorialNxtBtn.style.display = "none";
-    tutClick = false;
-  }, 150);}
+  if (!tutClick) {
+    tutClick = true;
+    setTimeout(() => {
+      tutorialNxtBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      tutCt++;
+      tutAdvance();
+      tutorialNxtBtn.style.display = "none";
+      tutClick = false;
+    }, 150);
+  }
 });
 
 function playTutorialBackground() {
@@ -1821,13 +1829,13 @@ function tut21() {
   playSelectSfx();
   // End tutorial and initialize main game.
   tutorialCont.style.display = "none";
-  setTimeout(() =>{
+  setTimeout(() => {
     bPal.style.display = "none";
-    setTimeout(() =>{
+    setTimeout(() => {
       sidebar.style.visibility = "visible";
       sidebar.style.display = "flex";
       playSelectSfx();
-      setTimeout(() =>{
+      setTimeout(() => {
         bFace.src = "faces/default_idle.png";
         bPal.style.display = "block";
         battleClickBtn.style.display = "block";
@@ -1838,10 +1846,70 @@ function tut21() {
   }, 2500)
 };
 
-window.electron.receive("wipeTutorial", () =>{
+window.electron.receive("wipeTutorial", () => {
   tutorialCont.style.display = "none";
   sidebar.style.display = "flex";
   battleEnemy.display = "block";
+});
+
+window.electron.receive("update-available", (info)=>{
+  playSelectSfx();
+  window.electron.getAppVersion().then(version => {
+    updateVer.innerHTML = `<span style="color: #b28e00"><del>V${version}</del></span> -> V${info.version}`;
+    updateCont.style.display = "block";
+  }).catch(error => {
+    console.error('Error fetching app version:', error);
+  });
+});
+
+updateNotes.addEventListener('mousedown', () => {
+  window.electron.openExternal("https://github.com/Eveeko/bullegachi/releases");
+});
+
+updateBtn.addEventListener('mouseover', () => {
+  playSelectSfx();
+  updateBtn.style.backgroundImage = `url("sprite/sprite_update_btn_i.png")`;
+})
+updateBtn.addEventListener('mouseleave', () => {
+  updateBtn.style.backgroundImage = `url("sprite/sprite_update_btn.png")`;
+})
+updateBtn.addEventListener('mousedown', () =>{
+  window.electron.send("updateConfirmed");
+  updateBtn.style.display = "none";
+  updateBtnSkip.style.display = "none";
+  updateLoading.style.display = "block";
+})
+
+updateBtnSkip.addEventListener('mouseover', () => {
+  playSelectSfx();
+  updateBtnSkip.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+})
+updateBtnSkip.addEventListener('mouseleave', () => {
+  updateBtnSkip.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+})
+updateBtnSkip.addEventListener('mousedown', () =>{
+  window.electron.send("updateDeclined");
+  updateBtn.style.display = "none";
+  updateBtnSkip.style.display = "none";
+  updateCont.style.display = "none";
+})
+
+window.electron.receive("updateProgress", (info)=>{
+  if(info.percent < 14){
+    updateLoading.innerHTML = "█";
+  }else if (info.percent < 28){
+    updateLoading.innerHTML = "█ █";
+  }else if (info.percent < 42){
+    updateLoading.innerHTML = "█ █ █";
+  } else if (info.percent < 56){
+    updateLoading.innerHTML = "█ █ █ █";
+  } else if (info.percent < 70) {
+    updateLoading.innerHTML = "█ █ █ █ █";
+  } else if (info.percent < 84) {
+    updateLoading.innerHTML = "█ █ █ █ █ █";
+  } else {
+    updateLoading.innerHTML = "█ █ █ █ █ █ █";
+  }
 });
 
 // ---------------------

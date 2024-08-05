@@ -87,18 +87,18 @@ const createWindow = () => {
 
   win.loadFile(path.join(__dirname, 'index.html'));
 
-  // Open DevTools in a separate window
-  const devToolsWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true,
-      webSecurity: false, // This will allow loading local resources but is not recommended for production
-      allowRunningInsecureContent: true
-    },
-  });
-  win.webContents.setDevToolsWebContents(devToolsWindow.webContents);
-  win.webContents.openDevTools({ mode: "detach" });
+  // // Open DevTools in a separate window
+  // const devToolsWindow = new BrowserWindow({
+  //   width: 800,
+  //   height: 600,
+  //   webPreferences: {
+  //     nodeIntegration: true,
+  //     webSecurity: false, // This will allow loading local resources but is not recommended for production
+  //     allowRunningInsecureContent: true
+  //   },
+  // });
+  // win.webContents.setDevToolsWebContents(devToolsWindow.webContents);
+  // win.webContents.openDevTools({ mode: "detach" });
 
   // Create a tray icon
   const iconPath = path.join(__dirname, "icon.ico");

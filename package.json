@@ -10,7 +10,8 @@
     "dist": "electron-builder",
     "postinstall": "electron-builder install-app-deps",
     "app:dir": "electron-builder --dir",
-    "app:dist": "electron-builder"
+    "app:dist": "electron-builder",
+    "release": "electron-builder"
   },
   "author": "Eveeko",
   "license": "GPL-3.0-or-later",
@@ -68,8 +69,7 @@
       {
         "provider": "github",
         "owner": "Eveeko",
-        "repo": "bullegachi",
-        "token": "${GH_TOKEN}"
+        "repo": "bullegachi"
       }
     ]
   }

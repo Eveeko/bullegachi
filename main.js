@@ -28,8 +28,7 @@ function getUserName(callback) {
     (error, stdout, stderr) => {
       if (error || stderr) {
         console.warn(
-          `Failed to get full name, falling back to basic username: ${
-            error || stderr
+          `Failed to get full name, falling back to basic username: ${error || stderr
           }`
         );
         const userInfo = os.userInfo();
@@ -254,7 +253,7 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {app.quit(); removePal();}
+  if (process.platform !== "darwin") { app.quit(); removePal(); }
 });
 
 // -----------------------
@@ -484,7 +483,7 @@ function setRawFace(name) {
  * Displays a custom image through a provided byte array ONLY if a pal is connected, otherwise does nothing. `resolution= (128x64px)`
  * @param {Array} imageArr A byte array of the image. 0 = off, 1 = on.
  */
-function customFace(imageArr) {}
+function customFace(imageArr) { }
 function setFaceByHealth() {
   if (palHungry) {
     switch (health) {
@@ -1239,6 +1238,12 @@ function connectPal() {
         );
         req.on("error", (e) => {
           console.log("err", e);
+          palConnected = false;
+          palConnecting = false;
+          saveClientData();
+          syncTrayMenu();
+          console.log("err", e);
+          new Notification({ title: "Bullegachi", body: "Unable to connect to the BulletPal successfully, Try reconnecting or unplugging and plugging back in the Pal." }).show()
         });
         req.end();
         // TODO: Add in error handling for the pal not going into dev mode.
@@ -1251,7 +1256,7 @@ function connectPal() {
  * Removes the connected Pal from the software. (deletes the remembered IP and resets the auto-reconnect bool)
  */
 function removePal(ind) {
-  if(ind){
+  if (ind) {
     var req = http.request(
       `http://${palIP}/setdev?mode=default`,
       { method: "POST" },

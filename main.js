@@ -1,38 +1,94 @@
-const { app, BrowserWindow, Tray, Menu, screen, ipcMain, Notification, shell } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  Tray,
+  Menu,
+  screen,
+  ipcMain,
+  Notification,
+  shell,
+} = require("electron");
 const path = require("node:path");
 const fs = require("fs");
 const regedit = require("regedit");
 const { autoUpdater } = require("electron-updater");
 const log = require("electron-log");
 const crypto = require("crypto");
-const ping = require('ping');
-const http = require('http');
-const os = require('os');
-const { exec } = require('child_process');
+const http = require("http");
+const os = require("os");
+const { exec } = require("child_process");
 
 // Configure logging
 log.transports.file.level = "info";
 autoUpdater.logger = log;
 
 function getUserName(callback) {
-  exec('wmic useraccount where name="%username%" get fullname', (error, stdout, stderr) => {
-    if (error || stderr) {
-      console.warn(`Failed to get full name, falling back to basic username: ${error || stderr}`);
-      const userInfo = os.userInfo();
-      callback(userInfo.username);
-    } else {
-      const lines = stdout.split('\n');
-      const fullName = lines.length > 1 ? lines[1].trim() : null;
-      if (fullName) {
-        const firstName = fullName.split(' ')[0];
-        callback(firstName);
-      } else {
+  exec(
+    'wmic useraccount where name="%username%" get fullname',
+    (error, stdout, stderr) => {
+      if (error || stderr) {
+        console.warn(
+          `Failed to get full name, falling back to basic username: ${
+            error || stderr
+          }`
+        );
         const userInfo = os.userInfo();
         callback(userInfo.username);
+      } else {
+        const lines = stdout.split("\n");
+        const fullName = lines.length > 1 ? lines[1].trim() : null;
+        if (fullName) {
+          const firstName = fullName.split(" ")[0];
+          callback(firstName);
+        } else {
+          const userInfo = os.userInfo();
+          callback(userInfo.username);
+        }
       }
     }
+  );
+} // gets the current windows user account name.
+
+function getDefaultGateway(callback) {
+  if (typeof callback !== "function") {
+    throw new Error("Callback must be a function");
+  }
+
+  const platform = process.platform;
+
+  let command;
+  if (platform === "win32") {
+    command = "route print";
+  } else if (platform === "linux" || platform === "darwin") {
+    command = "ip route | grep default";
+  } else {
+    return callback(new Error("Unsupported platform"));
+  }
+
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      return callback(error);
+    }
+
+    // Log raw output for debugging
+    console.log("Raw output:", stdout);
+    console.log("Raw error output:", stderr);
+
+    let gateway;
+    if (platform === "win32") {
+      // Improved regex to correctly capture the default gateway IP
+      const match = stdout.match(
+        /0\.0\.0\.0\s+0\.0\.0\.0\s+(\d+\.\d+\.\d+\.\d+)/
+      );
+      gateway = match ? match[1] : null;
+    } else {
+      const match = stdout.match(/default via (\d+\.\d+\.\d+\.\d+)/);
+      gateway = match ? match[1] : null;
+    }
+
+    callback(null, gateway);
   });
-}; // gets the current windows user account name.
+}
 
 // Initialize electron-reload with the directory to watch for changes
 //electronReload(__dirname);
@@ -47,7 +103,7 @@ var autoRun = true;
 const appVersion = app.getVersion();
 const userDataPath = app.getPath("userData");
 var username;
-const gotTheLock = app.requestSingleInstanceLock()
+const gotTheLock = app.requestSingleInstanceLock();
 
 getUserName((usrname) => {
   console.log(`User's name: ${usrname}`);
@@ -55,8 +111,8 @@ getUserName((usrname) => {
 });
 
 if (!gotTheLock) {
-  app.quit()
-}; // If a instance is already running of the program, kill the current program.
+  app.quit();
+} // If a instance is already running of the program, kill the current program.
 
 // modify your existing createWindow() function
 const createWindow = () => {
@@ -85,7 +141,7 @@ const createWindow = () => {
   // Set the position of the window
   win.setPosition(x, y);
 
-  win.loadFile(path.join(__dirname, 'index.html'));
+  win.loadFile(path.join(__dirname, "index.html"));
 
   // // Open DevTools in a separate window
   // const devToolsWindow = new BrowserWindow({
@@ -93,6 +149,7 @@ const createWindow = () => {
   //   height: 600,
   //   webPreferences: {
   //     nodeIntegration: true,
+
   //     webSecurity: false, // This will allow loading local resources but is not recommended for production
   //     allowRunningInsecureContent: true
   //   },
@@ -137,14 +194,14 @@ const createWindow = () => {
   win.webContents.on("did-finish-load", () => {
     win.webContents.send("move-mode", moveModeEnabled);
     win.webContents.send("get-base-dir", __dirname);
-    checkAndInitializeClientData().then(res => {
-      console.log("RES", res, res.firstRun)
+    checkAndInitializeClientData().then((res) => {
+      console.log("RES", res, res.firstRun);
       if (res.firstRun == false) {
-        win.webContents.send("wipeTutorial")
+        win.webContents.send("wipeTutorial");
         startGameLoop();
       } else {
         win.webContents.send("startTutorial", username);
-      };
+      }
     });
   });
 
@@ -197,7 +254,7 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+  if (process.platform !== "darwin") {app.quit(); removePal();}
 });
 
 // -----------------------
@@ -239,36 +296,37 @@ class Enemy {
   generateName(face) {
     const nameParts = {
       1: {
-        prefixes: ['Balor', 'Levith', 'Aeron', 'Pneumo', 'Aerial'],
-        suffixes: ['thrax', 'zor', 'gorn', 'thus', 'dor']
+        prefixes: ["Balor", "Levith", "Aeron", "Pneumo", "Aerial"],
+        suffixes: ["thrax", "zor", "gorn", "thus", "dor"],
       },
       2: {
-        prefixes: ['Fizzar', 'Canis', 'Bubblor', 'Colar', 'Frothar'],
-        suffixes: ['zark', 'gon', 'dar', 'nix', 'zor']
+        prefixes: ["Fizzar", "Canis", "Bubblor", "Colar", "Frothar"],
+        suffixes: ["zark", "gon", "dar", "nix", "zor"],
       },
       3: {
-        prefixes: ['Woden', 'Hingor', 'Knobar', 'Peevor', 'Framix'],
-        suffixes: ['dor', 'lock', 'bane', 'gorn', 'guard']
+        prefixes: ["Woden", "Hingor", "Knobar", "Peevor", "Framix"],
+        suffixes: ["dor", "lock", "bane", "gorn", "guard"],
       },
       4: {
-        prefixes: ['Brikor', 'Wallon', 'Mortar', 'Stonox', 'Blocen'],
-        suffixes: ['guard', 'hold', 'shield', 'fort', 'barr']
+        prefixes: ["Brikor", "Wallon", "Mortar", "Stonox", "Blocen"],
+        suffixes: ["guard", "hold", "shield", "fort", "barr"],
       },
       5: {
-        prefixes: ['Petalus', 'Stemix', 'Budon', 'Leafor', 'Rooton'],
-        suffixes: ['bloom', 'flora', 'thorn', 'petal', 'growth']
-      }
+        prefixes: ["Petalus", "Stemix", "Budon", "Leafor", "Rooton"],
+        suffixes: ["bloom", "flora", "thorn", "petal", "growth"],
+      },
     };
 
     if (!nameParts[face]) {
-      throw new Error('Invalid face. Must be a number between 1 and 5.');
+      throw new Error("Invalid face. Must be a number between 1 and 5.");
     }
 
-    const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const getRandomElement = (arr) =>
+      arr[Math.floor(Math.random() * arr.length)];
 
     const { prefixes, suffixes } = nameParts[face];
 
-    let name = '';
+    let name = "";
     let attempts = 0;
 
     while ((name.length > 10 || name.length === 0) && attempts < 10) {
@@ -325,7 +383,7 @@ var palHungry = false;
  */
 function idleHandler() {
   if (palConnected) {
-    if ((palFaceUpdate + 3000) < Date.now()) {
+    if (palFaceUpdate + 3000 < Date.now()) {
       // its been longer than 3 seconds since the last face update, proceed with idle animation
       let i = getRandomValue(1, 2);
       switch (palFace) {
@@ -343,14 +401,14 @@ function idleHandler() {
             setFace("happy_1_blink");
           } else {
             setFace("happy_1_wink");
-          };
+          }
           break;
         case "happy_2":
           if (i == 1) {
             setFace("happy_2_blink");
           } else {
             setFace("happy_2_wink");
-          };
+          }
           break;
         case "sleep":
           setFace("sleep_zzz");
@@ -358,15 +416,15 @@ function idleHandler() {
         case "sad":
           setFace("sad_tear");
           break;
-      };
+      }
       // Sets the next time to do a idle animation between 5-18 seconds.
-      palIdleInterval = setTimeout(idleHandler, (getRandomValue(5, 18) * 1000));
+      palIdleInterval = setTimeout(idleHandler, getRandomValue(5, 18) * 1000);
     } else {
       // it has not been longer than 3 seconds since the last face update, wait another 3-5 seconds. *could make it the difference but it adds a randomness to it by not*
-      palIdleInterval = setTimeout(idleHandler, (getRandomValue(3, 5) * 1000));
-    };
-  }; // Checks if pal is connected before doing all this bs.
-}; // Handles the idle animation states.
+      palIdleInterval = setTimeout(idleHandler, getRandomValue(3, 5) * 1000);
+    }
+  } // Checks if pal is connected before doing all this bs.
+} // Handles the idle animation states.
 
 /**
  * Sets the face of the bulletpal ONLY if a pal is connected, otherwise does nothing.
@@ -376,20 +434,25 @@ function setFace(name) {
   if (palConnected) {
     palFace = name;
     palFaceUpdate = Date.now();
-    var req = http.request(`http://${palIP}:8080/setemotion?emotion=${name}`, { method: 'POST', }, (res) => {
-      res.on('data', (chunk) => {
-        console.log(`BODY: ${chunk}`);
-      });
-      res.on('end', () => {
-        console.log('No more data in response.');
-        console.log('face set:', name);
-      });
-    });
-    req.on('error', (e) => {
+    var req = http.request(
+      `http://${palIP}:80/setemotion?emotion=${name}`,
+      { method: "POST" },
+      (res) => {
+        res.on("data", (chunk) => {
+          console.log(`BODY: ${chunk}`);
+        });
+        res.on("end", () => {
+          console.log("No more data in response.");
+          console.log("face set:", name);
+        });
+      }
+    );
+    req.on("error", (e) => {
       console.error(`problem with request: ${e.message}`);
     });
-  };
-};
+    req.end();
+  }
+}
 /**
  * Sets the face of the bulletpal ONLY if a pal is connected, otherwise does nothing.
  * @param {string} name id of the raw face image as used internally by the bulletpal (`idle, sleep_zzz_1, etc`)
@@ -398,27 +461,30 @@ function setRawFace(name) {
   if (palConnected) {
     palFace = name;
     palFaceUpdate = Date.now();
-    var req = http.request(`http://${palIP}:8080/setrawemotion?emotion=${name}`, { method: 'POST', }, (res) => {
-      res.on('data', (chunk) => {
-        console.log(`BODY: ${chunk}`);
-      });
-      res.on('end', () => {
-        console.log('No more data in response.');
-        console.log('face set:', name);
-      });
-    });
-    req.on('error', (e) => {
+    var req = http.request(
+      `http://${palIP}:80/setrawemotion?emotion=${name}`,
+      { method: "POST" },
+      (res) => {
+        res.on("data", (chunk) => {
+          console.log(`BODY: ${chunk}`);
+        });
+        res.on("end", () => {
+          console.log("No more data in response.");
+          console.log("face set:", name);
+        });
+      }
+    );
+    req.on("error", (e) => {
       console.error(`problem with request: ${e.message}`);
     });
-  };
-};// image byte array 128x64
+    req.end();
+  }
+} // image byte array 128x64
 /**
  * Displays a custom image through a provided byte array ONLY if a pal is connected, otherwise does nothing. `resolution= (128x64px)`
  * @param {Array} imageArr A byte array of the image. 0 = off, 1 = on.
  */
-function customFace(imageArr) {
-
-};
+function customFace(imageArr) {}
 function setFaceByHealth() {
   if (palHungry) {
     switch (health) {
@@ -434,7 +500,7 @@ function setFaceByHealth() {
       case 3:
         setRawFace("idle_hungry");
         break;
-    };
+    }
   } else {
     switch (health) {
       case 0:
@@ -449,9 +515,9 @@ function setFaceByHealth() {
       case 3:
         setFace("idle");
         break;
-    };
-  };
-};
+    }
+  }
+}
 
 // ----------------------------------
 //           GAMEPLAY LOOP
@@ -519,8 +585,8 @@ function hasSecondPassed() {
 
 /**
  * Returns a random value inbetween 2 numbers.
- * @param {Number} min 
- * @param {Number} max 
+ * @param {Number} min
+ * @param {Number} max
  * @returns {Number} A number inbetween the 2 provided numbers.
  */
 function getRandomValue(min, max) {
@@ -535,6 +601,7 @@ function startGameLoop() {
   // Save variables intermittently or before the program closes
   setInterval(saveVariables, 60000); // Save every minute
   app.on("before-quit", () => {
+    removePal(true)
     saveVariables();
     mainWindow = null;
     if (tray) {
@@ -577,7 +644,7 @@ function startGameLoop() {
     dead = true;
     startDeath();
     disableTracking();
-    console.log('pal loaded in dead.');
+    console.log("pal loaded in dead.");
   }
   // Start food depletion loop
   foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
@@ -585,11 +652,11 @@ function startGameLoop() {
 
 /**
  * Automatically depletes food for the pal and yields energy.
- * 
+ *
  * `LOW` energy ==> Greater food consumption.
- * 
+ *
  * `FULL` energy ==< Less food consumption.
- * 
+ *
  * Energy yield is proportional to food consumed.
  */
 function depleteFood() {
@@ -628,10 +695,12 @@ function depleteFood() {
         getRandomValue(300000, 900000)
       ); // Random time in seconds (5-15 minutes)
     }
-  }
-  else {
+  } else {
     // Continue food depletion loop
-    foodDepletionTimeout = setTimeout(depleteFood, getRandomValue(300000, 900000)); // Random time in seconds (5-15 minutes) }
+    foodDepletionTimeout = setTimeout(
+      depleteFood,
+      getRandomValue(300000, 900000)
+    ); // Random time in seconds (5-15 minutes) }
   }
 
   // Function to check player's health
@@ -660,7 +729,7 @@ function depleteFood() {
         console.log("bullet ran out of health with no heartchain. killing");
         dead = true;
         startDeath();
-      };
+      }
     } else {
       // Subtract 1 from health and restart food depletion loop
       health--;
@@ -684,7 +753,7 @@ function depleteFood() {
  * Used to start the pal death sequence.
  */
 function startDeath() {
-  setFace("dead")
+  setFace("dead");
   food = 0;
   disableTracking();
   win.webContents.send("killPal", true);
@@ -694,7 +763,7 @@ function startDeath() {
   setFace("dead");
 }
 function alivePal() {
-  win.webContents.send("alivePal", true);;
+  win.webContents.send("alivePal", true);
   setFace("idle");
   console.log("Pal has alived");
 }
@@ -710,7 +779,9 @@ function syncStats() {
   });
   if (food < 25) {
     palHungry = true;
-  } else { palHungry = false };
+  } else {
+    palHungry = false;
+  }
   setFaceByHealth();
 }
 /**
@@ -794,7 +865,7 @@ const runKey = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run";
  * @returns JSON object of the client data file.
  */
 const checkAndInitializeClientData = () => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     let clientData = { firstRun: false, autoRun: true, palConnected: false };
 
     // Check if the file exists
@@ -807,7 +878,7 @@ const checkAndInitializeClientData = () => {
       palConnected = clientData.palConnected;
       if (palConnected) {
         connectPal();
-      };
+      }
       syncTrayMenu();
       resolve(clientData);
     } else {
@@ -947,14 +1018,14 @@ function loadVariables() {
       heartChained = savedData.heartChained;
       if (bullettime == true) {
         console.log("bullettime was previously activated, resuming.");
-        let bteMs = (bullettimeEnd - Date.now());
+        let bteMs = bullettimeEnd - Date.now();
         win.webContents.send("startBulletTime", bteMs);
         syncStats();
         syncItems();
         setTimeout(() => {
           win.webContents.send("stopBulletTime");
-        }, bteMs) // Make this function wait until the end time of the effect before triggering.
-      };
+        }, bteMs); // Make this function wait until the end time of the effect before triggering.
+      }
       if (heartChained == true) {
         win.webContents.send("activate_heartchain");
       }
@@ -962,7 +1033,7 @@ function loadVariables() {
       console.error("Error loading game data:", err);
     }
   } else {
-    console.log('no crypto key found. resetting data...');
+    console.log("no crypto key found. resetting data...");
     ensureDataFileExists(true);
     syncStats();
     syncItems();
@@ -971,7 +1042,7 @@ function loadVariables() {
     syncLevel();
     genChk();
   }
-};
+}
 
 /**
  * Saves the game state variables to the gameData.json file.
@@ -996,7 +1067,7 @@ function saveVariables() {
     enemy: eSer,
     bullettime,
     bullettimeDateObj,
-    heartChained
+    heartChained,
   };
   try {
     fs.writeFileSync(filePath, JSON.stringify(gameData));
@@ -1019,28 +1090,21 @@ var palDevInterval = null; // Interval storage used to clear dev mode heartbeat 
  * Starts the discovery phase to connect to a local Pal (same WiFi).
  */
 
-
 function tickHeartbeat(ip) {
-  const options = {
-    hostname: ip,
-    port: 8080,
-    path: '/heartbeat.php',
-    method: 'GET'
-  };
-
   const interval = setInterval(() => {
-    const url = `http://${ip}:8080/heartbeat`;
+    const url = `http://${ip}:80/heartbeat`;
 
     const req = http.get(url, (res) => {
       if (res.statusCode === 200) {
-        console.log('heartbeat thumped')
+        console.log("heartbeat thumped");
       } else {
-        console.log('error heartbeating', res);
-      };
+        console.log("error heartbeating", res);
+      }
     });
-    req.on('error', (e) => {
-      console.log('error heartbeating2', e); s
+    req.on("error", (e) => {
+      console.log("error heartbeating2", e);
     });
+    req.end();
   }, 4500);
 
   return interval;
@@ -1050,121 +1114,187 @@ function connectPal() {
   palConnecting = true;
   syncTrayMenu();
   // Define your IP range and scan
-  const baseIp = '192.168.1'; // Networks base IP
-  const start = 1; // Starting IP in the range
-  const end = 254; // Ending IP in the range
-  // Function to check if an endpoint responds with a 200 status code
-  function checkEndpoint(ip, callback) {
-    const url = `http://${ip}:8080/isPal`;
+  const baseIp = "192.168.1"; // Networks base IP
+  const start = 254; // Starting IP in the range
+  const end = 2; // Ending IP in the range
 
-    const req = http.get(url, (res) => {
-      if (res.statusCode === 200) {
-        callback(null, ip);
+  // Create an AbortController instance
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
+  // Call the function and handle the result
+  getDefaultGateway((err, gateway) => {
+    if (err) {
+      console.error("Error:", err);
+    } else {
+      console.log("Default Gateway IP:", gateway);
+    }
+    // Function to check if an endpoint responds with a 200 status code
+    function checkEndpoint(ip, callback) {
+      const url = `http://${ip}:80/isPal`;
+
+      const req = http.get(url, { signal }, (res) => {
+        let data = "";
+
+        // Collect response data
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+
+        // Check when response is fully received
+        res.on("end", () => {
+          if (res.statusCode === 200) {
+            console.log(`200 ip found with isPal, ${ip}`);
+            if (data.trim()) {
+              // Check if the response has content
+              console.log(`Device found at ${ip} : Supports /isPal. Content: `);
+              callback(null, ip);
+            } else {
+              console.log(
+                `Device found at ${ip} : /isPal endpoint returned empty content.`
+              );
+              callback(new Error(`Empty content from /isPal at ${ip}`));
+            }
+          } else {
+            console.log(
+              `Device found at ${ip} : Does not support /isPal (Status Code: ${res.statusCode})`
+            );
+            callback(new Error(`Failed with status code: ${res.statusCode}`));
+          }
+        });
+      });
+
+      req.on("error", (e) => {
+        callback(e);
+      });
+
+      req.end();
+    }
+
+    // Function to scan a range of IPs
+    function scanRange(baseIp, start, end, callback) {
+      let pending = start - end + 1;
+      let results = [];
+      var found = false;
+
+      for (let i = end; i <= start; i++) {
+        const ip = `${baseIp}.${256 - i}`;
+        // Check the /isPal endpoint
+        if (ip != gateway) {
+          if (!found) {
+            checkEndpoint(ip, (err, foundIp) => {
+              if (err) {
+                console.error(`Error checking ${ip}:`, err.message);
+              } else {
+                console.log(`Device with /isPal found at ${foundIp}`);
+                found = true;
+                abortController.abort(); // Abort all remaining requests
+                return callback(foundIp);
+              }
+            });
+          }
+        }
+      }
+    }
+
+    scanRange(baseIp, start, end, (foundIp) => {
+      if (!foundIp) {
+        // BulletPal not found on the network. return a error visual.
+        console.log("Scan complete. BulletPal found?: \x1b[31mFALSE\x1b[0m");
+        palConnecting = false;
+        palConnected = false;
+        palIP = null;
+        saveClientData();
+        syncTrayMenu();
+        new Notification({
+          title: "Bullegachi",
+          body: "Connect to Pal failed to connect. Unable to detect a Pal on your local network. Make sure you and the Pal are on the same network!",
+        }).show();
       } else {
-        callback(new Error(`Failed with status code: ${res.statusCode}`));
+        // BulletPal found on network, proceed with setup.
+        console.log(
+          `Scan complete. BulletPal found?: \x1b[32mTRUE | ${foundIp}\x1b[0m`
+        );
+        palConnected = true;
+        palConnecting = false;
+        palIP = foundIp;
+        saveClientData();
+        syncTrayMenu();
+
+        console.log(
+          `Making a setdev request to: http://${palIP}:80/setdev?mode=dev`
+        );
+        var req = http.request(
+          `http://${palIP}:80/setdev?mode=dev`,
+          { method: "POST" },
+          (res) => {
+            if (res.statusCode === 200) {
+              console.log("\x1b[32mPal connected successfully!\x1b[0m");
+              palDevInterval = tickHeartbeat(palIP);
+            } else {
+              console.log(`Failed with status code: ${res.statusCode}`);
+              palDevInterval = tickHeartbeat(palIP);
+            }
+          }
+        );
+        req.on("error", (e) => {
+          console.log("err", e);
+        });
+        req.end();
+        // TODO: Add in error handling for the pal not going into dev mode.
       }
     });
-
-    req.on('error', (e) => {
-      callback(e);
-    });
-  }
-
-  // Function to scan a range of IPs
-  function scanRange(baseIp, start, end, callback) {
-    let pending = end - start + 1;
-    let results = [];
-    var found = false;
-
-    for (let i = start; i <= end; i++) {
-      const ip = `${baseIp}.${i}`;
-
-      ping.promise.probe(ip).then((res) => {
-        if (res.alive) {
-          console.log(`Device found at ${ip}`);
-          results.push(ip);
-
-          // Check the /isPal endpoint
-          checkEndpoint(ip, (err, foundIp) => {
-            if (err) {
-              //console.error(`Error checking ${ip}:`, err.message);
-            } else {
-              console.log(`Device with /isPal found at ${foundIp}`);
-              found = true;
-              return callback(foundIp);
-            }
-          });
-        }
-
-        if (--pending === 0 && found == false) {
-          return callback(false);
-        }
-      });
-    }
-  }
-
-  scanRange(baseIp, start, end, (foundIp) => {
-    if (!foundIp) {
-      // BulletPal not found on the network. return a error visual.
-      console.log("Scan complete. BulletPal found?: \x1b[31mFALSE\x1b[0m")
-      palConnecting = false;
-      palConnected = false;
-      palIP = null;
-      saveClientData();
-      syncTrayMenu();
-      new Notification({ title: "Bullegachi", body: "Connect to Pal failed to connect. Unable to detect a Pal on your local network. Make sure you and the Pal are on the same network!" }).show()
-    } else {
-      // BulletPal found on network, proceed with setup.
-      console.log(`Scan complete. BulletPal found?: \x1b[32mTRUE | ${foundIp}\x1b[0m`)
-      palConnected = true;
-      palConnecting = false;
-      palIP = foundIp;
-      saveClientData();
-      syncTrayMenu();
-
-      var req = http.get(`http://${palIP}:8080/setdev?mode=dev`, (res) => {
-        if (res.statusCode === 200) {
-          console.log("\x1b[32mPal connected successfully!\x1b[0m");
-          palDevInterval = tickHeartbeat(palIP);
-        } else {
-          console.log(`Failed with status code: ${res.statusCode}`);
-          palDevInterval = tickHeartbeat(palIP);
-        }
-      });
-      req.on('error', (e) => {
-        console.log("err", e);
-      });
-      // TODO: Add in error handling for the pal not going into dev mode.
-    }
   });
-};
+}
 
 /**
  * Removes the connected Pal from the software. (deletes the remembered IP and resets the auto-reconnect bool)
  */
-function removePal() {
+function removePal(ind) {
+  if(ind){
+    var req = http.request(
+      `http://${palIP}/setdev?mode=default`,
+      { method: "POST" },
+      (res) => {
+        if (res.statusCode === 200) {
+          console.log("Pal mode set to default.");
+        } else {
+          console.log(`Failed with status code: ${res.statusCode}`);
+        }
+      }
+    );
+    req.on("error", (e) => {
+      console.log("err", e);
+    });
+    req.end();
+  };
   palConnected = false;
   palConnecting = true;
   saveClientData();
   syncTrayMenu();
   clearInterval(palDevInterval);
-  var req = http.get(`http://${palIP}/setdev?mode=default`, (res) => {
-    if (res.statusCode === 200) {
-      console.log("Pal mode set to default.");
-    } else {
-      console.log(`Failed with status code: ${res.statusCode}`);
-    };
-  });
-  req.on('error', (e) => {
+  var req = http.request(
+    `http://${palIP}/setdev?mode=default`,
+    { method: "POST" },
+    (res) => {
+      if (res.statusCode === 200) {
+        console.log("Pal mode set to default.");
+      } else {
+        console.log(`Failed with status code: ${res.statusCode}`);
+      }
+    }
+  );
+  req.on("error", (e) => {
     console.log("err", e);
   });
+  req.end();
   palIP = false;
   console.log("\x1b[31mPal disconnected successfully :(\x1b[0m");
   setTimeout(() => {
     palConnecting = false;
     syncTrayMenu();
   }, 5000); // Give the Pal time to display the disconnect effects or whatever shit fully.
-};
+}
 
 /**
  * Synchronizes the windows tray menu with the current AutoRun state.
@@ -1175,7 +1305,11 @@ function syncTrayMenu() {
   const contextMenu = Menu.buildFromTemplate([
     { label: `Version ${appVersion}      `, enabled: false }, // Version label
     { type: "separator" }, // Separator
-    { label: palConnectLabel, click: palConnected ? removePal : connectPal, enabled: !palConnecting },
+    {
+      label: palConnectLabel,
+      click: palConnected ? removePal : connectPal,
+      enabled: !palConnecting,
+    },
     { label: autoRunLabel, click: autoRun ? removeAutoRun : setAutoRun },
     { label: "      Quit", click: () => app.quit() }, // Quit option
   ]);
@@ -1260,7 +1394,7 @@ function popupFoodStat(int) {
 
 ipcMain.on("consume_item", (event, name) => {
   if (dead == false) {
-    console.log('consuming item.');
+    console.log("consuming item.");
     var x = 0; // Defaults to Medkit
     switch (name) {
       case "medkit":
@@ -1280,7 +1414,7 @@ ipcMain.on("consume_item", (event, name) => {
       case "heartchain":
         x = 5;
         break;
-    };
+    }
     if (items[x].count != 0) {
       p1();
     } else {
@@ -1291,10 +1425,10 @@ ipcMain.on("consume_item", (event, name) => {
       switch (name) {
         case "medkit":
           if (health == 3) {
-            console.log('Unable to consume medkit as health is already full.');
+            console.log("Unable to consume medkit as health is already full.");
             win.webContents.send("alertItem", "Medkit", true);
           } else {
-            console.log('consuming medkit.');
+            console.log("consuming medkit.");
             items[0].count = items[0].count - 1;
             health = 3;
             syncStats();
@@ -1304,17 +1438,19 @@ ipcMain.on("consume_item", (event, name) => {
           break;
         case "bullettime":
           if (bullettime) {
-            console.log('Unable to consume bullettime as bullettime is already active.');
+            console.log(
+              "Unable to consume bullettime as bullettime is already active."
+            );
             win.webContents.send("alertItem", "BulletTime", true);
           } else {
-            console.log('consuming bullettime.');
+            console.log("consuming bullettime.");
             items[1].count = items[1].count - 1;
             bullettime = true; // Turns on bullettime.
             // Generate a random time offset between 30 minutes (1800000 ms) and 2 hours (7200000 ms)
             let rto = Math.random() * (7200000 - 1800000) + 1800000;
             bted = new Date(new Date().getTime() + rto); // bullet time end date object.
             bullettimeEnd = bted.getTime(); // Set the end time for the BulletTime effect.
-            let bteMs = (bullettimeEnd - Date.now());
+            let bteMs = bullettimeEnd - Date.now();
             win.webContents.send("startBulletTime", bteMs);
             syncStats();
             syncItems();
@@ -1344,11 +1480,14 @@ ipcMain.on("consume_item", (event, name) => {
           win.webContents.send("alertItem", "Sword");
           break;
         case "lootbox":
-          console.log('Rolling lootbox.');
+          console.log("Rolling lootbox.");
           var id = getRandomValue(1, 9); // id of the drop (0-2 = food \ 3-8 = items)
           var ct = getRandomValue(1, 5);
           id = id - 1;
-          if (id == undefined) { id = 1; ct = 13 };
+          if (id == undefined) {
+            id = 1;
+            ct = 13;
+          }
           items[4].count = items[4].count - 1;
           win.webContents.send("roll_lootbox", [id, ct]);
           switch (id) {
@@ -1366,16 +1505,18 @@ ipcMain.on("consume_item", (event, name) => {
               items[id - 3].count += ct;
               break;
             default:
-              console.log('error, item id not valid:', id);
+              console.log("error, item id not valid:", id);
               break;
-          };
+          }
           console.log(`lootbox id rolled: ${id} | ct: ${ct}`);
           syncItems();
           syncFoods();
           break;
         case "heartchain":
           if (heartChained) {
-            console.log('Unable to consume heartchain as a heartchain is already active.');
+            console.log(
+              "Unable to consume heartchain as a heartchain is already active."
+            );
             win.webContents.send("alertItem", "Heartchain", true);
           } else {
             // Give the player heartchained.
@@ -1385,16 +1526,16 @@ ipcMain.on("consume_item", (event, name) => {
             win.webContents.send("alertItem", "Heartchain");
             syncStats();
             syncItems();
-          };
+          }
           break;
-      };
-    };
+      }
+    }
     function p2() {
       console.log(`no ${name}'s to consume.`);
-    };
+    }
   } else {
-    console.log('pal already dead.');
-  };
+    console.log("pal already dead.");
+  }
 });
 // ---------------------
 //      COMBAT LOOP
@@ -1497,9 +1638,9 @@ ipcMain.on("startTTK", (event) => {
               dead = true;
               startDeath();
               disableTracking();
-              console.log('pal died in battle.');
+              console.log("pal died in battle.");
             }
-          };
+          }
         }
       }, 1000);
     }
@@ -1544,15 +1685,15 @@ ipcMain.on("startSacrifice", () => {
         { id: 5, name: "Lootbox", discovered: false, count: 0 },
         { id: 6, name: "HeartChain", discovered: false, count: 0 },
       ];
-      console.log('Reset all variables to default values.');
+      console.log("Reset all variables to default values.");
     }, 1500);
   } else {
     log.info("Pal is not dead, unable to sacrifice.");
   }
 });
 
-ipcMain.on('endSacrifice', () => {
-  console.log('Sacrifice ended. resetting and starting all timers/trackers...');
+ipcMain.on("endSacrifice", () => {
+  console.log("Sacrifice ended. resetting and starting all timers/trackers...");
   timeSpawned = new Date();
   trackingIntervalId = null;
   trackPlayerProgress(timeSpawned);
@@ -1658,7 +1799,7 @@ ipcMain.on("tutorialEnded", () => {
 ipcMain.on("battleBoxStarted", () => {
   if (battleBoxOpened == false) {
     battleBoxOpened = true;
-    console.log('battlebox has been started by the user.');
+    console.log("battlebox has been started by the user.");
     if (enemy.health == 0) {
       console.log("enemy loaded dead.");
     } else {
@@ -1673,10 +1814,10 @@ ipcMain.on("battleBoxStarted", () => {
         }
       }, 1000);
     }
-  };
-})
+  }
+});
 
-ipcMain.on('open-external', (event, url) => {
+ipcMain.on("open-external", (event, url) => {
   shell.openExternal(url);
 });
 
@@ -1684,11 +1825,11 @@ ipcMain.on('open-external', (event, url) => {
 //    Auto-updater Events
 // ------------------------
 
-ipcMain.handle('get-app-version', () => {
-  return app.getVersion();
+ipcMain.handle("get-app-version", () => {
+  return app.getVer  sion();
 });
 
-ipcMain.on('updateConfirmed', () =>{
+ipcMain.on("updateConfirmed", () => {
   autoUpdater.downloadUpdate();
 });
 
@@ -1700,14 +1841,14 @@ autoUpdater.on("update-available", (info) => {
 autoUpdater.on("update-downloaded", (info) => {
   log.info("Update downloaded:", info);
   win.webContents.send("update-downloaded", info);
-  setTimeout(() =>{
+  setTimeout(() => {
     autoUpdater.quitAndInstall();
-  }, 4500)
+  }, 4500);
 });
 
-autoUpdater.on("download-progress", (info) =>{
+autoUpdater.on("download-progress", (info) => {
   win.webContents.send("updateProgress", info);
-})
+});
 
 autoUpdater.on("error", (err) => {
   log.error("Error in auto-updater:", err);
@@ -1723,38 +1864,40 @@ autoUpdater.on("error", (err) => {
 
 function genChk() {
   fs.readFile(`${userDataPath}/gameData.json`, (err, data) => {
-    const hash = crypto.createHash('sha256');
+    const hash = crypto.createHash("sha256");
     hash.update(data);
-    const hashedData = hash.digest('hex');
-    fs.writeFile(`${userDataPath}/pal.bgh`, hashedData, (err => {
+    const hashedData = hash.digest("hex");
+    fs.writeFile(`${userDataPath}/pal.bgh`, hashedData, (err) => {
       if (err) {
         console.log(`crypto write error, yep.`, err);
-      };
-    }));
-    return (hashedData);
+      }
+    });
+    return hashedData;
   });
-};
+}
 
 function valChk() {
   fs.readFile(`${userDataPath}/pal.bgh`, (err, data) => {
     if (err) {
-      return (false);
+      return false;
     } else {
-      const bHash = crypto.createHash('sha256');
+      const bHash = crypto.createHash("sha256");
       bHash.update(data);
-      const bHashData = bHash.digest('hex');
+      const bHashData = bHash.digest("hex");
       fs.readFile(`${userDataPath}/gameData.json`, (err, bdata) => {
         if (err) {
           genChk();
         } else {
-          const aHash = crypto.createHash('sha256');
+          const aHash = crypto.createHash("sha256");
           aHash.update(bdata);
-          const aHashData = aHash.digest('hex');
+          const aHashData = aHash.digest("hex");
           if (bHashData == aHashData) {
-            return (true);
-          } else { return (false) };
-        };
+            return true;
+          } else {
+            return false;
+          }
+        }
       });
-    };
+    }
   });
-};
+}

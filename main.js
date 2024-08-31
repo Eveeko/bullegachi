@@ -1830,7 +1830,7 @@ ipcMain.on("open-external", (event, url) => {
 // ------------------------
 
 ipcMain.handle("get-app-version", () => {
-  return app.getVer  sion();
+  return app.getVersion();
 });
 
 ipcMain.on("updateConfirmed", () => {

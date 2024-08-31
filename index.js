@@ -1611,6 +1611,7 @@ window.electron.receive("startTutorial", (name) => {
 function tutAdvance() {
   var tutorials = [tut1, tut2, tut3, tut35, tut4, tut5, tut6, tut7, tut8, tut9, tut10, tut11, tut12, tut13, tut14, tut15, tut16, tut17, tut18, tut19, tut20, tut21]; // tutorial series script.
   tutorials[tutCt]();
+  window.electron.send("tutorialAdvanced", tutCt);
 };
 
 function tut1() {

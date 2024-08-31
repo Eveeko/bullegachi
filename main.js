@@ -1246,7 +1246,6 @@ function connectPal() {
           new Notification({ title: "Bullegachi", body: "Unable to connect to the BulletPal successfully, Try reconnecting or unplugging and plugging back in the Pal." }).show()
         });
         req.end();
-        // TODO: Add in error handling for the pal not going into dev mode.
       }
     });
   });

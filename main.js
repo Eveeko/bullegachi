@@ -110,8 +110,7 @@ function getUserName(callback) {
     (error, stdout, stderr) => {
       if (error || stderr) {
         console.warn(
-          `Failed to get full name, falling back to basic username: ${
-            error || stderr
+          `Failed to get full name, falling back to basic username: ${error || stderr
           }`
         );
         const userInfo = os.userInfo();
@@ -1726,18 +1725,23 @@ ipcMain.on("consume_item", (event, name) => {
 // ---------------------
 
 var timerTimeout = null;
+var lastSetAttackFaceTime = Date.now();
 
 ipcMain.on("battle-click", () => {
   console.log("battle-btn-clicked");
   if (enemy.health > 0) {
     enemy.health = Math.max(0, enemy.health - attack);
     syncEnemy();
-    setFace("angry_shake");
+    var currentTime = Date.now();
+    var elapsedTime = currentTime - lastSetAttackFaceTime;
+    if (elapsedTime > 250) {
+      setFace("angry_shake");
+    };
     if (enemy.health === 0) {
       clearInterval(timerTimeout);
       win.webContents.send("killEnemy", enemy);
-      setFace("angry_symbol");
-    }
+      setTimeout(() => {setFace("angry_symbol");}, 1000);
+    };
     console.log("enemy values updated.");
   } else {
     console.log("enemy is already ded. dk how this happened.");

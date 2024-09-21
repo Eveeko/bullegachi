@@ -1604,6 +1604,7 @@ window.electron.receive("startTutorial", (name) => {
     tutorialH1.style.display = "block";
     tutorialCont.style.display = "block";
     playSelectSfx();
+    window.electron.send('tutorialAdvanced')
     setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 1500)
   }, 500)
 });

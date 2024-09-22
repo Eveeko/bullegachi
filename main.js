@@ -501,6 +501,12 @@ class Enemy {
 // ---------------------------------
 
 var palHungry = false;
+var palX = 0; // default X position
+var palY = 0; // default Y position
+
+ipcMain.on("faceMovedX", (event, X) =>{
+  palX = X;
+});
 
 /**
  * Handles the idle animation state for the pal.
@@ -560,7 +566,7 @@ function setFace(name) {
     palFace = name;
     palFaceUpdate = Date.now();
     var req = http.request(
-      `http://${palIP}:80/setemotion?emotion=${name}`,
+      `http://${palIP}:80/setemotion?emotion=${name}&x=${palX}&y=${palY}`,
       { method: "POST" },
       (res) => {
         res.on("data", (chunk) => {
@@ -587,7 +593,7 @@ function setRawFace(name) {
     palFace = name;
     palFaceUpdate = Date.now();
     var req = http.request(
-      `http://${palIP}:80/setrawemotion?emotion=${name}`,
+      `http://${palIP}:80/setrawemotion?emotion=${name}&x=${palX}&y=${palY}`,
       { method: "POST" },
       (res) => {
         res.on("data", (chunk) => {
@@ -1406,6 +1412,7 @@ function connectPal() {
             if (res.statusCode === 200) {
               console.log("\x1b[32mPal connected successfully!\x1b[0m");
               palDevInterval = tickHeartbeat(palIP);
+              idleHandler();
             } else {
               console.log(`Failed with status code: ${res.statusCode}`);
               palDevInterval = tickHeartbeat(palIP);
@@ -1726,6 +1733,9 @@ ipcMain.on("consume_item", (event, name) => {
 
 var timerTimeout = null;
 var lastSetAttackFaceTime = Date.now();
+
+// ---------------------
+
 
 ipcMain.on("battle-click", () => {
   console.log("battle-btn-clicked");

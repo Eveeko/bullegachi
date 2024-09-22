@@ -116,12 +116,16 @@ function moveFace() {
   // Move the div
   if (left == "24px") {
     bFace.style.left = "18px";
+    window.electron.send("faceMovedX", -12);
   } else if (left == "18px") {
     bFace.style.left = "24px";
+    window.electron.send("faceMovedX", 0);
   } else if (left == "30px") {
     bFace.style.left = "24px";
+    window.electron.send("faceMovedX", 0);
   } else {
     bFace.style.left = "30px";
+    window.electron.send("faceMovedX", 12);
   }
   // Set the next move after a random time between 2 and 9 seconds
   var randomTime = Math.floor(Math.random() * (13000 - 2000) + 2000); // Random time between 2 and 13 seconds in milliseconds

@@ -1,4 +1,14 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-node scripts/version-bump.js
+# Check if there are staged files
+if git diff --cached --quiet; then
+  echo "No changes to commit."
+  exit 0
+fi
+
+# Use the commit message provided by Husky
+COMMIT_MSG="$(cat .git/COMMIT_EDITMSG)"
+
+# Run your version bump script
+node scripts/version-bump.js "$COMMIT_MSG"

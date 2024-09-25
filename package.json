@@ -1,6 +1,6 @@
 {
   "name": "bullegachi",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A companion app for the BulletPal",
   "main": "main.js",
   "scripts": {
@@ -11,13 +11,16 @@
     "postinstall": "electron-builder install-app-deps",
     "app:dir": "electron-builder --dir",
     "app:dist": "electron-builder",
-    "release": "electron-builder"
+    "release": "electron-builder",
+    "prepare": "husky"
   },
   "author": "Eveeko",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "electron": "^29.3.1",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "husky": "^9.1.6",
+    "standard-version": "^9.5.0"
   },
   "dependencies": {
     "electron-log": "^5.1.5",

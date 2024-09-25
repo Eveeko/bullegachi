@@ -1744,8 +1744,11 @@ ipcMain.on("battle-click", () => {
     syncEnemy();
     var currentTime = Date.now();
     var elapsedTime = currentTime - lastSetAttackFaceTime;
-    if (elapsedTime > 250) {
+    console.log(`elapsed: ${elapsedTime}, last: ${lastSetAttackFaceTime}`);
+    if (elapsedTime > 850) {
       setFace("angry_shake");
+      console.log(true);
+      lastSetAttackFaceTime = Date.now();
     };
     if (enemy.health === 0) {
       clearInterval(timerTimeout);

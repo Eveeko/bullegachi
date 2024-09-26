@@ -2062,7 +2062,9 @@ ipcMain.handle("get-app-version", () => {
 });
 
 ipcMain.on("updateConfirmed", () => {
-  autoUpdater.downloadUpdate();
+  setTimeout(() => {
+    autoUpdater.quitAndInstall();
+  }, 500); 
 });
 
 autoUpdater.on("update-available", (info) => {
@@ -2073,9 +2075,9 @@ autoUpdater.on("update-available", (info) => {
 autoUpdater.on("update-downloaded", (info) => {
   log.info("Update downloaded:", info);
   win.webContents.send("update-downloaded", info);
-  setTimeout(() => {
-    autoUpdater.quitAndInstall();
-  }, 4500);
+  // setTimeout(() => {
+  //   autoUpdater.quitAndInstall();
+  // }, 4500);
 });
 
 autoUpdater.on("download-progress", (info) => {

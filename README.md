@@ -1,3 +1,4 @@
+![default_happy_2](https://github.com/user-attachments/assets/964fcff0-cf01-4055-9a4a-0a65f33cb166)
 # Bullegachi
 A Bullet Kin inspired companion for your desk and pc!
 
@@ -18,23 +19,40 @@ This project has taken around 9 months *(mostly due to procrastination and my ir
 |
 2. **Part two** consists of the `software` which is a tamagotchi inspired desktop companion that is directly based off and interacts with the bullegachi made in part one.
 
-Due to the nature of this repository I will be housing `part two` on this page as it seems the most fitting.
-
+Due to the nature of this repository I will be housing `part two` on this page as it seems the most fitting.<br>
 `part one` will be on [my site]() where I go into detail on the design process and my method of assembly.
 
-## The Software.
+## Bullegachi Program.
+Feed, care, and fight! for your very own BulletPal with this desktop companion app designed to pair with your BulletPal figure!
 
-The Bullegachi desktop application is written in (`javascript`, `html` and `css`) and is utilizing the [Electron](https://www.electronjs.org/) framework for the actual application functionality(a window, [tray menu](https://www.electronjs.org/docs/latest/api/tray), etc).
+- **One-click install:** <br>
+  └─ Extracts and installs the application on your device and creates a start menu shortcut for you all at once!
+- **Auto-update out of the box:** <br>
+  └─ Will *automagically* prompt you if a new version is found on startup and if you wish to install or skip.
+ - **Pairing to BulletPal:** <br>
+  └─ Through the use of a extremely violent manipulation of gunpowder! Bullegachi is able to link together with your BulletPal figure itself!
 
-The application can be used as a standalone app where it does not interact with a BulletPal on the network *OR* it can work in parity with a BulletPal connected to the same network.
+### Features of your Bullegachi:
+- **Stomach**, causing hunger and even starvation!
+- **Heart**, you only get 3 of them so don't lose em **x_x**
+- **Energy**, a lack of this can cause severe performance issues!
+- **Level**, your only reason to exist.. it must. go. up.
+> don't let it see you look away.
+
+---
+
+The Bullegachi desktop program is written in a mix of (`javascript`, `html` and `css`) and is utilizing the [Electron](https://www.electronjs.org/) framework for the graphical and windows interface (a window, [tray menu](https://www.electronjs.org/docs/latest/api/tray), notifcations, etc).
+
+The application can be used as a standalone app where it does not interact with a BulletPal on the network *OR* it can work in parity with a BulletPal connected to the same network. <br>
+> Use the **Tray Menu** to connect to the BulletPal on the local network. Bullegachi will automatically attempt to reconnect to a local Pal once you have established connection once prior, if it fails it will disable        the auto-reconnect function until you manually reconnect again.
 
 ## Gameplay
 
-The core gameplay loop is:
-───────────────────┘
-`Battle for Food` - to maintain your virtual Pal's hunger stat.
-`Collect Items` - to power up your Pal in various ways.
-`Keep the Pal Alive` - as long as you can!!
+The core gameplay loop is:<br>
+───────────────────┘<br>
+`Battle for Food` - to maintain your virtual Pal's hunger stat.<br>
+`Collect Items` - to power up your Pal in various ways.<br>
+`Keep the Pal Alive` - as long as you can!!<br>
 ────────────────────
 
 ## Future Content

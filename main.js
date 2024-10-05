@@ -110,7 +110,8 @@ function getUserName(callback) {
     (error, stdout, stderr) => {
       if (error || stderr) {
         console.warn(
-          `Failed to get full name, falling back to basic username: ${error || stderr
+          `Failed to get full name, falling back to basic username: ${
+            error || stderr
           }`
         );
         const userInfo = os.userInfo();
@@ -504,7 +505,7 @@ var palHungry = false;
 var palX = 0; // default X position
 var palY = 0; // default Y position
 
-ipcMain.on("faceMovedX", (event, X) =>{
+ipcMain.on("faceMovedX", (event, X) => {
   palX = X;
 });
 
@@ -783,7 +784,7 @@ function startGameLoop() {
   setInterval(saveVariables, 60000); // Save every minute
   app.on("before-quit", () => {
     removePal(true);
-    saveVariables();
+    //saveVariables();
     mainWindow = null;
     if (tray) {
       tray.destroy();
@@ -1178,51 +1179,61 @@ const removeAutoRun = () => {
  */
 function loadVariables() {
   ensureDataFileExists(); // Ensure directory and file exist
-  if (valChk()) {
-    const filePath = path.join(userDataPath, "gameData.json");
-    try {
-      const data = fs.readFileSync(filePath, "utf-8");
-      const savedData = JSON.parse(data);
-      food = savedData.food;
-      health = savedData.health;
-      energy = savedData.energy;
-      attack = savedData.attack;
-      dead = savedData.dead;
-      timeSpawned = new Date(savedData.timeSpawned);
-      palLevel = savedData.palLevel;
-      palLevelProgress = savedData.palLevelProgress;
-      foods = savedData.foods;
-      items = savedData.items;
-      enemy = new Enemy(savedData.enemy);
-      bullettime = savedData.bullettime;
-      bullettimeDateObj = savedData.bullettimeDateObj;
-      heartChained = savedData.heartChained;
-      if (bullettime == true) {
-        console.log("bullettime was previously activated, resuming.");
-        let bteMs = bullettimeEnd - Date.now();
-        win.webContents.send("startBulletTime", bteMs);
+  valChk().then((ress) => {
+    if (ress) {
+      const filePath = path.join(userDataPath, "gameData.json");
+      try {
+        const data = fs.readFileSync(filePath, "utf-8");
+        const savedData = JSON.parse(data);
+        food = savedData.food;
+        health = savedData.health;
+        energy = savedData.energy;
+        attack = savedData.attack;
+        dead = savedData.dead;
+        timeSpawned = new Date(savedData.timeSpawned);
+        palLevel = savedData.palLevel;
+        palLevelProgress = savedData.palLevelProgress;
+        foods = savedData.foods;
+        items = savedData.items;
+        enemy = new Enemy(savedData.enemy);
+        bullettime = savedData.bullettime;
+        bullettimeDateObj = new Date(savedData.bullettimeDateObj);
+        heartChained = savedData.heartChained;
+        if (bullettime == true) {
+          console.log(
+            "bullettime was previously activated, resuming.",
+            bullettimeDateObj
+          );
+          let bteMs = bullettimeDateObj - Date.now();
+          win.webContents.send("startBulletTime", bteMs);
+          syncStats();
+          syncItems();
+          setTimeout(() => {
+            win.webContents.send("stopBulletTime");
+          }, bteMs); // Make this function wait until the end time of the effect before triggering.
+        }
+        if (heartChained == true) {
+          win.webContents.send("activate_heartchain");
+        }
         syncStats();
         syncItems();
-        setTimeout(() => {
-          win.webContents.send("stopBulletTime");
-        }, bteMs); // Make this function wait until the end time of the effect before triggering.
+        syncFoods();
+        syncEnemy();
+        syncLevel();
+      } catch (err) {
+        console.error("Error loading game data:", err);
       }
-      if (heartChained == true) {
-        win.webContents.send("activate_heartchain");
-      }
-    } catch (err) {
-      console.error("Error loading game data:", err);
+    } else {
+      console.log("no crypto key found. resetting data...");
+      ensureDataFileExists(true);
+      syncStats();
+      syncItems();
+      syncFoods();
+      syncEnemy();
+      syncLevel();
+      genChk();
     }
-  } else {
-    console.log("no crypto key found. resetting data...");
-    ensureDataFileExists(true);
-    syncStats();
-    syncItems();
-    syncFoods();
-    syncEnemy();
-    syncLevel();
-    genChk();
-  }
+  });
 }
 
 /**
@@ -1251,8 +1262,10 @@ function saveVariables() {
     heartChained,
   };
   try {
-    fs.writeFileSync(filePath, JSON.stringify(gameData));
-    genChk();
+    fs.writeFile(filePath, JSON.stringify(gameData), () => {
+      genChk();
+      console.log("updated gameData.json");
+    });
   } catch (err) {
     console.error("Error saving game data:", err);
   }
@@ -1639,8 +1652,8 @@ ipcMain.on("consume_item", (event, name) => {
             // Generate a random time offset between 30 minutes (1800000 ms) and 2 hours (7200000 ms)
             let rto = Math.random() * (7200000 - 1800000) + 1800000;
             bted = new Date(new Date().getTime() + rto); // bullet time end date object.
-            bullettimeEnd = bted.getTime(); // Set the end time for the BulletTime effect.
-            let bteMs = bullettimeEnd - Date.now();
+            bullettimeDateObj = bted.getTime(); // Set the end time for the BulletTime effect.
+            let bteMs = bullettimeDateObj - Date.now();
             win.webContents.send("startBulletTime", bteMs);
             syncStats();
             syncItems();
@@ -1736,7 +1749,6 @@ var lastSetAttackFaceTime = Date.now();
 
 // ---------------------
 
-
 ipcMain.on("battle-click", () => {
   console.log("battle-btn-clicked");
   if (enemy.health > 0) {
@@ -1749,12 +1761,14 @@ ipcMain.on("battle-click", () => {
       setFace("angry_shake");
       console.log(true);
       lastSetAttackFaceTime = Date.now();
-    };
+    }
     if (enemy.health === 0) {
       clearInterval(timerTimeout);
       win.webContents.send("killEnemy", enemy);
-      setTimeout(() => {setFace("angry_symbol");}, 1000);
-    };
+      setTimeout(() => {
+        setFace("angry_symbol");
+      }, 1000);
+    }
     console.log("enemy values updated.");
   } else {
     console.log("enemy is already ded. dk how this happened.");
@@ -2064,7 +2078,7 @@ ipcMain.handle("get-app-version", () => {
 ipcMain.on("updateConfirmed", () => {
   setTimeout(() => {
     autoUpdater.quitAndInstall();
-  }, 500); 
+  }, 500);
 });
 
 autoUpdater.on("update-available", (info) => {
@@ -2105,33 +2119,36 @@ function genChk() {
       if (err) {
         console.log(`crypto write error, yep.`, err);
       }
+      console.log("updated crypto key.");
     });
     return hashedData;
   });
 }
 
 function valChk() {
-  fs.readFile(`${userDataPath}/pal.bgh`, (err, data) => {
-    if (err) {
-      return false;
-    } else {
-      const bHash = crypto.createHash("sha256");
-      bHash.update(data);
-      const bHashData = bHash.digest("hex");
-      fs.readFile(`${userDataPath}/gameData.json`, (err, bdata) => {
-        if (err) {
-          genChk();
-        } else {
-          const aHash = crypto.createHash("sha256");
-          aHash.update(bdata);
-          const aHashData = aHash.digest("hex");
-          if (bHashData == aHashData) {
-            return true;
+  return new Promise((resolve) => {
+    fs.readFile(`${userDataPath}/pal.bgh`, (err, aData) => {
+      if (err) {
+        resolve(false);
+      } else {
+        const aHashData = String(aData);
+        fs.readFile(`${userDataPath}/gameData.json`, (err, bData) => {
+          if (err) {
+            console.log("err");
+            resolve(false);
           } else {
-            return false;
+            const bHash = crypto.createHash("sha256");
+            bHash.update(bData);
+            const bHashData = bHash.digest("hex");
+            console.log(aHashData, "|", bHashData);
+            if (bHashData === aHashData) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
           }
-        }
-      });
-    }
+        });
+      }
+    });
   });
 }

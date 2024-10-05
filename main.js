@@ -1573,6 +1573,7 @@ ipcMain.on("consume_food", (event, name) => {
         popupFoodStat(worth);
         syncStats();
         syncFoods();
+        saveVariables();
       }
       function p2() {
         // If you have no food to eat.
@@ -1637,6 +1638,7 @@ ipcMain.on("consume_item", (event, name) => {
             syncStats();
             syncItems();
             win.webContents.send("alertItem", "Medkit");
+            saveVariables();
           }
           break;
         case "bullettime":
@@ -1658,6 +1660,7 @@ ipcMain.on("consume_item", (event, name) => {
             syncStats();
             syncItems();
             win.webContents.send("alertItem", "BulletTime");
+            saveVariables();
             setTimeout(() => {
               win.webContents.send("stopBulletTime");
             }, bteMs); // Make this function wait until the end time of the effect before triggering.
@@ -1672,6 +1675,7 @@ ipcMain.on("consume_item", (event, name) => {
           syncStats();
           syncItems();
           win.webContents.send("alertItem", "Soda");
+          saveVariables();
           break;
         case "sword":
           // Gives the player a damage bonus per click permanently till death. (+1 additively)
@@ -1681,6 +1685,7 @@ ipcMain.on("consume_item", (event, name) => {
           syncStats();
           syncItems();
           win.webContents.send("alertItem", "Sword");
+          saveVariables();
           break;
         case "lootbox":
           console.log("Rolling lootbox.");
@@ -1698,6 +1703,7 @@ ipcMain.on("consume_item", (event, name) => {
             case 1:
             case 2:
               foods[id].count += ct;
+              foods[id].discovered = true;
               break;
             case 3:
             case 4:
@@ -1706,6 +1712,7 @@ ipcMain.on("consume_item", (event, name) => {
             case 7:
             case 8:
               items[id - 3].count += ct;
+              items[id - 3].discovered = true;
               break;
             default:
               console.log("error, item id not valid:", id);
@@ -1714,6 +1721,7 @@ ipcMain.on("consume_item", (event, name) => {
           console.log(`lootbox id rolled: ${id} | ct: ${ct}`);
           syncItems();
           syncFoods();
+          saveVariables();
           break;
         case "heartchain":
           if (heartChained) {
@@ -1729,6 +1737,7 @@ ipcMain.on("consume_item", (event, name) => {
             win.webContents.send("alertItem", "Heartchain");
             syncStats();
             syncItems();
+            saveVariables();
           }
           break;
       }
@@ -1808,6 +1817,7 @@ ipcMain.on("itemDropped", (event, vars) => {
   syncItems();
   syncStats();
   setFace("happy_1");
+  saveVariables();
 });
 
 ipcMain.on("advanceEnemy", (event) => {

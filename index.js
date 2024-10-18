@@ -1183,6 +1183,7 @@ window.electron.receive("nextEnemy", (enemyObj) => {
 
 window.electron.receive("setLevel", (levelData) => {
   console.log("setLevel", levelData);
+  if(!levelData.level) {levelData.level = 1};
   level.innerHTML = `lvl: ${levelData.level}`;
   levelIndicator.style.width = `${levelData.levelProgress}px`;
 });

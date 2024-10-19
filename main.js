@@ -1838,8 +1838,8 @@ ipcMain.on("itemDropped", (event, vars) => {
 });
 
 ipcMain.on("advanceEnemy", (event) => {
-  if (energy >= nextEnergyCost) {
-    energy = energy - nextEnergyCost;
+  if (energy >= nextEnergyCost || bullettime) {
+    if(!bullettime){energy = energy - nextEnergyCost;}
     nextEnergyCost = getRandomValue(10, 25);
     enemy = new Enemy();
     syncStats();

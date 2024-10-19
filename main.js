@@ -1204,7 +1204,7 @@ function loadVariables() {
         const savedData = JSON.parse(data);
         food = savedData.food;
         health = savedData.health;
-        energy = savedData.energy;
+        energy = 100;
         attack = savedData.attack;
         dead = savedData.dead;
         timeSpawned = new Date(savedData.timeSpawned);

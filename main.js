@@ -1921,12 +1921,12 @@ ipcMain.on("startSacrifice", () => {
         { id: 3, name: "Spice", discovered: false, count: 0 },
       ];
       items = [
-        { id: 1, name: "Medkit", discovered: false, count: 0 },
-        { id: 2, name: "BulletTime", discovered: false, count: 0 },
-        { id: 3, name: "Soda", discovered: false, count: 0 },
-        { id: 4, name: "Sword", discovered: false, count: 0 },
-        { id: 5, name: "Lootbox", discovered: false, count: 0 },
-        { id: 6, name: "HeartChain", discovered: false, count: 0 },
+        { id: 1, name: "Medkit", discovered: items[0].discovered, count: 0 },
+        { id: 2, name: "BulletTime", discovered: items[1].discovered, count: 0 },
+        { id: 3, name: "Soda", discovered: items[2].discovered, count: 0 },
+        { id: 4, name: "Sword", discovered: items[3].discovered, count: 0 },
+        { id: 5, name: "Lootbox", discovered: items[4].discovered, count: 0 },
+        { id: 6, name: "HeartChain", discovered: items[5].discovered, count: 0 },
       ];
       syncItems();
       console.log("Reset all variables to default values.");

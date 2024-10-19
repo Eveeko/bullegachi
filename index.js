@@ -1284,7 +1284,7 @@ window.electron.receive("sacrificePal", (sacObj) => {
                 var popupElement = document.createElement("h1");
                 popupElement.className = "popupLvl";
                 popupElement.id = "popupLvl";
-                popupElement.textContent = "-Lvl 23";
+                popupElement.textContent = `-${level.innerHTML.split(':')[1].trim()}Lvl`; // TODO: MAKE THIS REFLECT THE CORRECT LEVEL.
                 scanlines.appendChild(popupElement);
                 var audioElement = document.createElement("audio");
                 audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
@@ -1302,6 +1302,9 @@ window.electron.receive("sacrificePal", (sacObj) => {
                       bFace.src = "faces/default_idle.png";
                       bFace.style.visibility = "visible";
                       bPal.style.display = "block";
+                      battleBoxDead.style.visibility = "hidden";
+                      battleBoxSplashCont.style.display = "block";
+                      firstSetEnemy = true;
                       playSelectSfx();
                       window.electron.send("endSacrifice");
                     }, 2500);
@@ -1856,7 +1859,7 @@ function tut21() {
 window.electron.receive("wipeTutorial", () => {
   tutorialCont.style.display = "none";
   sidebar.style.display = "flex";
-  battleEnemy.display = "block";
+  battleEnemy.style.display = "block";
 });
 
 window.electron.receive("update-available", (info)=>{

@@ -1944,11 +1944,12 @@ ipcMain.on("endSacrifice", () => {
   foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
   saveVariables();
   saveClientData();
-  syncEnemy();
+  enemy = new Enemy();
   syncFoods();
   syncItems();
   syncLevel();
   syncStats();
+  syncEnemy();
 });
 
 /**

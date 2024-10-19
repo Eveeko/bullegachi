@@ -1856,7 +1856,7 @@ function tut21() {
 window.electron.receive("wipeTutorial", () => {
   tutorialCont.style.display = "none";
   sidebar.style.display = "flex";
-  battleEnemy.display = "block";
+  battleEnemy.style.display = "block";
 });
 
 window.electron.receive("update-available", (info)=>{

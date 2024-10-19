@@ -17,6 +17,7 @@ const crypto = require("crypto");
 const http = require("http");
 const os = require("os");
 const { exec } = require("child_process");
+const { randomInt } = require("node:crypto");
 
 const spoop_eyes = [
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -110,8 +111,7 @@ function getUserName(callback) {
     (error, stdout, stderr) => {
       if (error || stderr) {
         console.warn(
-          `Failed to get full name, falling back to basic username: ${
-            error || stderr
+          `Failed to get full name, falling back to basic username: ${error || stderr
           }`
         );
         const userInfo = os.userInfo();
@@ -231,7 +231,7 @@ const createWindow = () => {
   //   height: 600,
   //   webPreferences: {
   //     nodeIntegration: true,
-
+  // 
   //     webSecurity: false, // This will allow loading local resources but is not recommended for production
   //     allowRunningInsecureContent: true
   //   },
@@ -1131,20 +1131,20 @@ const setAutoRun = () => {
  */
 const removeAutoRun = () => {
   const exePath = `"${app.getPath("exe")}"`; // Get the path to the app executable
+  const appName = app.getName(); // Application name used as the key
 
+  // First, remove from the normal Run registry key
   regedit.list(runKey, (err, result) => {
     if (err) {
       console.error("Error listing registry:", err);
       return;
     }
-    const keys = result[runKey].values;
-    console.log("Registry Keys:", keys); // Log the keys to see what's returned
+
+    const keys = result[runKey]?.values;
     let foundAndRemoved = false;
 
     if (keys) {
-      // Check all keys to find and remove the one matching the app's executable path
       Object.entries(keys).forEach(([key, valueObj]) => {
-        console.log(1, key, 2, valueObj);
         if (valueObj.value.toLowerCase() === exePath.toLowerCase()) {
           regedit.deleteValue(`${runKey}\\${key}`, (err) => {
             if (err) {
@@ -1156,21 +1156,38 @@ const removeAutoRun = () => {
           });
         }
       });
-
-      // Update autoRun status and sync tray menu if any entry was found and removed
-      if (foundAndRemoved) {
-        autoRun = false;
-        saveClientData();
-        syncTrayMenu();
-      } else {
-        console.log("Registry entry not found for", exePath);
-        autoRun = false;
-        saveClientData();
-        syncTrayMenu();
-      }
     } else {
       console.log("No values found under", runKey);
     }
+
+    // Now also delete from StartupApproved registry to reset Task Manager's disabled flag
+    const startupApprovedKey = `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\StartupApproved\\Run`;
+
+    regedit.list(startupApprovedKey, (err, result) => {
+      if (err) {
+        console.error("Error listing StartupApproved registry:", err);
+        return;
+      }
+
+      const approvedKeys = result[startupApprovedKey]?.values;
+
+      if (approvedKeys && approvedKeys[appName]) {
+        regedit.deleteValue(`${startupApprovedKey}\\${appName}`, (err) => {
+          if (err) {
+            console.error(`Error deleting StartupApproved entry for ${appName}:`, err);
+          } else {
+            console.log(`StartupApproved entry deleted successfully for ${appName}`);
+          }
+        });
+      } else {
+        console.log("No StartupApproved entry found for", appName);
+      }
+    });
+
+    // Update autoRun status and sync tray menu after cleanup
+    autoRun = false;
+    saveClientData();
+    syncTrayMenu();
   });
 };
 
@@ -1897,14 +1914,15 @@ ipcMain.on("startSacrifice", () => {
       palLevel = 1;
       palLevelProgress = 0;
       enemy = new Enemy();
+      // give the player a random amount of (5-7) sweets on reset to encourage a new attempt instead of the starting 3 sweets.
       foods = [
         { id: 1, name: "Orange", discovered: false, count: 0 },
-        { id: 2, name: "Sweets", discovered: true, count: 5 },
+        { id: 2, name: "Sweets", discovered: true, count: getRandomValue(5, 7) },
         { id: 3, name: "Spice", discovered: false, count: 0 },
       ];
       items = [
         { id: 1, name: "Medkit", discovered: false, count: 0 },
-        { id: 2, name: "BulletTime", discovered: true, count: 0 },
+        { id: 2, name: "BulletTime", discovered: false, count: 0 },
         { id: 3, name: "Soda", discovered: false, count: 0 },
         { id: 4, name: "Sword", discovered: false, count: 0 },
         { id: 5, name: "Lootbox", discovered: false, count: 0 },
@@ -1925,8 +1943,11 @@ ipcMain.on("endSacrifice", () => {
   foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
   saveVariables();
   saveClientData();
+  syncEnemy();
   syncFoods();
   syncItems();
+  syncLevel();
+  syncStats();
 });
 
 /**

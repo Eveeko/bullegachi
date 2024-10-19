@@ -1928,6 +1928,7 @@ ipcMain.on("startSacrifice", () => {
         { id: 5, name: "Lootbox", discovered: false, count: 0 },
         { id: 6, name: "HeartChain", discovered: false, count: 0 },
       ];
+      syncItems();
       console.log("Reset all variables to default values.");
     }, 1500);
   } else {

@@ -89,6 +89,7 @@ const updateBtnSkip = document.getElementById("updateBtnSkip");
 const updateCont = document.getElementById("updateCont");
 const updateLoading = document.getElementById("updateLoading");
 const updateVer = document.getElementById("updateH1_1");
+const updateResetSave = document.getElementById("updateResetSave");
 
 var moveMode = false;
 var isDragging = false;
@@ -1862,11 +1863,17 @@ window.electron.receive("wipeTutorial", () => {
   battleEnemy.style.display = "block";
 });
 
+var resetSave = false; // Whether or not to reset the save file after updating.
+
 window.electron.receive("update-available", (info)=>{
   playSelectSfx();
   window.electron.getAppVersion().then(version => {
     updateVer.innerHTML = `<span style="color: #b28e00"><del>V${version}</del></span> -> V${info.version}`;
     updateCont.style.display = "block";
+    if(version[0] != info.version[0]){
+      resetSave = true;
+      updateResetSave.style.display = "block";
+    }
   }).catch(error => {
     console.error('Error fetching app version:', error);
   });
@@ -1884,7 +1891,7 @@ updateBtn.addEventListener('mouseleave', () => {
   updateBtn.style.backgroundImage = `url("sprite/sprite_update_btn.png")`;
 })
 updateBtn.addEventListener('mousedown', () =>{
-  window.electron.send("updateConfirmed");
+  window.electron.send("updateConfirmed", resetSave);
   updateBtn.style.display = "none";
   updateBtnSkip.style.display = "none";
   updateLoading.style.display = "block";

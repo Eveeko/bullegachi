@@ -113,7 +113,8 @@ function getUserName(callback) {
     (error, stdout, stderr) => {
       if (error || stderr) {
         console.warn(
-          `Failed to get full name, falling back to basic username: ${error || stderr
+          `Failed to get full name, falling back to basic username: ${
+            error || stderr
           }`
         );
         const userInfo = os.userInfo();
@@ -233,7 +234,7 @@ const createWindow = () => {
   //   height: 600,
   //   webPreferences: {
   //     nodeIntegration: true,
-  // 
+  //
   //     webSecurity: false, // This will allow loading local resources but is not recommended for production
   //     allowRunningInsecureContent: true
   //   },
@@ -345,9 +346,9 @@ app.on("window-all-closed", () => {
   }
 });
 
-if (process.platform === 'win32') {
+if (process.platform === "win32") {
   app.setAppUserModelId("Bullegachi");
-};
+}
 
 // -----------------------
 //    GAME LOOP CLASSES
@@ -1180,9 +1181,14 @@ const removeAutoRun = () => {
       if (approvedKeys && approvedKeys[appName]) {
         regedit.deleteValue(`${startupApprovedKey}\\${appName}`, (err) => {
           if (err) {
-            console.error(`Error deleting StartupApproved entry for ${appName}:`, err);
+            console.error(
+              `Error deleting StartupApproved entry for ${appName}:`,
+              err
+            );
           } else {
-            console.log(`StartupApproved entry deleted successfully for ${appName}`);
+            console.log(
+              `StartupApproved entry deleted successfully for ${appName}`
+            );
           }
         });
       } else {
@@ -1845,7 +1851,9 @@ ipcMain.on("itemDropped", (event, vars) => {
 
 ipcMain.on("advanceEnemy", (event) => {
   if (energy >= nextEnergyCost || bullettime) {
-    if (!bullettime) { energy = energy - nextEnergyCost; }
+    if (!bullettime) {
+      energy = energy - nextEnergyCost;
+    }
     nextEnergyCost = getRandomValue(10, 25);
     enemy = new Enemy();
     syncStats();
@@ -1923,16 +1931,31 @@ ipcMain.on("startSacrifice", () => {
       // give the player a random amount of (5-7) sweets on reset to encourage a new attempt instead of the starting 3 sweets.
       foods = [
         { id: 1, name: "Orange", discovered: false, count: 0 },
-        { id: 2, name: "Sweets", discovered: true, count: getRandomValue(5, 7) },
+        {
+          id: 2,
+          name: "Sweets",
+          discovered: true,
+          count: getRandomValue(5, 7),
+        },
         { id: 3, name: "Spice", discovered: false, count: 0 },
       ];
       items = [
         { id: 1, name: "Medkit", discovered: items[0].discovered, count: 0 },
-        { id: 2, name: "BulletTime", discovered: items[1].discovered, count: 0 },
+        {
+          id: 2,
+          name: "BulletTime",
+          discovered: items[1].discovered,
+          count: 0,
+        },
         { id: 3, name: "Soda", discovered: items[2].discovered, count: 0 },
         { id: 4, name: "Sword", discovered: items[3].discovered, count: 0 },
         { id: 5, name: "Lootbox", discovered: items[4].discovered, count: 0 },
-        { id: 6, name: "HeartChain", discovered: items[5].discovered, count: 0 },
+        {
+          id: 6,
+          name: "HeartChain",
+          discovered: items[5].discovered,
+          count: 0,
+        },
       ];
       syncItems();
       console.log("Reset all variables to default values.");
@@ -2114,10 +2137,32 @@ ipcMain.handle("get-app-version", () => {
   return app.getVersion();
 });
 
-ipcMain.on("updateConfirmed", () => {
-  setTimeout(() => {
-    autoUpdater.quitAndInstall();
-  }, 500);
+ipcMain.on("updateConfirmed", (resetSave) => {
+  if (resetSave) {
+    fs.unlink(`${userDataPath}/pal.bgh`, (err) => {
+      if (err) {
+        console.log(`failed to delete pal.bgh during saveReset`, err);
+      }
+      console.log("Successfully deleted pal.bgh");
+      fs.unlink(`${userDataPath}/gameData.json`, (err)=>{
+        if (err) {
+          console.log(`failed to delete gameData.json during saveReset.`, err);
+        }
+        console.log("Successfully deleted gameData.json");
+        fs.unlink(`${userDataPath}/clientData.json`, (err)=>{
+          if (err) {
+            console.log(`failed to delete clientData.json during saveReset.`, err);
+          }
+          console.log("Successfully deleted clientData.json");
+          autoUpdater.quitAndInstall();
+        })
+      })
+    });
+  } else {
+    setTimeout(() => {
+      autoUpdater.quitAndInstall();
+    }, 500);
+  }
 });
 
 autoUpdater.on("update-available", (info) => {

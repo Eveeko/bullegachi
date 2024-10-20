@@ -1283,3 +1283,28 @@ body {
   font-size: 16px;
   color: #ffcc00;
 }
+
+.updateResetSave {
+  position: absolute;
+  top: 138px;
+  left: 52px;
+  width: 160px;
+  font-size: 16px;
+  color: #ffcc00;
+  animation: blink_warn 3.5s infinite;
+}
+
+@keyframes blink_warn {
+  25%{
+    opacity: 0;
+  }
+  50%{
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
+}

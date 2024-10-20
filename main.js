@@ -343,6 +343,10 @@ app.on("window-all-closed", () => {
   }
 });
 
+if (process.platform === 'win32') {
+  app.setAppUserModelId("Bullegachi");
+};
+
 // -----------------------
 //    GAME LOOP CLASSES
 // -----------------------
@@ -1839,7 +1843,7 @@ ipcMain.on("itemDropped", (event, vars) => {
 
 ipcMain.on("advanceEnemy", (event) => {
   if (energy >= nextEnergyCost || bullettime) {
-    if(!bullettime){energy = energy - nextEnergyCost;}
+    if (!bullettime) { energy = energy - nextEnergyCost; }
     nextEnergyCost = getRandomValue(10, 25);
     enemy = new Enemy();
     syncStats();

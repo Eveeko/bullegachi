@@ -104,6 +104,8 @@ const spoop_eyes = [
 // Configure logging
 log.transports.file.level = "info";
 autoUpdater.logger = log;
+autoUpdater.autoDownload = false; // Disables auto downloading of any available updates.
+autoUpdater.autoInstallOnAppQuit = false; // Disables auto updating after app restart.
 
 function getUserName(callback) {
   exec(

@@ -2236,3 +2236,44 @@ function valChk() {
     });
   });
 }
+
+// -------------------------------------------------------------------------
+// ┌───────────────────────────────────────────────────────────────────────┐
+// │██████╗  █████╗ ████████╗████████╗██╗     ███████╗    ██╗   ██╗██████╗ │
+// │██╔══██╗██╔══██╗╚══██╔══╝╚══██╔══╝██║     ██╔════╝    ██║   ██║╚════██╗│
+// │██████╔╝███████║   ██║      ██║   ██║     █████╗      ██║   ██║ █████╔╝│
+// │██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝      ╚██╗ ██╔╝██╔═══╝ │
+// │██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗     ╚████╔╝ ███████╗│
+// │╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝      ╚═══╝  ╚══════╝│
+// └───────────────────────────────────────────────────────────────────────┘ 
+// -------------------------------------------------------------------------
+// This is the *NEW* and improved battle mechanics designed to supersede
+// the original battle mechanics of the spam random encounter click-to-kill
+// -------------------------------------------------------------------------
+
+/**
+ * Constructs a level object representing the bounds of the playfield.
+ * pass a `floor` value(int) to effect the level generation. 
+ */
+class level{
+  gridLength = 2; // The horizontal tiles that can fit total on the playing field.
+  gridHeight = 3; // The verticle tiles that can fit total on the playing field.
+  tiles = []; // Contains the tiles for this level. in this ordering. (X is root domain and Y is nested in X.)
+  // ie, tiles[ x1[ y2[] ], x2[ y2[] ], x3[ y1[], y2[], y3[] ] ] this forms the layout below:
+  //      =
+  //  = = =
+  //      =
+  exitAddress = [ 2, 2 ]; // The tile address(X and Y coordinate) that is the exit of this level. defaults to the 2nd tile.
+  totalEnemies = 1; // The total amount of enemies on all tiles in this level.
+  totalLoot = 0; // The total amount of loot(chest tiles, item tiles) on all tiles in this level.
+
+
+  /**
+   * @param {Number} floor effects the size and difficulty based on the size of the number
+   */
+  constructor(floor){
+    
+  }
+}
+
+new level()

@@ -2251,11 +2251,53 @@ function valChk() {
 // the original battle mechanics of the spam random encounter click-to-kill
 // -------------------------------------------------------------------------
 
+class Enemy {
+  name = "enemyName";
+  lvl = 1;
+  health = 10;
+  attacks = []; // Stores the attacks that the enemy can use.
+  defences = []; // Stores the defensive abilities the enemy can use.
+}
+class Event {
+  name = "eventName";
+  id = 1;
+}
+class Item {
+  name = "itemName";
+  rarity = "Common";
+  quantity = 1;
+  id = 1;
+  /**
+   * An item object which represents all usable items.
+   * @param {String} name The name of the item displayed to the user.
+   * @param {String} rarity The rarity. (Common, Rare, Epic, Legendary)
+   * @param {Number} quantity The amount of the item.
+   * @param {Number} id The internal id used by action logic.
+   */
+  constructor(name, rarity, quantity, id){
+    this.name = name;
+    this.rarity = rarity;
+    this.quantity = quantity;
+    this.id = id;
+  }
+}
 /**
- * Constructs a level object representing the bounds of the playfield.
+ * A tile object representing a single tile on the playfield of a level.
+ */
+class Tile{
+  coordX = 1; // The X coordinate of this tile on the levels grid. defaults to first tile.
+  coordY = 2; // The Y coordinate of this tile on the levels grid. defaults to first middle tile.
+  canStand = true; // Whether or not you can move to this tile. defaults to true.
+  sprite = "blank_1"; // The sprites name used for displaying on the playfield. (ie: tile_blank_1.png => tile.sprite = blank_1)
+  enemy = null; // If a enemy is on the tile this should contain the Enemy object. otherwise = null;
+  item = null; // If a item is on this tile this should contain the Item object. If there is an item object and a enemy object the item will drop after the enemy is defeated.
+  event = null; // If an event is designated for this tile this should contain the event object.
+}
+/**
+ * A level object representing the bounds of the playfield.
  * pass a `floor` value(int) to effect the level generation. 
  */
-class level{
+class Level{
   gridLength = 2; // The horizontal tiles that can fit total on the playing field.
   gridHeight = 3; // The verticle tiles that can fit total on the playing field.
   tiles = []; // Contains the tiles for this level. in this ordering. (X is root domain and Y is nested in X.)
@@ -2267,13 +2309,11 @@ class level{
   totalEnemies = 1; // The total amount of enemies on all tiles in this level.
   totalLoot = 0; // The total amount of loot(chest tiles, item tiles) on all tiles in this level.
 
-
   /**
    * @param {Number} floor effects the size and difficulty based on the size of the number
    */
   constructor(floor){
+    var totalTilesToGen = 0; // The amount of tiles we need to generate.  
     
   }
 }
-
-new level()

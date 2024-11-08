@@ -113,8 +113,7 @@ function getUserName(callback) {
     (error, stdout, stderr) => {
       if (error || stderr) {
         console.warn(
-          `Failed to get full name, falling back to basic username: ${
-            error || stderr
+          `Failed to get full name, falling back to basic username: ${error || stderr
           }`
         );
         const userInfo = os.userInfo();
@@ -2144,12 +2143,12 @@ ipcMain.on("updateConfirmed", (resetSave) => {
         console.log(`failed to delete pal.bgh during saveReset`, err);
       }
       console.log("Successfully deleted pal.bgh");
-      fs.unlink(`${userDataPath}/gameData.json`, (err)=>{
+      fs.unlink(`${userDataPath}/gameData.json`, (err) => {
         if (err) {
           console.log(`failed to delete gameData.json during saveReset.`, err);
         }
         console.log("Successfully deleted gameData.json");
-        fs.unlink(`${userDataPath}/clientData.json`, (err)=>{
+        fs.unlink(`${userDataPath}/clientData.json`, (err) => {
           if (err) {
             console.log(`failed to delete clientData.json during saveReset.`, err);
           }
@@ -2274,7 +2273,7 @@ class Item {
    * @param {Number} quantity The amount of the item.
    * @param {Number} id The internal id used by action logic.
    */
-  constructor(name, rarity, quantity, id){
+  constructor(name, rarity, quantity, id) {
     this.name = name;
     this.rarity = rarity;
     this.quantity = quantity;
@@ -2284,7 +2283,7 @@ class Item {
 /**
  * A tile object representing a single tile on the playfield of a level.
  */
-class Tile{
+class Tile {
   coordX = 1; // The X coordinate of this tile on the levels grid. defaults to first tile.
   coordY = 2; // The Y coordinate of this tile on the levels grid. defaults to first middle tile.
   canStand = true; // Whether or not you can move to this tile. defaults to true.
@@ -2297,7 +2296,8 @@ class Tile{
  * A level object representing the bounds of the playfield.
  * pass a `floor` value(int) to effect the level generation. 
  */
-class Level{
+class Level {
+  seed = 123456789; // The seed used to generate all parts of the level.
   gridLength = 2; // The horizontal tiles that can fit total on the playing field.
   gridHeight = 3; // The verticle tiles that can fit total on the playing field.
   tiles = []; // Contains the tiles for this level. in this ordering. (X is root domain and Y is nested in X.)
@@ -2305,15 +2305,28 @@ class Level{
   //      =
   //  = = =
   //      =
-  exitAddress = [ 2, 2 ]; // The tile address(X and Y coordinate) that is the exit of this level. defaults to the 2nd tile.
+  exitAddress = [2, 2]; // The tile address(X and Y coordinate) that is the exit of this level. defaults to the 2nd tile.
   totalEnemies = 1; // The total amount of enemies on all tiles in this level.
   totalLoot = 0; // The total amount of loot(chest tiles, item tiles) on all tiles in this level.
 
   /**
    * @param {Number} floor effects the size and difficulty based on the size of the number
    */
-  constructor(floor){
-    var totalTilesToGen = 0; // The amount of tiles we need to generate.  
+  constructor(floor) {
+    let floorStr = floor.toString();
+    let numberOfTens = Math.floor(floor / 10);
+    let floorMultiplier = `${(+(floorStr[floorStr.length - 1]) ? floorStr[floorStr.length - 1] : 1) * numberOfTens}.${floorStr.substring(1, -1)}`
+    let gen = n => [...Array(n)].map(_ => Math.random() * 10 | 0).join``; // stack overflow wizards praise thee!!
+    var totalTilesToGen = +(this.seed.substring(5, 6)) * floorMultiplier; // The amount of tiles we need to generate.
+    this.seed = (1 + Math.random() * 9 | 0) + gen(8); // Generates a 9 digit long seed.
+
+    var randY = +(`0.${this.seed.substring(0, 3)}`); // The random number used for gridHeight determination.
+    randY = (randY.toFixed(1) / 2); // Divides the value in half to favor small values. 1-5 is max value range.
+    randY = +((randY.toFixed(1) / 2).toString()[2]); // Takes the first value to the right of the decimal place.
+    if(randY == 0){ randY = 1 }; // Protection against a Zero height level.
+    this.gridHeight = randY; // Sets the grid height to the randY value.
     
+    var randX = +(`0.${this.seed.substring(2, 5)}`); // The random number used for gridLength determination.
+    randX =  Math.log10(randX.toFixed(1) + 1) * floorMultiplier
   }
 }

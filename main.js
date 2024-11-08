@@ -2250,12 +2250,33 @@ function valChk() {
 // the original battle mechanics of the spam random encounter click-to-kill
 // -------------------------------------------------------------------------
 
+class Attack {
+  name = "attackName";
+  type = "melee";
+  damage = 1;
+  cd = 1; // Turns it takes to be usable again. 1 == right away.
+  sprite = `${userDataPath}/sprite/sprite_unknown_food.png`; // The thumbnail image
+  entitySprite = null; // The sprite to draw over either the Pal or the enemy.
+  entitySpriteX = 0; // the X position.
+  entitySpriteY = 0; // the Y position.
+}
+class Defence {
+  name = "defenceName";
+  type = "shield";
+  blockDamage = 5; // Amount of damage the defence will mitigate from a receiving attack.
+  cd = 2;
+  sprite = `${userDataPath}/sprite/sprite_unknown_food.png`; // The thumbnail image
+  entitySprite = null; // The sprite to draw over either the Pal or the enemy.
+  entitySpriteX = 0; // the X position.
+  entitySpriteY = 0; // the Y position.
+}
 class Enemy {
   name = "enemyName";
   lvl = 1;
   health = 10;
   attacks = []; // Stores the attacks that the enemy can use.
   defences = []; // Stores the defensive abilities the enemy can use.
+  sprite = `${userDataPath}/sprite/sprite_enemy_dead_1.png`; // The enemy sprite.
 }
 class Event {
   name = "eventName";

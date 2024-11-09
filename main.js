@@ -227,19 +227,18 @@ const createWindow = () => {
 
   win.loadFile(path.join(__dirname, "index.html"));
 
-  // // Open DevTools in a separate window
-  // const devToolsWindow = new BrowserWindow({
-  //   width: 800,
-  //   height: 600,
-  //   webPreferences: {
-  //     nodeIntegration: true,
-  //
-  //     webSecurity: false, // This will allow loading local resources but is not recommended for production
-  //     allowRunningInsecureContent: true
-  //   },
-  // });
-  // win.webContents.setDevToolsWebContents(devToolsWindow.webContents);
-  // win.webContents.openDevTools({ mode: "detach" });
+  // Open DevTools in a separate window
+  const devToolsWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      webSecurity: false, // This will allow loading local resources but is not recommended for production
+      allowRunningInsecureContent: true
+    },
+  });
+  win.webContents.setDevToolsWebContents(devToolsWindow.webContents);
+  win.webContents.openDevTools({ mode: "detach" });
 
   // Create a tray icon
   const iconPath = path.join(__dirname, "icon.ico");
@@ -727,13 +726,6 @@ let heartChained = false; // Heartchain flag (used for checking if heartchain is
 let palFace = "idle"; // The current pal face (for the bullet pal), used for the idle animation handler.
 let palFaceUpdate = null; // The time of when the face was last updated, (used to prevent idle animations from being instantly played on face change.).
 let palIdleInterval = null; // Storage for the idle animation interval (used so it can be cleared once a pal is dcd)
-let battleBoxOpened = false;
-
-// -----------------------------------
-//            COMBAT LOOP
-// -----------------------------------
-
-var enemy = new Enemy(); // The enemy object that is for the current enemy.
 
 // -----------------------------------
 
@@ -1777,141 +1769,6 @@ ipcMain.on("consume_item", (event, name) => {
     console.log("pal already dead.");
   }
 });
-// ---------------------
-//      COMBAT LOOP
-// ---------------------
-
-var timerTimeout = null;
-var lastSetAttackFaceTime = Date.now();
-
-// ---------------------
-
-ipcMain.on("battle-click", () => {
-  console.log("battle-btn-clicked");
-  if (enemy.health > 0) {
-    enemy.health = Math.max(0, enemy.health - attack);
-    syncEnemy();
-    var currentTime = Date.now();
-    var elapsedTime = currentTime - lastSetAttackFaceTime;
-    console.log(`elapsed: ${elapsedTime}, last: ${lastSetAttackFaceTime}`);
-    if (elapsedTime > 850) {
-      setFace("angry_shake");
-      console.log(true);
-      lastSetAttackFaceTime = Date.now();
-    }
-    if (enemy.health === 0) {
-      clearInterval(timerTimeout);
-      win.webContents.send("killEnemy", enemy);
-      setTimeout(() => {
-        setFace("angry_symbol");
-      }, 1000);
-    }
-    console.log("enemy values updated.");
-  } else {
-    console.log("enemy is already ded. dk how this happened.");
-  }
-});
-
-ipcMain.on("itemDropped", (event, vars) => {
-  console.log("item dropped", vars);
-  // handle item drop.
-  switch (vars[0]) {
-    case 1:
-      foods[0].count = foods[0].count + vars[1];
-      foods[0].discovered = true;
-      break;
-    case 2:
-      foods[1].count = foods[1].count + vars[1];
-      foods[1].discovered = true;
-      break;
-    case 3:
-      foods[2].count = foods[2].count + vars[1];
-      foods[2].discovered = true;
-      break;
-    case 4:
-      items[1].count = items[1].count + vars[1];
-      items[1].discovered = true;
-      break;
-    case 5:
-      items[4].count = items[4].count + vars[1];
-      items[4].discovered = true;
-      break;
-    case 6:
-      items[5].count = items[5].count + vars[1];
-      items[5].discovered = true;
-      break;
-  }
-  syncFoods();
-  syncItems();
-  syncStats();
-  setFace("happy_1");
-  saveVariables();
-});
-
-ipcMain.on("advanceEnemy", (event) => {
-  if (energy >= nextEnergyCost || bullettime) {
-    if (!bullettime) {
-      energy = energy - nextEnergyCost;
-    }
-    nextEnergyCost = getRandomValue(10, 25);
-    enemy = new Enemy();
-    syncStats();
-    setTimeout(() => {
-      win.webContents.send("nextEnemy", enemy);
-    }, 500);
-  } else {
-    win.webContents.send("neEnergy", `Energy required: ${nextEnergyCost}`);
-  }
-});
-
-ipcMain.on("startTTK", (event) => {
-  if (timerTimeout) {
-    if (timerTimeout._destroyed) {
-      timerTimeout = setInterval(() => {
-        if (enemy.ttk > 0) {
-          enemy.ttk--;
-          syncEnemy();
-        } else {
-          // timer expired.
-          clearInterval(timerTimeout);
-          win.webContents.send("timerDamage", health);
-          health = health - 1;
-          syncStats();
-          setFaceByHealth();
-          if (health == 0) {
-            if (heartChained == true) {
-              console.log("heartchained active, reviving");
-              // Heartchain is active, break it and restore health and energy.
-              heartChained = false;
-              win.webContents.send("disable_heartchain");
-              energy = 100;
-              health = 3;
-              food = 100;
-              dead = false;
-              syncStats();
-            } else {
-              dead = true;
-              startDeath();
-              disableTracking();
-              console.log("pal died in battle.");
-            }
-          }
-        }
-      }, 1000);
-    }
-  } else {
-    timerTimeout = setInterval(() => {
-      if (enemy.ttk > 0) {
-        enemy.ttk--;
-        syncEnemy();
-      } else {
-        // timer expired.
-        win.webContents.send("timerDamage", health);
-        clearInterval(timerTimeout);
-      }
-    }, 1000);
-  }
-});
 
 ipcMain.on("startSacrifice", () => {
   if (dead) {
@@ -2070,27 +1927,6 @@ ipcMain.on("tutorialEnded", () => {
   console.log("Tutorial ended, starting game loop.");
   firstRun = false;
   saveClientData();
-});
-
-ipcMain.on("battleBoxStarted", () => {
-  if (battleBoxOpened == false) {
-    battleBoxOpened = true;
-    console.log("battlebox has been started by the user.");
-    if (enemy.health == 0) {
-      console.log("enemy loaded dead.");
-    } else {
-      timerTimeout = setInterval(() => {
-        if (enemy.ttk > 0) {
-          enemy.ttk--;
-          syncEnemy();
-        } else {
-          // timer expired.
-          win.webContents.send("timerDamage", health);
-          clearInterval(timerTimeout);
-        }
-      }, 1000);
-    }
-  }
 });
 
 ipcMain.on("open-external", (event, url) => {
@@ -2270,7 +2106,7 @@ class Defence {
   entitySpriteX = 0; // the X position.
   entitySpriteY = 0; // the Y position.
 }
-class Enemy {
+class Enemyn {
   name = "enemyName";
   lvl = 1;
   health = 10;

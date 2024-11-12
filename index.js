@@ -36,21 +36,7 @@ const invCounter4 = document.getElementById("inv_counter_4");
 const invCounter5 = document.getElementById("inv_counter_5");
 const invCounter6 = document.getElementById("inv_counter_6");
 const battleBox = document.getElementById("battleBox");
-const battleEnemy = document.getElementById("battleEnemy");
-const battleEnemyName = document.getElementById("battle_enemy_name");
-const battleEnemyHP = document.getElementById("battle_enemy_hp");
-const battleEnemyStatbox = document.getElementById("battle_enemy_statbox");
-const battleClickBtn = document.getElementById("battle_click_btn");
-const battlePal = document.getElementById("battlePal");
-const battlePalName = document.getElementById("battle_pal_name");
-const battlePalHP = document.getElementById("battle_pal_hp");
 const deathSound = document.getElementById("deathSound");
-const battleTimer = document.getElementById("battleTimer");
-const battleNextBtn = document.getElementById("battle_next_btn");
-const battleBossBanner = document.getElementById("bossBanner");
-const bossAlertSound = document.getElementById("bossAlertSound");
-const battlePalStat = document.getElementById("battle_pal_stat");
-const battleBoxDead = document.getElementById("battle_box_dead");
 const foodWarn = document.getElementById("food_warn");
 const moveBtn = document.getElementById("moveBtn");
 const muteBtn = document.getElementById("muteBtn");
@@ -81,8 +67,6 @@ const tutorialArrow = document.getElementById("tutorialArrow");
 const tutorialH1 = document.getElementById("tutorialH1");
 const tutorialSidebar = document.getElementById("tutorialSidebar");
 const tutorialBackgroundSfx = document.getElementById("tutorialBackgroundSfx");
-const battleBoxSplashCont = document.getElementById("battleBoxSplashCont");
-const battleBoxSplashBtn = document.getElementById("battleBoxSplashBtn");
 const updateNotes = document.getElementById("updateNotes");
 const updateBtn = document.getElementById("updateBtn");
 const updateBtnSkip = document.getElementById("updateBtnSkip");
@@ -434,7 +418,6 @@ window.electron.receive("killPal", (bool) => {
   console.log("pal killed.");
   bFace.setAttribute("src", "faces/default_dead.png");
   clearTimeout(moveFaceTimeout);
-  battleBoxDead.style.visibility = "";
   sacrificeBtn.style.visibility = "";
 }); // Kill the pal.
 
@@ -442,7 +425,6 @@ window.electron.receive("alivePal", (bool) => {
   console.log("pal alived.");
   bFace.setAttribute("src", "faces/default_idle.png");
   moveFace();
-  battleBoxDead.style.visibility = "hidden";
   sacrificeBtn.style.visibility = "hidden";
 }); // Alive the pal.
 
@@ -829,59 +811,6 @@ function playAttackSfx() {
     source.start(0);
   }
 }
-
-function shake(selector) {
-  var enemy;
-  if (selector) {
-    enemy = battlePal;
-  } else {
-    enemy = battleEnemy;
-  }
-  const shakeFrames = [
-    { transform: "translate(0, 0)" },
-    { transform: "translate(-10px, 0)" },
-    { transform: "translate(10px, 0)" },
-    { transform: "translate(-10px, 0)" },
-    { transform: "translate(10px, 0)" },
-    { transform: "translate(-5px, 0)" },
-    { transform: "translate(5px, 0)" },
-    { transform: "translate(0, 0)" },
-  ];
-
-  let frame = 0;
-
-  function animate() {
-    enemy.style.transform = shakeFrames[frame].transform;
-    frame++;
-
-    if (frame < shakeFrames.length) {
-      setTimeout(animate, 50); // Adjust the timing as needed
-    } else {
-      // Reset to the original position
-      enemy.style.transform = "translate(0, 0)";
-    }
-  }
-
-  animate();
-}
-
-battleClickBtn.addEventListener("mouseover", () => {
-  battleClickBtn.style.backgroundImage = `url("sprite/sprite_battle_i.png")`;
-  playSelectSfx();
-});
-battleClickBtn.addEventListener("mouseleave", () => {
-  battleClickBtn.style.backgroundImage = `url("sprite/sprite_battle.png")`;
-});
-battleClickBtn.addEventListener("mousedown", () => {
-  playAttackSfx();
-  window.electron.send("battle-click");
-  battleClickBtn.style.backgroundImage = `url("sprite/sprite_battle.png")`;
-  shake();
-  setTimeout(() => {
-    battleClickBtn.style.backgroundImage = `url("sprite/sprite_battle_i.png")`;
-  }, 50);
-  // send a click event to the main script.
-});
 
 function playDeathSfx() {
   if (audioEnabled) {

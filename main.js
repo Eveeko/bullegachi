@@ -979,9 +979,6 @@ function syncItems() {
 /**
  * Wrapper for win.webContents. Syncs internal enemy with UI.
  */
-function syncEnemy() {
-  win.webContents.send("setEnemy", enemy);
-}
 /**
  * Wrapper for win.webContents. Syncs internal player level with UI.
  * @param {number} level The current player level.
@@ -1238,7 +1235,6 @@ function loadVariables() {
         syncStats();
         syncItems();
         syncFoods();
-        syncEnemy();
         syncLevel();
       } catch (err) {
         console.error("Error loading game data:", err);
@@ -1249,7 +1245,6 @@ function loadVariables() {
       syncStats();
       syncItems();
       syncFoods();
-      syncEnemy();
       syncLevel();
       genChk();
     }
@@ -1829,12 +1824,10 @@ ipcMain.on("endSacrifice", () => {
   foodDepletionTimeout = setTimeout(depleteFood, 3000); // Random time in seconds (5-15 minutes)
   saveVariables();
   saveClientData();
-  enemy = new Enemy();
   syncFoods();
   syncItems();
   syncLevel();
   syncStats();
-  syncEnemy();
 });
 
 /**

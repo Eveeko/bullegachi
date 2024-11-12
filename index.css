@@ -482,255 +482,6 @@ body {
   left: 190px;
 }
 
-.battle_box {
-  position: absolute;
-  top: 5px;
-  left: 40px;
-  background-color: #110d00;
-  border: 3px solid #ffcc00;
-  border-radius: 5px;
-  width: 210px;
-  height: 186px;
-  filter: blur(1px);
-}
-
-.battle_title {
-  color: #ffcc00;
-  font-size: 22px;
-  left: 86px;
-  top: -12px;
-  position: fixed;
-  filter: blur(0.5px);
-}
-
-.battle_timer {
-  color: #ffcc00;
-  font-size: 22px;
-  left: 166px;
-  top: -11px;
-  position: fixed;
-  filter: blur(0.5px);
-}
-
-.battle_enemy {
-  background-image: url("sprite/sprite_enemy_1.png");
-  width: 130px;
-  height: 148px;
-  position: absolute;
-  top: 66px;
-  left: 160px;
-  background-repeat: no-repeat;
-  background-size: 56px;
-}
-
-.battle_enemy_statbox {
-  background-color: #ffcc00;
-  position: absolute;
-  top: 60px;
-  left: 153px;
-  width: 72px;
-  height: 12px;
-  border-radius: 0px;
-}
-
-.battle_enemy_name {
-  color: #ffcc00;
-  font-size: 12px;
-  left: 154px;
-  top: 32px;
-  position: fixed;
-  filter: blur(0.5px);
-}
-
-.battle_enemy_hp {
-  color: #110d00;
-  font-size: 14px;
-  left: 158px;
-  top: 41px;
-  position: fixed;
-}
-
-.battle_pal {
-  background-image: url("sprite/sprite_bulletpal_f.png");
-  width: 130px;
-  height: 148px;
-  position: absolute;
-  top: 92px;
-  left: 64px;
-  background-repeat: no-repeat;
-  background-size: 56px;
-}
-
-.battle_pal_statbox {
-  background-color: #ffcc00;
-  position: absolute;
-  top: -13px;
-  left: -4px;
-  width: 62px;
-  height: 12px;
-  border-radius: 0px;
-}
-
-.battle_pal_name {
-  color: #ffcc00;
-  font-size: 12px;
-  left: 60px;
-  top: 51px;
-  position: fixed;
-  filter: blur(0.5px);
-}
-
-.battle_pal_hp {
-  color: #110d00;
-  font-size: 14px;
-  left: 64px;
-  top: 60px;
-  position: fixed;
-}
-
-.battle_click_btn {
-  background-image: url("sprite/sprite_battle.png");
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  top: 134px;
-  left: 122px;
-  background-repeat: no-repeat;
-  background-size: 50px;
-  filter: blur(0.5px);
-}
-
-.battle_enemy_stat {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-}
-
-.popupItem {
-  position: absolute;
-  top: 0px;
-  left: 162px;
-  font-size: 14px;
-  color: #ffcc00;
-  animation: flicker-rising 1.5s forwards;
-}
-
-.battle_next_btn {
-  background-image: url("sprite/sprite_next_btn.png");
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  top: 134px;
-  left: 122px;
-  background-repeat: no-repeat;
-  background-size: 50px;
-  filter: blur(0.5px);
-}
-
-@keyframes bannerscroll {
-  0% {
-    left: -136px;
-    top: -148px;
-    visibility: visible;
-    background-color: rgba(11, 9, 0, 0.039);
-  }
-
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    background-color: #ffcc00;
-  }
-
-  20%,
-  40%,
-  60%,
-  80% {
-    background-color: rgba(11, 9, 0, 0.039);
-  }
-
-  90% {
-    background-color: #ffcc00;
-    visibility: visible;
-  }
-
-  100% {
-    background-color: rgba(11, 9, 0, 0.039);
-    left: -536px;
-    top: 180px;
-    visibility: hidden;
-  }
-}
-
-.banner {
-  position: absolute;
-  left: -136px;
-  top: -148px;
-  font-size: 32px;
-  color: #110d00;
-  background-color: #ffcc00;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-left: 220px;
-  animation: bannerscroll 7s linear forwards;
-  transform: rotate(320deg);
-}
-
-.banner-h4 {
-  margin: auto;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.battle_pal_stat {
-  position: absolute;
-  left: 63px;
-  top: 92px;
-}
-
-.battle_box_dead {
-  position: absolute;
-  left: 54px;
-  top: 16px;
-  background-color: #110d00;
-  border: 3px solid #ffcc00;
-  border-radius: 5px;
-  width: 180px;
-  height: 164px;
-  filter: blur(1px);
-}
-
-.battle_box_dead_img {
-  position: absolute;
-  left: 55px;
-  top: 20px;
-  background-image: url(sprite/sprite_pal_dead.png);
-  background-size: 65px 65px;
-  background-repeat: no-repeat;
-  width: 65px;
-  height: 65px;
-}
-
-.battle_box_dead_h4 {
-  position: absolute;
-  left: 2px;
-  top: 62px;
-  font-size: 22px;
-  color: #ffcc00;
-  text-align: center;
-}
-
-.battle_box_dead_line {
-  position: absolute;
-  left: 50px;
-  top: 140px;
-  border: 3px;
-  background-color: #ffcc00;
-  width: 76px;
-  height: 4px;
-}
-
 .food_warn {
   position: absolute;
   left: 41px;
@@ -1307,4 +1058,32 @@ body {
   100%{
     opacity: 1;
   }
+}
+
+/*
+  BATTLE v2 CSS SHIT
+  ------------------
+*/
+
+.battle_box {
+  position: absolute;
+  top: 5px;
+  left: 40px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 210px;
+  height: 186px;
+  filter: blur(1px);
+}
+
+.battle_tile_1 {
+  position: absolute;
+  top: 5px;
+  left: 20px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  width: 25px;
+  height: 25px;
+  transform: rotate(45deg);
 }

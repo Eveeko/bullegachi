@@ -1080,6 +1080,40 @@ body {
   filter: blur(1px);
 }
 
+.battleBox_splash_background {
+  position: absolute;
+  top: 5px;
+  left: 40px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 210px;
+  height: 186px;
+  filter: blur(1px);
+  z-index: 2;
+}
+
+.bbx_splsh_start {
+  position: absolute;
+  border: 3px solid #ffcc00;
+  top: 110px;
+  left: 115px;
+  width: 45px;
+  height: 35px;
+  border-radius: 5px;
+  z-index: 2;
+}
+.bbx_splsh_h1_1 {
+  position: absolute;
+  color: #ffcc00;
+  font-size: 12px;
+  top: 110px;
+  left: 115px;
+  width: 45px;
+  height: 35px;
+  z-index: 2;
+}
+
 /* the origin tile where the player starts the level at. */
 .battle_tile_origin {
   position: absolute;

@@ -958,14 +958,14 @@ body {
 
 .updateCont {
   position: absolute;
-    left: 10px;
-    top: 10px;
-    background-color: #110d00;
-    border: 3px solid #ffcc00;
-    border-radius: 5px;
-    width: 234px;
-    height: 174px;
-    filter: blur(1px);
+  left: 10px;
+  top: 10px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 234px;
+  height: 174px;
+  filter: blur(1px);
 }
 
 .updateH1 {
@@ -1003,7 +1003,7 @@ body {
   background-size: 45px 45px;
 }
 
-.updateNotes{
+.updateNotes {
   position: absolute;
   top: 158px;
   left: 15px;
@@ -1012,7 +1012,7 @@ body {
   padding: 4px;
 }
 
-.updateNotes:hover{
+.updateNotes:hover {
   cursor: pointer;
   color: #b28e00;
 }
@@ -1046,16 +1046,19 @@ body {
 }
 
 @keyframes blink_warn {
-  25%{
+  25% {
     opacity: 0;
   }
-  50%{
+
+  50% {
     opacity: 1;
   }
+
   75% {
     opacity: 0;
   }
-  100%{
+
+  100% {
     opacity: 1;
   }
 }
@@ -1072,7 +1075,7 @@ body {
   background-color: #110d00;
   border: 3px solid #ffcc00;
   border-radius: 5px;
-  width: 210px;  
+  width: 210px;
   height: 186px;
   filter: blur(1px);
 }
@@ -1087,4 +1090,79 @@ body {
   width: 25px;
   height: 25px;
   transform: rotate3d(20, -2, 1, 69deg);
+}
+
+.pf_player {
+  position: absolute;
+  top: 48px;
+  left: 78px;
+}
+
+.pf_pspr {
+  position: absolute;
+  width: 33px;
+  height: 47px;
+  background-image: url(sprite/sprite_bulletpal.png);
+  z-index: 2;
+}
+
+.pf_pout {
+  top: 26px;
+  left: 4.5px;
+  width: 26px;
+  height: 20px;
+  position: absolute;
+  outline-width: 5px;
+  outline-color: #110d00;
+  outline-style: solid;
+  outline-offset: -5px;
+  z-index: 1;
+}
+
+.pf_barsl{
+  position: absolute;
+  top: 0px;
+  left: 8px;
+  width: 1px;
+  height: 4px;
+  background-color: #110d00;
+}
+
+.pf_pface {
+  position: absolute;
+  left: 9px;
+  top: 26px;
+  width: 18px;
+  height: 10px;
+  background-image: url(faces/default_idle.png);
+  background-size: 18px, 10px;
+  z-index: 1;
+  filter: blur(0.4px);
+}
+
+.pf_pbar {
+  position: absolute;
+  top: -6px;
+  left: 4px;
+  width: 26px;
+  height: 4px;
+  background-color: #ffcc00;
+  outline: #110d00;
+  outline-style: solid;
+  outline-width: 1px;
+  z-index: 1;
+}
+
+.pf_lvl {
+  position: absolute;
+  color: #ffcc00;
+  font-size: 5px;
+  top: -12px;
+  left: 3.5px;
+  width: 20px;
+}
+.pf_grid {
+  position: absolute;
+  left: 0px;
+  top: 0px;
 }

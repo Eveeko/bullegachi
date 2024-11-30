@@ -139,7 +139,29 @@
         <div class="battle_box" id="battleBox">
             <div class="line-filter"></div>
         </div>
-        <div id="battle_tile_origin" class="battle_tile_origin"></div>70
+        <div id="battleBox_splash" class="battleBox_splash" style="visibility: visible;">
+            <div id="battleBox_splash_start" class="bbx_splsh_start"></div>
+            <div id="battleBox_splash_sprite" class="bbx_splsh_sprite"></div>
+            <h1 id="battleBox_splash_h1_1" class="bbx_splsh_h1_1" style="visibility: visible;">Start descent.</h1> <!-- ooooo button title changing to reflect plot o.o -->
+            <h1 id="battleBox_splash_h1_2" class="bbx_splsh_h1_1 bbx_splsh_h1_2" style="visibility: hidden;">Resume escape.</h1> <!-- ^ -->
+        </div>
+        <!-- This houses all the player elements so it can stay static in relation to the screen. -->
+        <div id="playfield_player" class="pf_player">
+            <div id="playfield_player_sprite" class="pf_pspr"></div>
+            <div id="playfield_player_outline" class="pf_pout"></div>
+            <div id="playfield_player_face" class="pf_pface"></div>
+            <div id="playfield_player_bar" class="pf_pbar">
+                <div id="playfield_player_bar_sublines" class="pf_barsl"></div>
+                <div id="playfield_player_bar_sublines" class="pf_barsl" style="left: 18px;"></div>
+            </div>
+            <div id="playfield_player_level" class="pf_lvl">lvl: 1</div>
+        </div>
+        <!-- This houses all the level elements so it can move around the player while the player stays static. -->
+        <div id="playfield_grid" class="pf_grid">
+            <div id="battle_tile_origin" class="battle_tile_origin"></div>
+
+        </div>
+
     </div>
     <div id="settingsBox" style="visibility: hidden;">
         <div class="settings_box">

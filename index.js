@@ -74,6 +74,10 @@ const updateCont = document.getElementById("updateCont");
 const updateLoading = document.getElementById("updateLoading");
 const updateVer = document.getElementById("updateH1_1");
 const updateResetSave = document.getElementById("updateResetSave");
+const battleBoxSplashStart = document.getElementById("battleBox_splash_start");
+const battleBoxSplashResume = document.getElementById("battleBox_splash_resume");
+const battleBoxSplashH1_1 = document.getElementById("battleBox_splash_h1_1");
+const battleBoxSplashH1_2 = document.getElementById("battleBox_splash_h1_2");
 
 var moveMode = false;
 var isDragging = false;
@@ -865,7 +869,7 @@ function popupItem(name, rand, bl) {
 
 window.electron.receive("setLevel", (levelData) => {
   console.log("setLevel", levelData);
-  if(!levelData.level) {levelData.level = 1};
+  if (!levelData.level) { levelData.level = 1 };
   level.innerHTML = `lvl: ${levelData.level}`;
   levelIndicator.style.width = `${levelData.levelProgress}px`;
 });
@@ -1545,12 +1549,12 @@ window.electron.receive("wipeTutorial", () => {
 
 var resetSave = false; // Whether or not to reset the save file after updating.
 
-window.electron.receive("update-available", (info)=>{
+window.electron.receive("update-available", (info) => {
   playSelectSfx();
   window.electron.getAppVersion().then(version => {
     updateVer.innerHTML = `<span style="color: #b28e00"><del>V${version}</del></span> -> V${info.version}`;
     updateCont.style.display = "block";
-    if(version[0] != info.version[0]){
+    if (version[0] != info.version[0]) {
       resetSave = true;
       updateResetSave.style.display = "block";
     }
@@ -1570,7 +1574,7 @@ updateBtn.addEventListener('mouseover', () => {
 updateBtn.addEventListener('mouseleave', () => {
   updateBtn.style.backgroundImage = `url("sprite/sprite_update_btn.png")`;
 })
-updateBtn.addEventListener('mousedown', () =>{
+updateBtn.addEventListener('mousedown', () => {
   window.electron.send("updateConfirmed", resetSave);
   updateBtn.style.display = "none";
   updateBtnSkip.style.display = "none";
@@ -1584,21 +1588,21 @@ updateBtnSkip.addEventListener('mouseover', () => {
 updateBtnSkip.addEventListener('mouseleave', () => {
   updateBtnSkip.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
 })
-updateBtnSkip.addEventListener('mousedown', () =>{
+updateBtnSkip.addEventListener('mousedown', () => {
   window.electron.send("updateDeclined");
   updateBtn.style.display = "none";
   updateBtnSkip.style.display = "none";
   updateCont.style.display = "none";
 })
 
-window.electron.receive("updateProgress", (info)=>{
-  if(info.percent < 14){
+window.electron.receive("updateProgress", (info) => {
+  if (info.percent < 14) {
     updateLoading.innerHTML = "█";
-  }else if (info.percent < 28){
+  } else if (info.percent < 28) {
     updateLoading.innerHTML = "█ █";
-  }else if (info.percent < 42){
+  } else if (info.percent < 42) {
     updateLoading.innerHTML = "█ █ █";
-  } else if (info.percent < 56){
+  } else if (info.percent < 56) {
     updateLoading.innerHTML = "█ █ █ █";
   } else if (info.percent < 70) {
     updateLoading.innerHTML = "█ █ █ █ █";
@@ -1628,3 +1632,47 @@ window.electron.receive("updateProgress", (info)=>{
 // This is the *NEW* battle mechanics, all visual and user input are defined
 // and handled within this block. call 1-800-battle2 for more information™
 // -------------------------------------------------------------------------
+
+battleBoxSplashStart.addEventListener('mouseover', () => {
+  playSelectSfx();
+  battleBoxSplashStart.style.backgroundColor = "#ffcc00";
+  battleBoxSplashH1_1.style.color = "#110d00";
+});
+battleBoxSplashStart.addEventListener('mouseout', () => {
+  battleBoxSplashStart.style.backgroundColor = "#110d00";
+  battleBoxSplashH1_1.style.color = "#ffcc00";
+});
+battleBoxSplashStart.addEventListener('mousedown', () => {
+  playSelectSfx();
+  battleBoxSplashStart.style.backgroundColor = "#110d00";
+  battleBoxSplashH1_1.style.color = "#ffcc00";
+  setTimeout(() => {
+    battleBoxSplashStart.style.backgroundColor = "#ffcc00";
+    battleBoxSplashH1_1.style.color = "#110d00";
+    battleBoxSplashResume.style.visibility = "hidden";
+    battleBoxSplashStart.style.visibility = "hidden";
+    window.electron.send("battleBoxStart");
+  }, 150);
+});
+
+battleBoxSplashResume.addEventListener('mouseover', () => {
+  playSelectSfx();
+  battleBoxSplashResume.style.backgroundColor = "#ffcc00";
+  battleBoxSplashH1_2.style.color = "#110d00";
+});
+battleBoxSplashResume.addEventListener('mouseout', () => {
+  battleBoxSplashResume.style.backgroundColor = "#110d00";
+  battleBoxSplashH1_2.style.color = "#ffcc00";
+});
+battleBoxSplashResume.addEventListener('mousedown', () => {
+  playSelectSfx();
+  battleBoxSplashResume.style.backgroundColor = "#110d00";
+  battleBoxSplashH1_2.style.color = "#ffcc00";
+  setTimeout(() => {
+    battleBoxSplashResume.style.backgroundColor = "#ffcc00";
+    battleBoxSplashH1_2.style.color = "#110d00";
+    battleBoxSplashResume.style.visibility = "hidden";
+    battleBoxSplashStart.style.visibility = "hidden";
+    window.electron.send("battleBoxResume");
+  }, 150);
+});

@@ -1097,8 +1097,8 @@ body {
   position: absolute;
   border: 3px solid #ffcc00;
   top: 110px;
-  left: 115px;
-  width: 45px;
+  left: 72px;
+  width: 58px;
   height: 35px;
   border-radius: 5px;
   z-index: 2;
@@ -1107,11 +1107,25 @@ body {
   position: absolute;
   color: #ffcc00;
   font-size: 12px;
-  top: 110px;
-  left: 115px;
+  top: -2px;
+  left: 7px;
   width: 45px;
   height: 35px;
   z-index: 2;
+  text-align: center;
+}
+.bbx_splsh_resume {
+  position: absolute;
+  border: 3px solid #ffcc00;
+  top: 110px;
+  left: 160px;
+  width: 58px;
+  height: 35px;
+  border-radius: 5px;
+  z-index: 2;
+}
+.bbx_splsh_h1_2 {
+  left: 8px;
 }
 
 /* the origin tile where the player starts the level at. */

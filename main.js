@@ -2173,10 +2173,17 @@ class Level {
     var randY = +(`0.${this.seed.substring(0, 3)}`); // The random number used for gridHeight determination.
     randY = (randY.toFixed(1) / 2); // Divides the value in half to favor small values. 1-5 is max value range.
     randY = +((randY.toFixed(1) / 2).toString()[2]); // Takes the first value to the right of the decimal place.
-    if(randY == 0){ randY = 1 }; // Protection against a Zero height level.
+    if (randY == 0) { randY = 1 }; // Protection against a Zero height level.
     this.gridHeight = randY; // Sets the grid height to the randY value.
-    
+
     var randX = +(`0.${this.seed.substring(2, 5)}`); // The random number used for gridLength determination.
-    randX =  Math.log10(randX.toFixed(1) + 1) * floorMultiplier
+    randX = Math.log10(randX.toFixed(1) + 1) * floorMultiplier
   }
 }
+
+ipcMain.on('battleBoxStart', () => {
+
+});
+ipcMain.on('battleBoxResume', () => {
+
+});

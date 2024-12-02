@@ -1676,3 +1676,7 @@ battleBoxSplashResume.addEventListener('mousedown', () => {
     window.electron.send("battleBoxResume");
   }, 150);
 });
+
+window.electron.receive('battleBoxStart_levelSync', (level)=>{
+  console.log(level);
+})

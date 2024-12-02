@@ -2155,7 +2155,7 @@ class Level {
   //      =
   //  = = =
   //      =
-  exitAddress = [2, 2]; // The tile address(X and Y coordinate) that is the exit of this level. defaults to the 2nd tile.
+  exitAddress = [3, 2]; // The tile address(X and Y coordinate) that is the exit of this level. defaults to the 2nd tile.
   totalEnemies = 1; // The total amount of enemies on all tiles in this level.
   totalLoot = 0; // The total amount of loot(chest tiles, item tiles) on all tiles in this level.
 
@@ -2167,22 +2167,87 @@ class Level {
     let numberOfTens = Math.floor(floor / 10);
     let floorMultiplier = `${(+(floorStr[floorStr.length - 1]) ? floorStr[floorStr.length - 1] : 1) * numberOfTens}.${floorStr.substring(1, -1)}`
     let gen = n => [...Array(n)].map(_ => Math.random() * 10 | 0).join``; // stack overflow wizards praise thee!!
-    var totalTilesToGen = +(this.seed.substring(5, 6)) * floorMultiplier; // The amount of tiles we need to generate.
+    var totalTilesToGen = Math.round(+(this.seed.toString().substring(5, 6)) * floorMultiplier + 3); // The amount of tiles we need to generate.
     this.seed = (1 + Math.random() * 9 | 0) + gen(8); // Generates a 9 digit long seed.
 
-    var randY = +(`0.${this.seed.substring(0, 3)}`); // The random number used for gridHeight determination.
+    var randY = +(`0.${this.seed.toString().substring(0, 3)}`); // The random number used for gridHeight determination.
     randY = (randY.toFixed(1) / 2); // Divides the value in half to favor small values. 1-5 is max value range.
     randY = +((randY.toFixed(1) / 2).toString()[2]); // Takes the first value to the right of the decimal place.
     if (randY == 0) { randY = 1 }; // Protection against a Zero height level.
     this.gridHeight = randY; // Sets the grid height to the randY value.
 
-    var randX = +(`0.${this.seed.substring(2, 5)}`); // The random number used for gridLength determination.
-    randX = Math.log10(randX.toFixed(1) + 1) * floorMultiplier
+    var randX = +(`0.${this.seed.toString().substring(2, 5)}`); // The random number used for gridLength determination.
+    randX = Math.log10(randX.toFixed(1) + 1) * floorMultiplier;
+    if (randX <= 2) { randX = 3 }; // Protection against a 2x2 cube level.
+    this.gridLength = randX; // Sets the grid length to the randX value.
+
+    console.log('[*] totalTilesToGen value:', totalTilesToGen);
+    console.log('[*] floorMultiplier value:', floorMultiplier);
+
+    // -----t-i-l-e---g-e-n-e-r-a-t-i-o-n------
+
+    function generateGrid(totalTilesToGen, gridHeight, gridLength) {
+      // Initialize the tiles array
+      const tiles = [];
+
+      // Keep track of usable tiles
+      let usableTiles = 0;
+
+      for (let x = 0; x < gridLength; x++) {
+        const column = [];
+        for (let y = 0; y < gridHeight; y++) {
+          // Check if we can still add usable tiles
+          if (usableTiles < totalTilesToGen) {
+            column.push([x, y]); // Add usable tile
+            usableTiles++;
+          } else {
+            column.push(null); // Add null for unusable tile
+          }
+        }
+        tiles.push(column);
+      }
+
+      return tiles;
+    }
+
+    generateGrid(totalTilesToGen, gridHeight, gridLength);
+
+    // --------------------------------------
+
+    let enemiesRemaining = this.totalEnemies;
+    let lootRemaining = this.totalLoot;
+
+    for (let i = 0; i < totalTilesToGen; i++) {
+      // Probability of placing an enemy on this tile
+      const probability = enemiesRemaining / (totalTilesToGen - i);
+
+      if (Math.random() < probability) {
+        var Xgrid = this.tiles[i];
+        console.log('enemy placed: ', i); // Place loot
+        enemiesRemaining--; // Reduce remaining enemies
+
+        if (enemiesRemaining === 0) break; // Exit early if all enemies are placed
+      }
+    }
+    for (let i = 0; i < totalTilesToGen; i++) {
+      // Probability of placing a piece of loot on this tile
+      const probability = lootRemaining / (totalTilesToGen - i);
+
+      if (Math.random() < probability) {
+        console.log('loot placed: ', i); // Place loot
+        lootRemaining--; // Reduce remaining loot
+
+        if (lootRemaining === 0) break; // Exit early if all loot are placed
+      }
+    }
+
   }
 }
 
 ipcMain.on('battleBoxStart', () => {
-
+  var startingLevel = new Level(1);
+  console.log(startingLevel);
+  win.webContents.send('battleBoxStart_levelSync', startingLevel);
 });
 ipcMain.on('battleBoxResume', () => {
 

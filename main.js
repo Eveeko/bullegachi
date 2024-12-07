@@ -2141,6 +2141,11 @@ class Tile {
   enemy = null; // If a enemy is on the tile this should contain the Enemy object. otherwise = null;
   item = null; // If a item is on this tile this should contain the Item object. If there is an item object and a enemy object the item will drop after the enemy is defeated.
   event = null; // If an event is designated for this tile this should contain the event object.
+  constructor(x, y, walkable) {
+    this.coordX = x;
+    this.coordY = y;
+    this.canStand = walkable;
+  }
 }
 /**
  * A level object representing the bounds of the playfield.
@@ -2158,6 +2163,8 @@ class Level {
   exitAddress = [3, 2]; // The tile address(X and Y coordinate) that is the exit of this level. defaults to the 2nd tile.
   totalEnemies = 1; // The total amount of enemies on all tiles in this level.
   totalLoot = 0; // The total amount of loot(chest tiles, item tiles) on all tiles in this level.
+  totalUsableTiles = 0; // The total amount of tiles that can be moved onto.
+  totalUnusableTiles = 0; // the total amount of tiles that CANT be moved to.
 
   /**
    * @param {Number} floor effects the size and difficulty based on the size of the number
@@ -2188,48 +2195,77 @@ class Level {
 
     function generateGrid(totalTilesToGen, gridHeight, gridLength) {
       // Initialize the tiles array
-      const tiles = [];
+      const xtiles = [];
 
       // Keep track of usable tiles
       let usableTiles = 0;
+      let unusableTiles = 0;
 
       for (let x = 0; x < gridLength; x++) {
         const column = [];
         for (let y = 0; y < gridHeight; y++) {
-          // Check if we can still add usable tiles
           if (usableTiles < totalTilesToGen) {
-            column.push([x, y]); // Add usable tile
-            usableTiles++;
+            // Check if we can still add usable tiles
+            var xi = getRandomValue(1, 2);
+            if (xi == 2) {
+              if (y > 1) {
+                if (column[y - 1].canStand == true) {
+                  column.push(new Tile(x, y, true)); // Add usable tile
+                  usableTiles++;
+                } else {
+                  unusableTiles++;
+                  column.push(new Tile(x, y, false)); // Add null for unusable tile
+                }
+              } else {
+                column.push(new Tile(x, y, true)); // Add usable tile
+                usableTiles++;
+              }
+            } else {
+              unusableTiles++;
+              column.push(new Tile(x, y, false)); // Add null for unusable tile
+            }
           } else {
-            column.push(null); // Add null for unusable tile
+            column.push(new Tile(x, y, false)); // Add null for unusable tile
           }
         }
-        tiles.push(column);
+        xtiles.push(column);
       }
 
-      return tiles;
+      return ([xtiles, usableTiles, unusableTiles]);
     }
 
-    generateGrid(totalTilesToGen, gridHeight, gridLength);
+    var xbz = generateGrid(totalTilesToGen, 5, 7);
+    this.tiles = xbz[0];
+    this.totalUsableTiles = xbz[1];
+    this.totalUnusableTiles = xbz[2];
 
     // --------------------------------------
 
     let enemiesRemaining = this.totalEnemies;
     let lootRemaining = this.totalLoot;
 
-    for (let i = 0; i < totalTilesToGen; i++) {
+    for (let i = 0; i < totalTilesToGen - 1; i++) {
       // Probability of placing an enemy on this tile
-      const probability = enemiesRemaining / (totalTilesToGen - i);
-
+      var probability = enemiesRemaining / (totalTilesToGen - i);
+      var XgridValid = [];
       if (Math.random() < probability) {
         var Xgrid = this.tiles[i];
-        console.log('enemy placed: ', i); // Place loot
+        for (let z = 0; z < Xgrid.length; z++) {
+          console.log(Xgrid[z])
+          if (Xgrid[z].canStand) {
+            XgridValid.push(z);
+          };
+        }
+        // Generate a random index between 0 and (length - 1)
+        var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
+        console.log('enemy placed: ', i, randomXgridIndex); // Place loot
+        this.tiles[i][randomXgridIndex].enemy = new Enemyn();
         enemiesRemaining--; // Reduce remaining enemies
 
         if (enemiesRemaining === 0) break; // Exit early if all enemies are placed
       }
     }
-    for (let i = 0; i < totalTilesToGen; i++) {
+    for (let i = 0; i < totalTilesToGen - 1; i++) {
       // Probability of placing a piece of loot on this tile
       const probability = lootRemaining / (totalTilesToGen - i);
 
@@ -2240,9 +2276,50 @@ class Level {
         if (lootRemaining === 0) break; // Exit early if all loot are placed
       }
     }
+    // ------------------------------
+    // Generating exit tile.
+
+    var tilesToLoop = (Math.floor(this.unusableTiles / 2)) ? (Math.floor(this.unusableTiles / 2)) : 1;
+    console.log('exit tiles potential =', tilesToLoop);
 
   }
 }
+
+//// -;-;-;-;-;-
+//function generatePrettyAsciiMap(grid) {
+//  const transposedGrid = [];
+//
+//  // Transpose the grid to switch X and Y coordinates
+//  for (let y = 0; y < grid[0].length; y++) {
+//    const row = [];
+//    for (let x = 0; x < grid.length; x++) {
+//      row.push(grid[x][y]);
+//    }
+//    transposedGrid.push(row);
+//  }
+//  // Generate ASCII map
+//  return transposedGrid.map(row =>
+//    row.map(cell => {
+//      if (cell.enemy) {
+//        return ' E '; // Enemy present
+//      } else if (cell.canStand) {
+//        return ' . '; // Walkable terrain
+//      } else {
+//        return ' # '; // Impassable terrain
+//      }
+//    }).join('') // Combine row into a single string for X positions
+//  ).join('\n'); // Combine all Y-position rows into the final map
+//}
+////console.log(generatePrettyAsciiMap(this.tiles));
+//var levelSet = [];
+//for(z = 0; z < 10; z++){
+//  levelSet.push(new Level(1));
+//};
+//for(x = 0; x < 10; x++){
+//  console.log('-');
+//  console.log(generatePrettyAsciiMap(levelSet[x].tiles));
+//};
+//// -;-;-;-;-;-
 
 ipcMain.on('battleBoxStart', () => {
   var startingLevel = new Level(1);

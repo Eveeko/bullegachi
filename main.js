@@ -113,7 +113,8 @@ function getUserName(callback) {
     (error, stdout, stderr) => {
       if (error || stderr) {
         console.warn(
-          `Failed to get full name, falling back to basic username: ${error || stderr
+          `Failed to get full name, falling back to basic username: ${
+            error || stderr
           }`
         );
         const userInfo = os.userInfo();
@@ -234,7 +235,7 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false, // This will allow loading local resources but is not recommended for production
-      allowRunningInsecureContent: true
+      allowRunningInsecureContent: true,
     },
   });
   win.webContents.setDevToolsWebContents(devToolsWindow.webContents);
@@ -1979,12 +1980,15 @@ ipcMain.on("updateConfirmed", (resetSave) => {
         console.log("Successfully deleted gameData.json");
         fs.unlink(`${userDataPath}/clientData.json`, (err) => {
           if (err) {
-            console.log(`failed to delete clientData.json during saveReset.`, err);
+            console.log(
+              `failed to delete clientData.json during saveReset.`,
+              err
+            );
           }
           console.log("Successfully deleted clientData.json");
           autoUpdater.quitAndInstall();
-        })
-      })
+        });
+      });
     });
   } else {
     setTimeout(() => {
@@ -2073,7 +2077,7 @@ function valChk() {
 // │██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝      ╚██╗ ██╔╝██╔═══╝ │
 // │██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗     ╚████╔╝ ███████╗│
 // │╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝      ╚═══╝  ╚══════╝│
-// └───────────────────────────────────────────────────────────────────────┘ 
+// └───────────────────────────────────────────────────────────────────────┘
 // -------------------------------------------------------------------------
 // This is the *NEW* and improved battle mechanics designed to supersede
 // the original battle mechanics of the spam random encounter click-to-kill
@@ -2149,7 +2153,7 @@ class Tile {
 }
 /**
  * A level object representing the bounds of the playfield.
- * pass a `floor` value(int) to effect the level generation. 
+ * pass a `floor` value(int) to effect the level generation.
  */
 class Level {
   seed = 123456789; // The seed used to generate all parts of the level.
@@ -2172,24 +2176,33 @@ class Level {
   constructor(floor) {
     let floorStr = floor.toString();
     let numberOfTens = Math.floor(floor / 10);
-    let floorMultiplier = `${(+(floorStr[floorStr.length - 1]) ? floorStr[floorStr.length - 1] : 1) * numberOfTens}.${floorStr.substring(1, -1)}`
-    let gen = n => [...Array(n)].map(_ => Math.random() * 10 | 0).join``; // stack overflow wizards praise thee!!
-    var totalTilesToGen = Math.round(+(this.seed.toString().substring(5, 6)) * floorMultiplier + 3); // The amount of tiles we need to generate.
-    this.seed = (1 + Math.random() * 9 | 0) + gen(8); // Generates a 9 digit long seed.
+    let floorMultiplier = `${
+      (+floorStr[floorStr.length - 1] ? floorStr[floorStr.length - 1] : 1) *
+      numberOfTens
+    }.${floorStr.substring(1, -1)}`;
+    let gen = (n) => [...Array(n)].map((_) => (Math.random() * 10) | 0).join``; // stack overflow wizards praise thee!!
+    var totalTilesToGen = Math.round(
+      +this.seed.toString().substring(5, 6) * floorMultiplier + 3
+    ); // The amount of tiles we need to generate.
+    this.seed = ((1 + Math.random() * 9) | 0) + gen(8); // Generates a 9 digit long seed.
 
-    var randY = +(`0.${this.seed.toString().substring(0, 3)}`); // The random number used for gridHeight determination.
-    randY = (randY.toFixed(1) / 2); // Divides the value in half to favor small values. 1-5 is max value range.
-    randY = +((randY.toFixed(1) / 2).toString()[2]); // Takes the first value to the right of the decimal place.
-    if (randY == 0) { randY = 1 }; // Protection against a Zero height level.
+    var randY = +`0.${this.seed.toString().substring(0, 3)}`; // The random number used for gridHeight determination.
+    randY = randY.toFixed(1) / 2; // Divides the value in half to favor small values. 1-5 is max value range.
+    randY = +(randY.toFixed(1) / 2).toString()[2]; // Takes the first value to the right of the decimal place.
+    if (randY == 0) {
+      randY = 1;
+    } // Protection against a Zero height level.
     this.gridHeight = randY; // Sets the grid height to the randY value.
 
-    var randX = +(`0.${this.seed.toString().substring(2, 5)}`); // The random number used for gridLength determination.
+    var randX = +`0.${this.seed.toString().substring(2, 5)}`; // The random number used for gridLength determination.
     randX = Math.log10(randX.toFixed(1) + 1) * floorMultiplier;
-    if (randX <= 2) { randX = 3 }; // Protection against a 2x2 cube level.
+    if (randX <= 2) {
+      randX = 3;
+    } // Protection against a 2x2 cube level.
     this.gridLength = randX; // Sets the grid length to the randX value.
 
-    console.log('[*] totalTilesToGen value:', totalTilesToGen);
-    console.log('[*] floorMultiplier value:', floorMultiplier);
+    console.log("[*] totalTilesToGen value:", totalTilesToGen);
+    console.log("[*] floorMultiplier value:", floorMultiplier);
 
     // -----t-i-l-e---g-e-n-e-r-a-t-i-o-n------
 
@@ -2208,21 +2221,30 @@ class Level {
             // Check if we can still add usable tiles
             var xi = getRandomValue(1, 2);
             if (xi == 2) {
-              if (y > 1) {
-                if (column[y - 1].canStand == true) {
-                  column.push(new Tile(x, y, true)); // Add usable tile
-                  usableTiles++;
-                } else {
-                  unusableTiles++;
-                  column.push(new Tile(x, y, false)); // Add null for unusable tile
-                }
-              } else {
-                column.push(new Tile(x, y, true)); // Add usable tile
-                usableTiles++;
-              }
+              var tileBehindReal = false; // Whether or not the tile to the left of the player is standable.
+              var tileAheadReal = false; // Whether or not the tile to the right of the player is standable.
+              var tileAboveReal = false; // Whether or not the tile directly up of the player is standable.
+              var tileUnderReal = false; // Whether or not the tile directly down of the player is standable.
+              // check if there is a adjacent tile before placing.
+              if(column[x - 1][y].canStand == true){
+                // this checks if there is a adjacent tile behind.
+                tileBehindReal = true;
+              };
+              if(column[x][y + 1].canStand == true){
+                // This checks if there is a adjacent tile underneath.
+                // This should relatively always be false unless something goes wrong.
+              };
+
+              //if (column[y - 1].canStand == true) {
+              // column.push(new Tile(x, y, true)); // Add usable tile
+              // usableTiles++;
+              // else {
+              // column.push(new Tile(x, y, false)); // Add null for unusable tile
+              // unusableTiles++;
+              //
             } else {
-              unusableTiles++;
               column.push(new Tile(x, y, false)); // Add null for unusable tile
+              unusableTiles++;
             }
           } else {
             column.push(new Tile(x, y, false)); // Add null for unusable tile
@@ -2231,7 +2253,7 @@ class Level {
         xtiles.push(column);
       }
 
-      return ([xtiles, usableTiles, unusableTiles]);
+      return [xtiles, usableTiles, unusableTiles];
     }
 
     var xbz = generateGrid(totalTilesToGen, 5, 7);
@@ -2251,14 +2273,14 @@ class Level {
       if (Math.random() < probability) {
         var Xgrid = this.tiles[i];
         for (let z = 0; z < Xgrid.length; z++) {
-          console.log(Xgrid[z])
+          console.log(Xgrid[z]);
           if (Xgrid[z].canStand) {
             XgridValid.push(z);
-          };
+          }
         }
         // Generate a random index between 0 and (length - 1)
         var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
-        console.log('enemy placed: ', i, randomXgridIndex); // Place loot
+        console.log("enemy placed: ", i, randomXgridIndex); // Place loot
         this.tiles[i][randomXgridIndex].enemy = new Enemyn();
         enemiesRemaining--; // Reduce remaining enemies
 
@@ -2270,7 +2292,7 @@ class Level {
       const probability = lootRemaining / (totalTilesToGen - i);
 
       if (Math.random() < probability) {
-        console.log('loot placed: ', i); // Place loot
+        console.log("loot placed: ", i); // Place loot
         lootRemaining--; // Reduce remaining loot
 
         if (lootRemaining === 0) break; // Exit early if all loot are placed
@@ -2279,53 +2301,57 @@ class Level {
     // ------------------------------
     // Generating exit tile.
 
-    var tilesToLoop = (Math.floor(this.unusableTiles / 2)) ? (Math.floor(this.unusableTiles / 2)) : 1;
-    console.log('exit tiles potential =', tilesToLoop);
-
+    var tilesToLoop = Math.floor(this.unusableTiles / 2)
+      ? Math.floor(this.unusableTiles / 2)
+      : 1;
+    console.log("exit tiles potential =", tilesToLoop);
   }
 }
 
-//// -;-;-;-;-;-
-//function generatePrettyAsciiMap(grid) {
-//  const transposedGrid = [];
-//
-//  // Transpose the grid to switch X and Y coordinates
-//  for (let y = 0; y < grid[0].length; y++) {
-//    const row = [];
-//    for (let x = 0; x < grid.length; x++) {
-//      row.push(grid[x][y]);
-//    }
-//    transposedGrid.push(row);
-//  }
-//  // Generate ASCII map
-//  return transposedGrid.map(row =>
-//    row.map(cell => {
-//      if (cell.enemy) {
-//        return ' E '; // Enemy present
-//      } else if (cell.canStand) {
-//        return ' . '; // Walkable terrain
-//      } else {
-//        return ' # '; // Impassable terrain
-//      }
-//    }).join('') // Combine row into a single string for X positions
-//  ).join('\n'); // Combine all Y-position rows into the final map
-//}
-////console.log(generatePrettyAsciiMap(this.tiles));
-//var levelSet = [];
-//for(z = 0; z < 10; z++){
-//  levelSet.push(new Level(1));
-//};
-//for(x = 0; x < 10; x++){
-//  console.log('-');
-//  console.log(generatePrettyAsciiMap(levelSet[x].tiles));
-//};
-//// -;-;-;-;-;-
+// -;-;-;-;-;-
+function generatePrettyAsciiMap(grid) {
+  const transposedGrid = [];
 
-ipcMain.on('battleBoxStart', () => {
+  // Transpose the grid to switch X and Y coordinates
+  for (let y = 0; y < grid[0].length; y++) {
+    const row = [];
+    for (let x = 0; x < grid.length; x++) {
+      row.push(grid[x][y]);
+    }
+    transposedGrid.push(row);
+  }
+  // Generate ASCII map
+  return transposedGrid
+    .map(
+      (row) =>
+        row
+          .map((cell) => {
+            if (cell.enemy) {
+              return " E "; // Enemy present
+            } else if (cell.canStand) {
+              return " . "; // Walkable terrain
+            } else {
+              return " # "; // Impassable terrain
+            }
+          })
+          .join("") // Combine row into a single string for X positions
+    )
+    .join("\n"); // Combine all Y-position rows into the final map
+}
+//console.log(generatePrettyAsciiMap(this.tiles));
+var levelSet = [];
+for (z = 0; z < 10; z++) {
+  levelSet.push(new Level(1));
+}
+for (x = 0; x < 10; x++) {
+  console.log("-");
+  console.log(generatePrettyAsciiMap(levelSet[x].tiles));
+}
+// -;-;-;-;-;-
+
+ipcMain.on("battleBoxStart", () => {
   var startingLevel = new Level(1);
   console.log(startingLevel);
-  win.webContents.send('battleBoxStart_levelSync', startingLevel);
+  win.webContents.send("battleBoxStart_levelSync", startingLevel);
 });
-ipcMain.on('battleBoxResume', () => {
-
-});
+ipcMain.on("battleBoxResume", () => {});

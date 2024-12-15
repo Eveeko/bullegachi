@@ -1678,5 +1678,6 @@ battleBoxSplashResume.addEventListener('mousedown', () => {
 });
 
 window.electron.receive('battleBoxStart_levelSync', (level)=>{
+  console.log('received new level payload.');
   console.log(level);
 })

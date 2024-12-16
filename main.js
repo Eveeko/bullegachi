@@ -2163,7 +2163,7 @@ class Level {
   //      =
   //  = = =
   //      =
-  exitAddress = [3, 2]; // The tile address(X and Y coordinate) that is the exit of this level. defaults to the 2nd tile.
+  exitAddress = null; // The tile address(X and Y coordinate) that is the exit of this level. defaults to the 2nd tile.
   totalEnemies = 1; // The total amount of enemies on all tiles in this level.
   totalLoot = 1; // The total amount of loot(chest tiles, item tiles) on all tiles in this level.
   totalUsableTiles = 0; // The total amount of tiles that can be moved onto.
@@ -2432,20 +2432,36 @@ class Level {
         if (lootRemaining === 0) break; // Exit early if all loot are placed
       }
     }
-    // ------------------------------
+    // ---------------------
     // Generating exit tile.
 
-    var tilesToLoop = Math.floor(this.unusableTiles / 2)
-      ? Math.floor(this.unusableTiles / 2)
-      : 1;
+    var aEndPoints = [];
+    var tilesToLoop = Math.floor(this.unusableTiles / 2) ? Math.floor(this.unusableTiles / 2) : 1;
     console.log("exit tiles potential =", tilesToLoop);
+    var epad = null;
 
+    this.tiles[this.tiles.length - 1].forEach((e, i)=>{
+      if(e.walkable == true){ aEndPoints.push(i); console.log("aEndPoints", i) };
+    });
+    if (aEndPoints.length > 1) {
+      // if there is multiple end tiles.
+      let xe = getRandomValue(0, aEndPoints.length - 1);
+      epad = [this.tiles.length - 1, xe];
+    } else if (aEndPoints.length == 1){
+      // if there is only 1 end tile.
+      console.log([ (this.tiles.length - 1), aEndPoints[0] ])
+      epad = [ (this.tiles.length - 1), aEndPoints[0] ];
+    } else {
+      // if there is no end tile.
+
+    };
+    this.exitAddress = epad;
     // Making sure there is an entrance tile.
     var arrayX2 = [];
     
     this.tiles[1].forEach((e, i)=>{
       if(e.walkable == true){arrayX2.push(i)};
-    })
+    });
     if(arrayX2.length){
       this.tiles[0][arrayX2[0]].walkable = true;
     }

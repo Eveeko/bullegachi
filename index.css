@@ -1140,6 +1140,26 @@ body {
   transform: rotate3d(20, -2, 1, 69deg);
 }
 
+.battle_tile {
+  position: absolute;
+  top: 80px;
+  left: 105px;
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  width: 25px;
+  height: 25px;
+  transform: rotate3d(20, -2, 1, 69deg);
+}
+.battle_tile_empty {
+  position: absolute;
+  top: 80px;
+  left: 105px;
+  width: 25px;
+  height: 25px;
+  transform: rotate3d(20, -2, 1, 30deg);
+  background-position: 3px -2px;
+}
+
 .pf_player {
   position: absolute;
   top: 48px;
@@ -1213,4 +1233,19 @@ body {
   position: absolute;
   left: 0px;
   top: 0px;
+}
+
+.pf_map_ctrls_left {
+  position: absolute;
+    left: 60px;
+    top: 145px;
+    background-image: url(sprite/sprite_next_btn.png);
+    width: 35px;
+    height: 35px;
+    background-repeat: no-repeat;
+    background-size: 35px 35px;
+    rotate: 180deg;
+}
+.pf_map_ctrls_left:hover {
+  background-image: url(sprite/sprite_next_btn_i.png);
 }

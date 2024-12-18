@@ -74,10 +74,17 @@ const updateCont = document.getElementById("updateCont");
 const updateLoading = document.getElementById("updateLoading");
 const updateVer = document.getElementById("updateH1_1");
 const updateResetSave = document.getElementById("updateResetSave");
+const battleBoxSplash = document.getElementById("battleBox_splash");
 const battleBoxSplashStart = document.getElementById("battleBox_splash_start");
 const battleBoxSplashResume = document.getElementById("battleBox_splash_resume");
 const battleBoxSplashH1_1 = document.getElementById("battleBox_splash_h1_1");
 const battleBoxSplashH1_2 = document.getElementById("battleBox_splash_h1_2");
+const playfield_grid = document.getElementById("playfield_grid");
+const playfield_player = document.getElementById("playfield_player");
+const map_controls_left = document.getElementById("map_controls_left");
+const map_controls_right = document.getElementById("map_controls_right");
+const map_controls_up = document.getElementById("map_controls_up");
+const map_controls_down = document.getElementById("map_controls_down");
 
 var moveMode = false;
 var isDragging = false;
@@ -1680,4 +1687,22 @@ battleBoxSplashResume.addEventListener('mousedown', () => {
 window.electron.receive('battleBoxStart_levelSync', (level)=>{
   console.log('received new level payload.');
   console.log(level);
+  var startingHeightOffset = level.gridHeight * 10;
+  if(startingHeightOffset == 10) startingHeightOffset = 0;
+  for(x = 0; x < level.tiles.length; x++){
+    for(z = 0; z < level.tiles[x].length; z++){
+      const newTile = document.createElement("div");
+      newTile.className = "battle_tile";
+      if(!level.tiles[x][z].walkable){
+        newTile.style.backgroundImage = `url("sprite/sprite_tile_rock_1.png")`;
+        newTile.className = "battle_tile_empty";
+      }
+      newTile.style.top = `${(80 - startingHeightOffset) + (z * 10)}px`;
+      newTile.style.left = `${105 + (x * 25)}px`
+      playfield_grid.appendChild(newTile);
+    }
+  }
 })
+
+// Player map controls
+// -------------------

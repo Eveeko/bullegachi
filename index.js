@@ -85,6 +85,7 @@ const map_controls_left = document.getElementById("map_controls_left");
 const map_controls_right = document.getElementById("map_controls_right");
 const map_controls_up = document.getElementById("map_controls_up");
 const map_controls_down = document.getElementById("map_controls_down");
+const map_controls_mask = document.getElementById("map_controls_mask");
 
 var moveMode = false;
 var isDragging = false;
@@ -1684,25 +1685,44 @@ battleBoxSplashResume.addEventListener('mousedown', () => {
   }, 150);
 });
 
-window.electron.receive('battleBoxStart_levelSync', (level)=>{
+window.electron.receive('battleBoxStart_levelSync', (level) => {
   console.log('received new level payload.');
   console.log(level);
   var startingHeightOffset = level.gridHeight * 10;
-  if(startingHeightOffset == 10) startingHeightOffset = 0;
-  for(x = 0; x < level.tiles.length; x++){
-    for(z = 0; z < level.tiles[x].length; z++){
+  if (startingHeightOffset == 10) startingHeightOffset = 0;
+  for (x = 0; x < level.tiles.length; x++) {
+    for (z = 0; z < level.tiles[x].length; z++) {
       const newTile = document.createElement("div");
       newTile.className = "battle_tile";
-      if(!level.tiles[x][z].walkable){
+      if (!level.tiles[x][z].walkable) {
         newTile.style.backgroundImage = `url("sprite/sprite_tile_rock_1.png")`;
         newTile.className = "battle_tile_empty";
       }
-      newTile.style.top = `${(80 - startingHeightOffset) + (z * 10)}px`;
-      newTile.style.left = `${105 + (x * 25)}px`
+      newTile.style.top = `${(90 - startingHeightOffset) + (z * 10)}px`;
+      newTile.style.left = `${(112 + (x * 28)) - (z * 3)}px`
       playfield_grid.appendChild(newTile);
     }
   }
 })
 
+// TODO: Add an inactivity timer that adds the class pf_player_idle to the player div to play an idle animation.
+
 // Player map controls
 // -------------------
+controlsHalted = false;
+playerPosition = [ 0, 0 ]; // TODO: make this determinate based on the origin tiles coords as the origin tile will eventually be able to move randomly on the Y axis.
+
+// ------------------- 
+
+map_controls_left.addEventListener('mousedown', () => {
+  if (!controlsHalted) {
+    playSelectSfx();
+    controllsHalted = true;
+    map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+    setTimeout(() => {
+      map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      map_controls_mask.style.visibility = "visible";
+      window.electron.send("");
+    }, 150);
+  }
+});

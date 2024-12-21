@@ -1150,6 +1150,17 @@ body {
   height: 25px;
   transform: rotate3d(20, -2, 1, 69deg);
 }
+.battle_tile_popIn {
+  animation: tile_popIn 3 ease-out;
+}
+@keyframes tile_popIn {
+  0%{
+    transform: rotate3d(0, 0, 0, 0deg);
+  }
+  100%{
+    transform: rotate3d(20, -2, 1, 69deg);
+  }
+}
 .battle_tile_empty {
   position: absolute;
   top: 80px;
@@ -1157,13 +1168,30 @@ body {
   width: 25px;
   height: 25px;
   transform: rotate3d(20, -2, 1, 30deg);
-  background-position: 3px -2px;
+  background-position: 2px -2px;
 }
 
 .pf_player {
   position: absolute;
   top: 48px;
   left: 78px;
+}
+
+.pf_player_idle {
+  animation: pf_player_idle 23s infinite;
+  z-index: 1;
+}
+
+@keyframes pf_player_idle_anim {
+  0%{
+    transform: rotate3d(30, 35, -2, 0deg);
+  }
+  50%{
+    transform: rotate3d(30, 35, -2, 350deg);
+  }
+  100% {
+    transform: rotate3d(30, 35, -2, 0deg);
+  }
 }
 
 .pf_pspr {
@@ -1234,7 +1262,15 @@ body {
   left: 0px;
   top: 0px;
 }
-
+.pf_map_ctrls_mask{
+  position: absolute;
+  left: 50px;
+  top: 140px;
+  width: 195px;
+  height: 50px;
+  background-color: rgba(17, 13, 0, 0.5);
+  z-index: 1;
+}
 .pf_map_ctrls_left {
   position: absolute;
     left: 60px;

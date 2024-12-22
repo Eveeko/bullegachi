@@ -8,12 +8,13 @@ body {
   padding: 0;
   overflow: hidden;
   background:
-    /* Curved glass effect */
-    radial-gradient(circle at center,
-      rgb(25, 20, 0) 20%,
-      rgb(14, 11, 0) 70%,
-      rgb(4, 3, 0) 94%,
-      rgb(0, 0, 0) 98%);
+    /* Curved glass effect */ radial-gradient(
+    circle at center,
+    rgb(25, 20, 0) 20%,
+    rgb(14, 11, 0) 70%,
+    rgb(4, 3, 0) 94%,
+    rgb(0, 0, 0) 98%
+  );
   position: relative;
   background-size: 260px 210px;
   font-family: "VT220", monospace;
@@ -28,9 +29,11 @@ body {
   left: 0;
   width: 100%;
   height: 210px;
-  background-image: linear-gradient(to bottom,
-      rgba(255, 204, 0, 0.1) 1px,
-      transparent 2px);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 204, 0, 0.1) 1px,
+    transparent 2px
+  );
   z-index: 1;
   pointer-events: none;
   animation: scan 7s linear infinite;
@@ -144,10 +147,12 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(transparent,
-      transparent 2px,
-      rgba(11, 9, 0, 0.3) 3px,
-      rgba(11, 9, 0, 0.3) 4px);
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(11, 9, 0, 0.3) 3px,
+    rgba(11, 9, 0, 0.3) 4px
+  );
 }
 
 .bulletpal {
@@ -159,7 +164,8 @@ body {
   left: 67px;
   background-repeat: no-repeat;
   background-size: auto 100%;
-  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%) hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
+  filter: brightness(0) saturate(100%) invert(68%) sepia(79%) saturate(715%)
+    hue-rotate(0deg) brightness(106%) contrast(104%) brightness(90%);
   /* Apply the SVG filter to the image */
   filter: url(line-filter.svg#rgb-line-filter);
   /* Apply the line filter to the image */
@@ -503,7 +509,6 @@ body {
 }
 
 @keyframes blink_rapid {
-
   0%,
   20%,
   40%,
@@ -642,7 +647,6 @@ body {
 }
 
 @keyframes blink {
-
   0%,
   50% {
     color: #110d00;
@@ -1132,12 +1136,48 @@ body {
   top: 5px;
   left: 40px;
 }
-.bbx_intro_sprite_1 {
+.bbx_intro_background {
   position: absolute;
   top: 0px;
   left: 0px;
-  background-image: url("/sprite/introCave.png");
+  background-color: #110d00;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  width: 210px;
+  height: 186px;
+  filter: blur(1px);
+  z-index: 4;
+}
+.bbx_intro_sprite_1 {
+  position: absolute;
+  top: 0px;
+  left: 5px;
+  background-image: url(sprite/sprite_intro_1.svg);
   background-position: 0px 0px;
+  background-size: 230px 130px;
+  width: 203px;
+  height: 130px;
+  z-index: 3;
+}
+.bbx_intro_lineFlasher {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 215px;
+  height: 10px;
+  z-index: 3;
+  background-color: #ffcc00;
+  filter: blur(1px);
+}
+.bbx_intro_lineFlasher_mask{
+  position: absolute;
+  top: 10px;
+  left: 4px;
+  width: 206px;
+  height: 120px;
+  z-index: 3;
+  background-color: #110d00;
+  filter: blur(1px);
 }
 
 /* the origin tile where the player starts the level at. */
@@ -1166,10 +1206,10 @@ body {
   animation: tile_popIn 3 ease-out;
 }
 @keyframes tile_popIn {
-  0%{
+  0% {
     transform: rotate3d(0, 0, 0, 0deg);
   }
-  100%{
+  100% {
     transform: rotate3d(20, -2, 1, 69deg);
   }
 }
@@ -1195,10 +1235,10 @@ body {
 }
 
 @keyframes pf_player_idle_anim {
-  0%{
+  0% {
     transform: rotate3d(30, 35, -2, 0deg);
   }
-  50%{
+  50% {
     transform: rotate3d(30, 35, -2, 350deg);
   }
   100% {
@@ -1227,7 +1267,7 @@ body {
   z-index: 1;
 }
 
-.pf_barsl{
+.pf_barsl {
   position: absolute;
   top: 0px;
   left: 8px;
@@ -1274,7 +1314,7 @@ body {
   left: 0px;
   top: 0px;
 }
-.pf_map_ctrls_mask{
+.pf_map_ctrls_mask {
   position: absolute;
   left: 50px;
   top: 140px;
@@ -1285,14 +1325,14 @@ body {
 }
 .pf_map_ctrls_left {
   position: absolute;
-    left: 60px;
-    top: 145px;
-    background-image: url(sprite/sprite_next_btn.png);
-    width: 35px;
-    height: 35px;
-    background-repeat: no-repeat;
-    background-size: 35px 35px;
-    rotate: 180deg;
+  left: 60px;
+  top: 145px;
+  background-image: url(sprite/sprite_next_btn.png);
+  width: 35px;
+  height: 35px;
+  background-repeat: no-repeat;
+  background-size: 35px 35px;
+  rotate: 180deg;
 }
 .pf_map_ctrls_left:hover {
   background-image: url(sprite/sprite_next_btn_i.png);

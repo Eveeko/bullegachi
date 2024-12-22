@@ -1659,7 +1659,8 @@ battleBoxSplashStart.addEventListener('mousedown', () => {
     battleBoxSplashH1_1.style.color = "#110d00";
     battleBoxSplashResume.style.visibility = "hidden";
     battleBoxSplashStart.style.visibility = "hidden";
-    window.electron.send("battleBoxStart");
+    battleBoxIntroStart();
+    //window.electron.send("battleBoxStart");
   }, 150);
 });
 
@@ -1681,9 +1682,22 @@ battleBoxSplashResume.addEventListener('mousedown', () => {
     battleBoxSplashH1_2.style.color = "#110d00";
     battleBoxSplashResume.style.visibility = "hidden";
     battleBoxSplashStart.style.visibility = "hidden";
-    window.electron.send("battleBoxResume");
+    battleBoxResumeFromLeftStart();
+    //window.electron.send("battleBoxResume");
   }, 150);
 });
+/**
+ * Starts the battleBox intro sequence and begins the game state.
+ */
+function battleBoxIntroStart(){
+
+};
+/**
+ * Starts the battleBox from the last saved state.
+ */
+function battleBoxResumeFromLeftStart(){
+
+}
 
 window.electron.receive('battleBoxStart_levelSync', (level) => {
   console.log('received new level payload.');
@@ -1704,6 +1718,8 @@ window.electron.receive('battleBoxStart_levelSync', (level) => {
     }
   }
 })
+
+
 
 // TODO: Add an inactivity timer that adds the class pf_player_idle to the player div to play an idle animation.
 

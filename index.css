@@ -1127,6 +1127,18 @@ body {
 .bbx_splsh_h1_2 {
   left: 8px;
 }
+.bbx_intro_cont {
+  position: absolute;
+  top: 5px;
+  left: 40px;
+}
+.bbx_intro_sprite_1 {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-image: url("/sprite/introCave.png");
+  background-position: 0px 0px;
+}
 
 /* the origin tile where the player starts the level at. */
 .battle_tile_origin {

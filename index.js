@@ -56,7 +56,7 @@ const bullettimeCont = document.getElementById("bullettime_cont");
 const bullettimeTimer = document.getElementById("bullettime_timer");
 const heartchain = document.getElementById("heartchain");
 const heartchainSfx = document.getElementById("heartchainSound");
-const heartchainSfx2 = document.getElementById("heartchainSound2")
+const heartchainSfx2 = document.getElementById("heartchainSound2");
 const lootboxBG = document.getElementById("lootbox_background");
 const lootbox = document.getElementById("lootbox");
 const lootboxPointer = document.getElementById("lootbox_pointer");
@@ -86,6 +86,11 @@ const map_controls_right = document.getElementById("map_controls_right");
 const map_controls_up = document.getElementById("map_controls_up");
 const map_controls_down = document.getElementById("map_controls_down");
 const map_controls_mask = document.getElementById("map_controls_mask");
+const battleBox_intro_h1 = document.getElementById("battleBox_intro_h1");
+const battleBox_intro_sprite_1 = document.getElementById("battleBox_intro_sprite_1");
+const battleBox_intro_lineFlasher = document.getElementById("battleBox_intro_lineFlasher");
+const speechSfx = document.getElementById("speechSfx");
+const introCaveSfx = document.getElementById("introEventSfx");
 
 var moveMode = false;
 var isDragging = false;
@@ -840,8 +845,8 @@ function popupItem(name, rand, bl) {
       popupElement.textContent = `+${name}`;
     } else {
       popupElement.textContent = `+${rand} ${name}`;
-    };
-  };
+    }
+  }
   popupElement.className = "popupItem";
   popupElement.id = "popupItem";
   battleBox.appendChild(popupElement);
@@ -877,7 +882,9 @@ function popupItem(name, rand, bl) {
 
 window.electron.receive("setLevel", (levelData) => {
   console.log("setLevel", levelData);
-  if (!levelData.level) { levelData.level = 1 };
+  if (!levelData.level) {
+    levelData.level = 1;
+  }
   level.innerHTML = `lvl: ${levelData.level}`;
   levelIndicator.style.width = `${levelData.levelProgress}px`;
 });
@@ -978,7 +985,9 @@ window.electron.receive("sacrificePal", (sacObj) => {
                 var popupElement = document.createElement("h1");
                 popupElement.className = "popupLvl";
                 popupElement.id = "popupLvl";
-                popupElement.textContent = `-${level.innerHTML.split(':')[1].trim()}Lvl`; // TODO: MAKE THIS REFLECT THE CORRECT LEVEL.
+                popupElement.textContent = `-${level.innerHTML
+                  .split(":")[1]
+                  .trim()}Lvl`; // TODO: MAKE THIS REFLECT THE CORRECT LEVEL.
                 scanlines.appendChild(popupElement);
                 var audioElement = document.createElement("audio");
                 audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
@@ -1028,7 +1037,7 @@ window.electron.receive("food_dead", () => {
 });
 
 window.electron.receive("alertItem", (name, failBool) => {
-  console.log('alerting item', name);
+  console.log("alerting item", name);
   if (failBool) {
     switch (name) {
       case "Medkit":
@@ -1047,7 +1056,7 @@ window.electron.receive("alertItem", (name, failBool) => {
         itemWarn.innerHTML = "Heartchain active!";
         itemWarn.style.left = "10px";
         break;
-    };
+    }
   } else {
     itemWarn.innerHTML = `${name} consumed`;
     switch (name) {
@@ -1069,8 +1078,8 @@ window.electron.receive("alertItem", (name, failBool) => {
       case "Heartchain":
         itemWarn.style.left = "4px";
         break;
-    };
-  };
+    }
+  }
   itemWarnCont.style.display = "block";
   var audioElement = document.createElement("audio");
   audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
@@ -1104,17 +1113,21 @@ function formatTimeLeft(ms) {
 
   if (hours > 0) {
     // Format as hours:minutes
-    formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}h`;
+    formattedTime = `${String(hours).padStart(2, "0")}:${String(
+      minutes
+    ).padStart(2, "0")}h`;
   } else if (minutes > 0) {
     // Format as minutes:seconds
-    formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}m`;
+    formattedTime = `${String(minutes).padStart(2, "0")}:${String(
+      seconds
+    ).padStart(2, "0")}m`;
   } else {
     // Format as seconds
-    formattedTime = `${String(seconds).padStart(2, '0')}s`;
+    formattedTime = `${String(seconds).padStart(2, "0")}s`;
   }
 
   return formattedTime;
-};
+}
 
 function countdown(ms) {
   let intervalId = setInterval(() => {
@@ -1131,7 +1144,6 @@ function countdown(ms) {
 
 // Displays the BulletTime graphics and timer.
 window.electron.receive("startBulletTime", (ms) => {
-  ;
   bullettimeTimer.innerHTML = formatTimeLeft(ms);
   bullettimeGlitch.style.display = "block";
   bullettimeCont.style.display = "block";
@@ -1155,7 +1167,7 @@ window.electron.receive("disable_heartchain", () => {
   setTimeout(() => {
     heartchainSfx2.currentTime = 0;
     heartchainSfx2.play();
-    bPal.style.animation = "fade_in 3s 1"
+    bPal.style.animation = "fade_in 3s 1";
     setTimeout(() => {
       playSelectSfx();
     }, 2200);
@@ -1170,7 +1182,16 @@ window.electron.receive("roll_lootbox", (vars) => {
   var id = vars[0]; // 0-8 int that determines the item/food to display as the reward. (0-5 = items, 6-8 = foods)
   var quantity = vars[1];
 
-  const items = ['Orange', 'Sweets', 'Spice', 'Medkit', 'BulletTime', 'Soda', 'Sword', 'Lootbox'];
+  const items = [
+    "Orange",
+    "Sweets",
+    "Spice",
+    "Medkit",
+    "BulletTime",
+    "Soda",
+    "Sword",
+    "Lootbox",
+  ];
 
   function generateRandomItems() {
     const randomItems = [];
@@ -1185,16 +1206,16 @@ window.electron.receive("roll_lootbox", (vars) => {
   spinLootbox(id);
 
   function spinLootbox(landingIndex) {
-    const lootboxItems = document.getElementById('lootboxItems');
-    const itemDisplay = document.getElementById('itemDisplay');
-    const landedItemDiv = document.getElementById('landedItem');
-    const itemText = document.getElementById('itemText');
-    const itemCount = document.getElementById('itemCount');
+    const lootboxItems = document.getElementById("lootboxItems");
+    const itemDisplay = document.getElementById("itemDisplay");
+    const landedItemDiv = document.getElementById("landedItem");
+    const itemText = document.getElementById("itemText");
+    const itemCount = document.getElementById("itemCount");
 
     // Resetting display elements for new spin
-    lootboxItems.innerHTML = '';
-    itemDisplay.style.display = 'none';
-    lootboxItems.style.display = 'flex';
+    lootboxItems.innerHTML = "";
+    itemDisplay.style.display = "none";
+    lootboxItems.style.display = "flex";
     lootbox.style.display = "block";
     lootboxPointer.style.display = "block";
 
@@ -1218,13 +1239,13 @@ window.electron.receive("roll_lootbox", (vars) => {
       randomItems.push(randomItem);
     }
 
-    randomItems.forEach(item => {
-      const itemDiv = document.createElement('div');
-      itemDiv.className = 'lootbox-item';
+    randomItems.forEach((item) => {
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "lootbox-item";
       itemDiv.style.backgroundImage = `url(sprite/sprite_${item}.png)`;
       lootboxItems.appendChild(itemDiv);
     });
-    console.log(randomItems)
+    console.log(randomItems);
 
     const itemWidth = 50;
     const totalItems = randomItems.length;
@@ -1234,25 +1255,26 @@ window.electron.receive("roll_lootbox", (vars) => {
     const finalPosition = -(landingIndex + additionalItemsBefore) * itemWidth; // Adjust final position to land on predetermined item
 
     // Add pixelated effect
-    lootboxItems.classList.add('pixelated');
+    lootboxItems.classList.add("pixelated");
 
-    lootboxItems.style.transition = 'none';
+    lootboxItems.style.transition = "none";
     lootboxItems.style.transform = `translateX(0px)`;
 
     setTimeout(() => {
-      lootboxItems.style.transition = `transform ${spinTimes + 1}s cubic-bezier(0.33, 1, 0.68, 1)`;
+      lootboxItems.style.transition = `transform ${
+        spinTimes + 1
+      }s cubic-bezier(0.33, 1, 0.68, 1)`;
       lootboxItems.style.transform = `translateX(${spinDistance}px)`;
     }, 50);
-
 
     setTimeout(() => {
       lootbox.style.display = "none";
       lootboxPointer.style.display = "none";
-      lootboxItems.style.display = 'none';
+      lootboxItems.style.display = "none";
       landedItemDiv.style.backgroundImage = `url(sprite/sprite_${predeterminedItem}.png)`;
       itemCount.innerText = `+${quantity}`;
       itemText.innerHTML = predeterminedItem;
-      itemDisplay.style.display = 'flex';
+      itemDisplay.style.display = "flex";
     }, (spinTimes + 2) * 1000);
   }
 });
@@ -1293,11 +1315,11 @@ tutorialNxtBtn.addEventListener("mousedown", () => {
 function playTutorialBackground() {
   tutorialBackgroundSfx.currentTime = 0;
   tutorialBackgroundSfx.play();
-};
+}
 
 function stopTutorialBackground() {
   tutorialBackgroundSfx.pause();
-};
+}
 
 window.electron.receive("startTutorial", (name) => {
   username = name;
@@ -1306,40 +1328,73 @@ window.electron.receive("startTutorial", (name) => {
     tutorialH1.style.display = "block";
     tutorialCont.style.display = "block";
     playSelectSfx();
-    window.electron.send('tutorialAdvanced')
-    setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 1500)
-  }, 500)
+    window.electron.send("tutorialAdvanced");
+    setTimeout(() => {
+      tutorialNxtBtn.style.display = "block";
+    }, 1500);
+  }, 500);
 });
 
 function tutAdvance() {
-  var tutorials = [tut1, tut2, tut3, tut35, tut4, tut5, tut6, tut7, tut8, tut9, tut10, tut11, tut12, tut13, tut14, tut15, tut16, tut17, tut18, tut19, tut20, tut21]; // tutorial series script.
+  var tutorials = [
+    tut1,
+    tut2,
+    tut3,
+    tut35,
+    tut4,
+    tut5,
+    tut6,
+    tut7,
+    tut8,
+    tut9,
+    tut10,
+    tut11,
+    tut12,
+    tut13,
+    tut14,
+    tut15,
+    tut16,
+    tut17,
+    tut18,
+    tut19,
+    tut20,
+    tut21,
+  ]; // tutorial series script.
   tutorials[tutCt]();
   window.electron.send("tutorialAdvanced", tutCt);
-};
+}
 
 function tut1() {
   playSelectSfx();
   tutorialH1.innerHTML = "I don't recognize you?";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 1500)
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 1500);
+}
 
 function tut2() {
   playSelectSfx();
   tutorialH1.innerHTML = "";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
+}
 
 function tut3() {
   playSelectSfx();
-  tutorialH1.innerHTML = `${username}...`
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  tutorialH1.innerHTML = `${username}...`;
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
   bFace.src = "faces/tutorial_1.png";
   bFace.style.left = "24px";
-};
+}
 function tut35() {
   tutorialH1.innerHTML = "";
   tutCt++;
-  setTimeout(() => { tutAdvance() }, 2500)
+  setTimeout(() => {
+    tutAdvance();
+  }, 2500);
 }
 
 function tut4() {
@@ -1347,8 +1402,10 @@ function tut4() {
   playTutorialBackground();
   tutorialH1.innerHTML = `Well Hi there!!!`;
   bFace.src = "faces/default_happy_2.png";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
+}
 
 function tut5() {
   playSelectSfx();
@@ -1356,18 +1413,22 @@ function tut5() {
   tutorialH1.style.left = "28px";
   tutorialH1.style.width = "210px";
   tutorialH1.innerHTML = `I'm your Bullegachi, Your PC BulletPal companion!`;
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
+}
 
 function tut6() {
   playSelectSfx();
-  tutorialNxtBtn.style.top = "112px"
-  tutorialH1.innerHTML = `Before you can start keeping me alive there are a few things you should know..`
+  tutorialNxtBtn.style.top = "112px";
+  tutorialH1.innerHTML = `Before you can start keeping me alive there are a few things you should know..`;
   tutorialH1.style.top = "2px";
   tutorialH1.style.left = "22px";
   tutorialH1.style.width = "220px";
   tutorialH1.style.fontSize = "18px";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
 }
 function tut7() {
   playSelectSfx();
@@ -1377,32 +1438,40 @@ function tut7() {
   tutorialH1.style.left = "22px";
   tutorialH1.style.top = "142px";
   tutorialH1.style.width = "220px";
-  tutorialH1.innerHTML = `1. Health, If it gets to 0 I will die shortly after.`
+  tutorialH1.innerHTML = `1. Health, If it gets to 0 I will die shortly after.`;
   tutorialArrow.style.display = "block";
-  bFace.src = "faces/default_dead.png"
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  bFace.src = "faces/default_dead.png";
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
 }
 
 function tut8() {
   playSelectSfx();
-  tutorialH1.innerHTML = `2. Food, If it gets to 0 I will lose health slowly.`
-  bFace.src = "faces/default_sad_2.png"
+  tutorialH1.innerHTML = `2. Food, If it gets to 0 I will lose health slowly.`;
+  bFace.src = "faces/default_sad_2.png";
   tutorialArrow.style.top = "13px";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
 }
 function tut9() {
   playSelectSfx();
-  tutorialH1.innerHTML = `3. Energy, Used to fight enemies to gain loot, everytime I eat my Energy will refill`
-  bFace.src = "faces/default_angry.png"
+  tutorialH1.innerHTML = `3. Energy, Used to fight enemies to gain loot, everytime I eat my Energy will refill`;
+  bFace.src = "faces/default_angry.png";
   tutorialArrow.style.top = "28px";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
 }
 function tut10() {
   playSelectSfx();
   tutorialH1.innerHTML = `4. Level, How long you have kept me alive!`;
   tutorialArrow.style.top = "43px";
   bFace.src = "faces/default_happy_2.png";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
 }
 function tut11() {
   playSelectSfx();
@@ -1414,7 +1483,9 @@ function tut11() {
   tutorialH1.style.width = "220px";
   tutorialH1.innerHTML = `Now last thing that you need to know!`;
   tutorialArrow.style.display = "none";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
 }
 
 function tut12() {
@@ -1433,8 +1504,10 @@ function tut12() {
   tutorialSidebar.style.display = "block";
   battleBtn.style.backgroundImage = "url(sprite/sprite_battle_i.png)";
   battleClickBtn.style.display = "none";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
+}
 
 function tut13() {
   playSelectSfx();
@@ -1445,8 +1518,10 @@ function tut13() {
   tutorialArrow.style.left = "80px";
   tutorialArrow.style.transform = "rotate(270deg)";
   tutorialH1.innerHTML = "This is me, if my HP hits 0 I will die.";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
+}
 
 function tut14() {
   playSelectSfx();
@@ -1454,8 +1529,10 @@ function tut14() {
   tutorialArrow.style.left = "128px";
   tutorialArrow.style.transform = "rotate(180deg)";
   tutorialH1.innerHTML = "This is the enemy, if their HP hits 0 they die!";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
+}
 
 function tut15() {
   playSelectSfx();
@@ -1463,11 +1540,14 @@ function tut15() {
   tutorialArrow.style.top = "94px";
   tutorialArrow.style.left = "137px";
   tutorialArrow.style.transform = "rotate(270deg)";
-  tutorialH1.innerHTML = "This is the attack btn, click it to deal damage to the enemy!";
+  tutorialH1.innerHTML =
+    "This is the attack btn, click it to deal damage to the enemy!";
   tutorialSidebar.style.width = "180px";
   battleEnemyName.style.color = "#100c00";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
+}
 
 function tut16() {
   playSelectSfx();
@@ -1476,16 +1556,18 @@ function tut16() {
   tutorialArrow.style.left = "138px";
   tutorialArrow.style.transform = "rotate(180deg)";
   tutorialH1.innerHTML = "Each time you kill an enemy, something will drop!";
-  battleEnemyHP.innerHTML = "HP: 0"
-  battleEnemyName.innerHTML = "D E A D"
+  battleEnemyHP.innerHTML = "HP: 0";
+  battleEnemyName.innerHTML = "D E A D";
   battleEnemy.style.display = "none";
   battleClickBtn.style.display = "none";
   playDeathSfx();
   setTimeout(() => {
     popupItem("Sweets", 1, false);
-    setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
-  }, 2500)
-};
+    setTimeout(() => {
+      tutorialNxtBtn.style.display = "block";
+    }, 2500);
+  }, 2500);
+}
 
 function tut17() {
   playSelectSfx();
@@ -1494,9 +1576,11 @@ function tut17() {
   battleClickBtn.style.display = "none";
   setTimeout(() => {
     popupItem("?", 1, true);
-    setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500)
+    setTimeout(() => {
+      tutorialNxtBtn.style.display = "block";
+    }, 2500);
   }, 1500);
-};
+}
 
 function tut18() {
   playSelectSfx();
@@ -1511,23 +1595,29 @@ function tut18() {
   tutorialH1.style.top = "142px";
   tutorialH1.style.width = "220px";
   tutorialH1.innerHTML = "That seems to be everything!";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500);
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
+}
 
 function tut19() {
   playSelectSfx();
   tutorialH1.innerHTML = "I hope you enjoy this adventure with me :D";
   bFace.src = "faces/default_happy_2_blink_1.png";
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 2500);
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 2500);
+}
 
 function tut20() {
   playSelectSfx();
   stopTutorialBackground();
   bFace.src = "faces/tutorial_1.png";
   tutorialH1.innerHTML = `Don't let me die ${username}.`;
-  setTimeout(() => { tutorialNxtBtn.style.display = "block"; }, 4500);
-};
+  setTimeout(() => {
+    tutorialNxtBtn.style.display = "block";
+  }, 4500);
+}
 
 function tut21() {
   playSelectSfx();
@@ -1547,8 +1637,8 @@ function tut21() {
         window.electron.send("tutorialEnded", true);
       }, 500);
     });
-  }, 2500)
-};
+  }, 2500);
+}
 
 window.electron.receive("wipeTutorial", () => {
   tutorialCont.style.display = "none";
@@ -1559,49 +1649,52 @@ var resetSave = false; // Whether or not to reset the save file after updating.
 
 window.electron.receive("update-available", (info) => {
   playSelectSfx();
-  window.electron.getAppVersion().then(version => {
-    updateVer.innerHTML = `<span style="color: #b28e00"><del>V${version}</del></span> -> V${info.version}`;
-    updateCont.style.display = "block";
-    if (version[0] != info.version[0]) {
-      resetSave = true;
-      updateResetSave.style.display = "block";
-    }
-  }).catch(error => {
-    console.error('Error fetching app version:', error);
-  });
+  window.electron
+    .getAppVersion()
+    .then((version) => {
+      updateVer.innerHTML = `<span style="color: #b28e00"><del>V${version}</del></span> -> V${info.version}`;
+      updateCont.style.display = "block";
+      if (version[0] != info.version[0]) {
+        resetSave = true;
+        updateResetSave.style.display = "block";
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching app version:", error);
+    });
 });
 
-updateNotes.addEventListener('mousedown', () => {
+updateNotes.addEventListener("mousedown", () => {
   window.electron.openExternal("https://github.com/Eveeko/bullegachi/releases");
 });
 
-updateBtn.addEventListener('mouseover', () => {
+updateBtn.addEventListener("mouseover", () => {
   playSelectSfx();
   updateBtn.style.backgroundImage = `url("sprite/sprite_update_btn_i.png")`;
-})
-updateBtn.addEventListener('mouseleave', () => {
+});
+updateBtn.addEventListener("mouseleave", () => {
   updateBtn.style.backgroundImage = `url("sprite/sprite_update_btn.png")`;
-})
-updateBtn.addEventListener('mousedown', () => {
+});
+updateBtn.addEventListener("mousedown", () => {
   window.electron.send("updateConfirmed", resetSave);
   updateBtn.style.display = "none";
   updateBtnSkip.style.display = "none";
   updateLoading.style.display = "block";
-})
+});
 
-updateBtnSkip.addEventListener('mouseover', () => {
+updateBtnSkip.addEventListener("mouseover", () => {
   playSelectSfx();
   updateBtnSkip.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
-})
-updateBtnSkip.addEventListener('mouseleave', () => {
+});
+updateBtnSkip.addEventListener("mouseleave", () => {
   updateBtnSkip.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-})
-updateBtnSkip.addEventListener('mousedown', () => {
+});
+updateBtnSkip.addEventListener("mousedown", () => {
   window.electron.send("updateDeclined");
   updateBtn.style.display = "none";
   updateBtnSkip.style.display = "none";
   updateCont.style.display = "none";
-})
+});
 
 window.electron.receive("updateProgress", (info) => {
   if (info.percent < 14) {
@@ -1635,22 +1728,22 @@ window.electron.receive("updateProgress", (info) => {
 // │██╔══██╗██╔══██║   ██║      ██║   ██║     ██╔══╝      ╚██╗ ██╔╝██╔═══╝ │
 // │██████╔╝██║  ██║   ██║      ██║   ███████╗███████╗     ╚████╔╝ ███████╗│
 // │╚═════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝╚══════╝      ╚═══╝  ╚══════╝│
-// └───────────────────────────────────────────────────────────────────────┘ 
+// └───────────────────────────────────────────────────────────────────────┘
 // -------------------------------------------------------------------------
 // This is the *NEW* battle mechanics, all visual and user input are defined
 // and handled within this block. call 1-800-battle2 for more information™
 // -------------------------------------------------------------------------
 
-battleBoxSplashStart.addEventListener('mouseover', () => {
+battleBoxSplashStart.addEventListener("mouseover", () => {
   playSelectSfx();
   battleBoxSplashStart.style.backgroundColor = "#ffcc00";
   battleBoxSplashH1_1.style.color = "#110d00";
 });
-battleBoxSplashStart.addEventListener('mouseout', () => {
+battleBoxSplashStart.addEventListener("mouseout", () => {
   battleBoxSplashStart.style.backgroundColor = "#110d00";
   battleBoxSplashH1_1.style.color = "#ffcc00";
 });
-battleBoxSplashStart.addEventListener('mousedown', () => {
+battleBoxSplashStart.addEventListener("mousedown", () => {
   playSelectSfx();
   battleBoxSplashStart.style.backgroundColor = "#110d00";
   battleBoxSplashH1_1.style.color = "#ffcc00";
@@ -1659,21 +1752,23 @@ battleBoxSplashStart.addEventListener('mousedown', () => {
     battleBoxSplashH1_1.style.color = "#110d00";
     battleBoxSplashResume.style.visibility = "hidden";
     battleBoxSplashStart.style.visibility = "hidden";
-    battleBoxIntroStart();
+    setTimeout(() => {
+      battleBoxIntroStart();
+    }, 500);
     //window.electron.send("battleBoxStart");
   }, 150);
 });
 
-battleBoxSplashResume.addEventListener('mouseover', () => {
+battleBoxSplashResume.addEventListener("mouseover", () => {
   playSelectSfx();
   battleBoxSplashResume.style.backgroundColor = "#ffcc00";
   battleBoxSplashH1_2.style.color = "#110d00";
 });
-battleBoxSplashResume.addEventListener('mouseout', () => {
+battleBoxSplashResume.addEventListener("mouseout", () => {
   battleBoxSplashResume.style.backgroundColor = "#110d00";
   battleBoxSplashH1_2.style.color = "#ffcc00";
 });
-battleBoxSplashResume.addEventListener('mousedown', () => {
+battleBoxSplashResume.addEventListener("mousedown", () => {
   playSelectSfx();
   battleBoxSplashResume.style.backgroundColor = "#110d00";
   battleBoxSplashH1_2.style.color = "#ffcc00";
@@ -1689,18 +1784,38 @@ battleBoxSplashResume.addEventListener('mousedown', () => {
 /**
  * Starts the battleBox intro sequence and begins the game state.
  */
-function battleBoxIntroStart(){
+function battleBoxIntroStart() {
+  battleBox_intro_h1.style.visibility = "visible";
 
-};
+  typewriterEffect(battleBox_intro_h1, "Now descending..", 1000);
+}
 /**
  * Starts the battleBox from the last saved state.
  */
-function battleBoxResumeFromLeftStart(){
+function battleBoxResumeFromLeftStart() {}
 
+function typewriterEffect(h1Element, text, timeToComplete) {
+  const totalChars = text.length;
+  const delay = timeToComplete / totalChars;
+  let currentIndex = 0;
+  speechSfx.play();
+
+  function typeNextChar() {
+    if (currentIndex < totalChars) {
+      h1Element.textContent += text[currentIndex];
+      currentIndex++;
+      setTimeout(typeNextChar, delay);
+    }else{
+      speechSfx.pause();
+      speechSfx.currentTime = 0;
+    }
+  }
+
+  h1Element.textContent = ""; // Clear any existing text
+  typeNextChar();
 }
-
-window.electron.receive('battleBoxStart_levelSync', (level) => {
-  console.log('received new level payload.');
+window.electron.receive("battleBoxStart_levelSync", (level) => {
+  console.log("received new level payload.");
   console.log(level);
   var startingHeightOffset = level.gridHeight * 10;
   if (startingHeightOffset == 10) startingHeightOffset = 0;
@@ -1712,25 +1827,23 @@ window.electron.receive('battleBoxStart_levelSync', (level) => {
         newTile.style.backgroundImage = `url("sprite/sprite_tile_rock_1.png")`;
         newTile.className = "battle_tile_empty";
       }
-      newTile.style.top = `${(90 - startingHeightOffset) + (z * 10)}px`;
-      newTile.style.left = `${(112 + (x * 28)) - (z * 3)}px`
+      newTile.style.top = `${90 - startingHeightOffset + z * 10}px`;
+      newTile.style.left = `${112 + x * 28 - z * 3}px`;
       playfield_grid.appendChild(newTile);
     }
   }
-})
-
-
+});
 
 // TODO: Add an inactivity timer that adds the class pf_player_idle to the player div to play an idle animation.
 
 // Player map controls
 // -------------------
 controlsHalted = false;
-playerPosition = [ 0, 0 ]; // TODO: make this determinate based on the origin tiles coords as the origin tile will eventually be able to move randomly on the Y axis.
+playerPosition = [0, 0]; // TODO: make this determinate based on the origin tiles coords as the origin tile will eventually be able to move randomly on the Y axis.
 
-// ------------------- 
+// -------------------
 
-map_controls_left.addEventListener('mousedown', () => {
+map_controls_left.addEventListener("mousedown", () => {
   if (!controlsHalted) {
     playSelectSfx();
     controllsHalted = true;

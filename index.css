@@ -1146,7 +1146,7 @@ body {
   width: 210px;
   height: 186px;
   filter: blur(1px);
-  z-index: 4;
+  z-index: 3;
 }
 .bbx_intro_sprite_1 {
   position: absolute;
@@ -1178,6 +1178,15 @@ body {
   z-index: 3;
   background-color: #110d00;
   filter: blur(1px);
+}
+.bbx_intro_h1_1{
+  position: absolute;
+  top: 20px;
+  left: 36px;
+  width: 154px;
+  color: #ffcc00;
+  font-size: 18px;
+  z-index: 3;
 }
 
 /* the origin tile where the player starts the level at. */

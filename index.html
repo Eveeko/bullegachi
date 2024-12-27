@@ -139,6 +139,9 @@
         <div class="battle_box" id="battleBox">
             <div class="line-filter"></div>
         </div>
+        <audio id="speechSfx" preload="auto">
+            <source src="sfx/speech1.wav" type="audio/wav">
+        </audio>
         <!-- This houses all the player elements so it can stay static in relation to the screen. -->
         <div id="playfield_player" class="pf_player">
             <div id="playfield_player_sprite" class="pf_pspr"></div>
@@ -174,15 +177,17 @@
                 <h1 id="battleBox_splash_h1_2" class="bbx_splsh_h1_1 bbx_splsh_h1_2">Resume escape.</h1> <!-- ^ -->
             </div>
         </div>
-        <div id="battleBox_intro_cont" class="bbx_intro_cont">
+        <div id="battleBox_intro_cont" class="bbx_intro_cont" style="visibility: hidden;">
             <div id="battleBox_intro_background" class="bbx_intro_background"></div>
-            <audio id="introEvent" preload="auto">
-                <source src="intro_cave.wav" type="audio/wav">
+            <audio id="introCaveSfx" preload="auto">
+                <source src="sfx/intro_cave.wav" type="audio/wav">
             </audio>
-            <div id="battleBox_intro_sprite_1" class="bbx_intro_sprite_1"></div>
+            <h1 id="battleBox_intro_h1" class="bbx_intro_h1_1" style="visibility: hidden;"></h1>
+            <div id="battleBox_intro_sprite_1" class="bbx_intro_sprite_1" style="visibility: hidden;"></div>
             <div id="battleBox_intro_lineFlasher" class="bbx_intro_lineFlasher" style="visibility: hidden;">
                 <div id="battleBox_intro_lineFlasher_mask" class="bbx_intro_lineFlasher_mask"></div>
             </div>
+            
         </div>
     </div>
     <div id="settingsBox" style="visibility: hidden;">

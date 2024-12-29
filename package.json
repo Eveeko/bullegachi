@@ -55,7 +55,8 @@
       "index.js",
       "main.js",
       "preload.js",
-      "VT220.ttf"
+      "VT220.ttf",
+      "LICENSE"
     ],
     "win": {
       "target": [

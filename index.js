@@ -1,5 +1,8 @@
 const path = window.electronRequire("path");
-
+var speechAudioBuffer;
+let speechAudioSlices = [];
+let currentSpeechSliceIndex = 0;
+const sliceDuration = 0.16;
 const scanlines = document.getElementById("scanlines");
 const bPal = document.getElementById("bulletpal");
 const bFace = document.getElementById("bFace");
@@ -87,10 +90,11 @@ const map_controls_up = document.getElementById("map_controls_up");
 const map_controls_down = document.getElementById("map_controls_down");
 const map_controls_mask = document.getElementById("map_controls_mask");
 const battleBox_intro_h1 = document.getElementById("battleBox_intro_h1");
+const battleBox_intro_h1_2 = document.getElementById("battleBox_intro_h1_2");
 const battleBox_intro_sprite_1 = document.getElementById("battleBox_intro_sprite_1");
 const battleBox_intro_lineFlasher = document.getElementById("battleBox_intro_lineFlasher");
 const speechSfx = document.getElementById("speechSfx");
-const introCaveSfx = document.getElementById("introEventSfx");
+const introCaveSfx = document.getElementById("introCaveSfx");
 
 var moveMode = false;
 var isDragging = false;
@@ -112,6 +116,24 @@ window.electron.receive("get-base-dir", (baseDir) => {
   console.log("Base directory:", baseDir);
   __dirname = baseDir;
 });
+
+fetch("sfx/speech1.wav")
+  .then(response => response.arrayBuffer())
+  .then(data => audioContext.decodeAudioData(data))
+  .then(buffer => {
+    speechAudioBuffer = buffer;
+    console.log('SpeechSfx Audio buffer loaded:', speechAudioBuffer.duration, 'seconds');
+    preloadAudioSlices();
+  })
+  .catch(error => console.error('Error loading SpeechSfx audio:', error));
+
+function preloadAudioSlices() {
+  const maxOffset = speechAudioBuffer.duration - sliceDuration;
+  const sliceCount = 50; // Number of slices to preload
+
+  speechAudioSlices = Array.from({ length: sliceCount }, () => Math.random() * maxOffset);
+  currentSliceIndex = 0; // Reset the index when preloading
+}
 
 function moveFace() {
   var left = bFace.style.getPropertyValue("left");
@@ -1261,9 +1283,8 @@ window.electron.receive("roll_lootbox", (vars) => {
     lootboxItems.style.transform = `translateX(0px)`;
 
     setTimeout(() => {
-      lootboxItems.style.transition = `transform ${
-        spinTimes + 1
-      }s cubic-bezier(0.33, 1, 0.68, 1)`;
+      lootboxItems.style.transition = `transform ${spinTimes + 1
+        }s cubic-bezier(0.33, 1, 0.68, 1)`;
       lootboxItems.style.transform = `translateX(${spinDistance}px)`;
     }, 50);
 
@@ -1786,33 +1807,94 @@ battleBoxSplashResume.addEventListener("mousedown", () => {
  */
 function battleBoxIntroStart() {
   battleBox_intro_h1.style.visibility = "visible";
-
   typewriterEffect(battleBox_intro_h1, "Now descending..", 1000);
+  setTimeout(() => {
+    battleBox_intro_h1_2.style.visibility = "visible";
+    typewriterEffect(battleBox_intro_h1_2, ". . .", 3000);
+    setTimeout(() => {
+      //window.electron.send("battleBoxStart"); // load the level while displaying starting animation.
+      battleBox_intro_h1.style.visibility = "hidden";
+      battleBox_intro_h1_2.style.visibility = "hidden";
+
+      battleBox_intro_sprite_1.style.visibility = "visible";
+      battleBox_intro_lineFlasher.style.visibility = "visible";
+      let delayCt = 850;
+      let topOffset = 0;
+      for (let x = 0; x < 15; x++) {
+        setTimeout(() => {
+          battleBox_intro_lineFlasher.style.backgroundColor = "#110d00";
+          setTimeout(() => {
+            battleBox_intro_lineFlasher.style.backgroundColor = "#ffcc00";
+            battleBox_intro_lineFlasher.style.top = `${topOffset + (10 * x)}px`;
+            if(x == 14){ battleBox_intro_lineFlasher.style.visibility = "hidden" }
+          }, 200)
+        }, (delayCt * x))
+      }
+      introCaveSfx.currentTime = 0;
+      introCaveSfx.play();
+      setTimeout(()=>{
+        introCaveSfx.pause();
+        playSelectSfx();
+        battleBox_intro_sprite_1.style.visibility = "hidden";
+        setTimeout(() =>{
+          battleBox_intro_h1.innerHTML = "";
+          battleBox_intro_h1.style.fontSize = "12px";
+          battleBox_intro_h1.style.visibility = "visible";
+          typewriterEffect(battleBox_intro_h1, "You enter the caves entrance by foot.", 1000);
+        }, 500);
+      }, 13500);
+    }, 4500)
+  }, 1500);
 }
 /**
  * Starts the battleBox from the last saved state.
  */
-function battleBoxResumeFromLeftStart() {}
+function battleBoxResumeFromLeftStart() { }
 
 function typewriterEffect(h1Element, text, timeToComplete) {
   const totalChars = text.length;
   const delay = timeToComplete / totalChars;
   let currentIndex = 0;
-  speechSfx.play();
-
-  function typeNextChar() {
+  if (timeToComplete > 1000) {
+    if ((text.length / timeToComplete) < 10) {
+      typeNextChar(true);
+    } else {
+      speechSfx.play();
+      h1Element.textContent = ""; // Clear any existing text
+      typeNextChar();
+    }
+  } else {
+    speechSfx.play();
+    h1Element.textContent = ""; // Clear any existing text
+    typeNextChar();
+  }
+  function typeNextChar(flag) {
     if (currentIndex < totalChars) {
+      if (flag) {
+        if (text[currentIndex] != " ") { playRandomSlice(); }
+        setTimeout(() => { typeNextChar(true) }, delay);
+      } else { setTimeout(typeNextChar, delay); }
       h1Element.textContent += text[currentIndex];
       currentIndex++;
-      setTimeout(typeNextChar, delay);
-    }else{
+    } else {
       speechSfx.pause();
       speechSfx.currentTime = 0;
     }
   }
-
-  h1Element.textContent = ""; // Clear any existing text
-  typeNextChar();
+  function playRandomSlice() {
+    if (!speechAudioSlices.length) {
+      console.error('No preloaded slices available');
+      return;
+    }
+    // Get the current slice offset and increment the index
+    const offset = speechAudioSlices[currentSpeechSliceIndex];
+    currentSpeechSliceIndex = (currentSpeechSliceIndex + 1) % speechAudioSlices.length; // Wrap around when reaching the end
+    // Play the slice
+    const source = audioContext.createBufferSource();
+    source.buffer = speechAudioBuffer;
+    source.connect(audioContext.destination);
+    source.start(audioContext.currentTime, offset, sliceDuration);
+  }
 }
 window.electron.receive("battleBoxStart_levelSync", (level) => {
   console.log("received new level payload.");

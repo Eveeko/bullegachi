@@ -1188,6 +1188,15 @@ body {
   font-size: 18px;
   z-index: 3;
 }
+.bbx_intro_h1_2{
+  position: absolute;
+  top: 105px;
+  left: 85px;
+  width: 154px;
+  color: #ffcc00;
+  font-size: 18px;
+  z-index: 3;
+}
 
 /* the origin tile where the player starts the level at. */
 .battle_tile_origin {

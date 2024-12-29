@@ -95,6 +95,7 @@ const battleBox_intro_sprite_1 = document.getElementById("battleBox_intro_sprite
 const battleBox_intro_lineFlasher = document.getElementById("battleBox_intro_lineFlasher");
 const speechSfx = document.getElementById("speechSfx");
 const introCaveSfx = document.getElementById("introCaveSfx");
+const intro_cave_start_btn = document.getElementById("intro_cave_start_btn");
 
 var moveMode = false;
 var isDragging = false;
@@ -1775,6 +1776,7 @@ battleBoxSplashStart.addEventListener("mousedown", () => {
     battleBoxSplashStart.style.visibility = "hidden";
     setTimeout(() => {
       battleBoxIntroStart();
+      //window.electron.send("intro_vignette_overlayCreate");
     }, 500);
     //window.electron.send("battleBoxStart");
   }, 150);
@@ -1841,11 +1843,20 @@ function battleBoxIntroStart() {
           battleBox_intro_h1.style.fontSize = "12px";
           battleBox_intro_h1.style.visibility = "visible";
           typewriterEffect(battleBox_intro_h1, "You enter the caves entrance by foot.", 1000);
+          setTimeout(() =>{
+            intro_cave_start_btn.style.visibility = "visible";
+          }, 1500)
         }, 500);
       }, 13500);
     }, 4500)
   }, 1500);
-}
+};
+intro_cave_start_btn.addEventListener("mousedown", () => {
+  intro_cave_start_btn.style.visibility = "hidden";
+  battleBox_intro_h1.style.visibility = "hidden";
+  playSelectSfx();
+  window.electron.send("intro_vignette_overlayCreate");
+});
 /**
  * Starts the battleBox from the last saved state.
  */

@@ -1169,7 +1169,7 @@ body {
   background-color: #ffcc00;
   filter: blur(1px);
 }
-.bbx_intro_lineFlasher_mask{
+.bbx_intro_lineFlasher_mask {
   position: absolute;
   top: 10px;
   left: 4px;
@@ -1179,7 +1179,7 @@ body {
   background-color: #110d00;
   filter: blur(1px);
 }
-.bbx_intro_h1_1{
+.bbx_intro_h1_1 {
   position: absolute;
   top: 20px;
   left: 36px;
@@ -1188,7 +1188,7 @@ body {
   font-size: 18px;
   z-index: 3;
 }
-.bbx_intro_h1_2{
+.bbx_intro_h1_2 {
   position: absolute;
   top: 105px;
   left: 85px;
@@ -1196,6 +1196,20 @@ body {
   color: #ffcc00;
   font-size: 18px;
   z-index: 3;
+}
+.bbx_intro_cave_start_btn {
+  position: absolute;
+  top: 112px;
+  left: 80px;
+  width: 50px;
+  height: 50px;
+  background-image: url(sprite/sprite_footstep_btn.png);
+  background-repeat: no-repeat;
+  background-size: 50px;
+  z-index: 3;
+}
+.bbx_intro_cave_start_btn:hover {
+  background-image: url(sprite/sprite_footstep_btn_i.png);
 }
 
 /* the origin tile where the player starts the level at. */

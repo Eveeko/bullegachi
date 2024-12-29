@@ -113,7 +113,8 @@ function getUserName(callback) {
     (error, stdout, stderr) => {
       if (error || stderr) {
         console.warn(
-          `Failed to get full name, falling back to basic username: ${error || stderr
+          `Failed to get full name, falling back to basic username: ${
+            error || stderr
           }`
         );
         const userInfo = os.userInfo();
@@ -2175,9 +2176,10 @@ class Level {
   constructor(floor) {
     let floorStr = floor.toString();
     let numberOfTens = Math.floor(floor / 10);
-    let floorMultiplier = `${(+floorStr[floorStr.length - 1] ? floorStr[floorStr.length - 1] : 1) *
+    let floorMultiplier = `${
+      (+floorStr[floorStr.length - 1] ? floorStr[floorStr.length - 1] : 1) *
       numberOfTens
-      }.${floorStr.substring(1, -1)}`;
+    }.${floorStr.substring(1, -1)}`;
     let gen = (n) => [...Array(n)].map((_) => (Math.random() * 10) | 0).join``; // stack overflow wizards praise thee!!
     var totalTilesToGen = Math.round(
       +this.seed.toString().substring(5, 6) * floorMultiplier + 3
@@ -2210,10 +2212,19 @@ class Level {
       const COLS = 3;
 
       function isConnected(grid) {
-        const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+        const visited = Array.from({ length: ROWS }, () =>
+          Array(COLS).fill(false)
+        );
 
         function dfs(r, c) {
-          if (r < 0 || r >= ROWS || c < 0 || c >= COLS || grid[r][c] === 0 || visited[r][c]) {
+          if (
+            r < 0 ||
+            r >= ROWS ||
+            c < 0 ||
+            c >= COLS ||
+            grid[r][c] === 0 ||
+            visited[r][c]
+          ) {
             return;
           }
           visited[r][c] = true;
@@ -2240,8 +2251,8 @@ class Level {
       }
 
       function touchesSides(grid) {
-        const leftTouched = grid.some(row => row[0] === 1);
-        const rightTouched = grid.some(row => row[COLS - 1] === 1);
+        const leftTouched = grid.some((row) => row[0] === 1);
+        const rightTouched = grid.some((row) => row[COLS - 1] === 1);
         return leftTouched && rightTouched;
       }
 
@@ -2281,7 +2292,9 @@ class Level {
       }
 
       function reflectGrid(grid) {
-        const reflected = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+        const reflected = Array.from({ length: ROWS }, () =>
+          Array(COLS).fill(0)
+        );
         for (let r = 0; r < ROWS; r++) {
           for (let c = 0; c < COLS; c++) {
             reflected[r][COLS - 1 - c] = grid[r][c];
@@ -2292,7 +2305,7 @@ class Level {
 
       const shapes = new Set();
       const maxTiles = ROWS * COLS;
-      for (let mask = 1; mask < (1 << maxTiles); mask++) {
+      for (let mask = 1; mask < 1 << maxTiles; mask++) {
         const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
         for (let bit = 0; bit < maxTiles; bit++) {
           if (mask & (1 << bit)) {
@@ -2306,7 +2319,7 @@ class Level {
         }
       }
 
-      return Array.from(shapes).map(shape => JSON.parse(shape));
+      return Array.from(shapes).map((shape) => JSON.parse(shape));
     }
 
     const SHAPES = generateShapes();
@@ -2334,7 +2347,8 @@ class Level {
       );
 
       let tilesGenerated = 0;
-      let lastX = 0, lastY = 0;
+      let lastX = 0,
+        lastY = 0;
 
       while (tilesGenerated < totalTilesToGen) {
         const shape = getRandomShape();
@@ -2346,7 +2360,10 @@ class Level {
             let canPlace = true;
             for (let x = 0; x < 3; x++) {
               for (let y = 0; y < 3; y++) {
-                if (shape[x][y] === 1 && grid[startX + x][startY + y].walkable) {
+                if (
+                  shape[x][y] === 1 &&
+                  grid[startX + x][startY + y].walkable
+                ) {
                   canPlace = false;
                   break;
                 }
@@ -2378,7 +2395,7 @@ class Level {
       }
 
       // Ensure at least one walkable tile in the first column
-      const firstColumnHasTile = grid.some(column => column[0].walkable);
+      const firstColumnHasTile = grid.some((column) => column[0].walkable);
       if (!firstColumnHasTile) {
         for (let y = 0; y < gridHeight; y++) {
           if (!grid[0][y].walkable) {
@@ -2437,33 +2454,39 @@ class Level {
     // Generating exit tile.
 
     var aEndPoints = [];
-    var tilesToLoop = Math.floor(this.unusableTiles / 2) ? Math.floor(this.unusableTiles / 2) : 1;
+    var tilesToLoop = Math.floor(this.unusableTiles / 2)
+      ? Math.floor(this.unusableTiles / 2)
+      : 1;
     console.log("exit tiles potential =", tilesToLoop);
     var epad = null;
 
-    this.tiles[this.tiles.length - 1].forEach((e, i)=>{
-      if(e.walkable == true){ aEndPoints.push(i); console.log("aEndPoints", i) };
+    this.tiles[this.tiles.length - 1].forEach((e, i) => {
+      if (e.walkable == true) {
+        aEndPoints.push(i);
+        console.log("aEndPoints", i);
+      }
     });
     if (aEndPoints.length > 1) {
       // if there is multiple end tiles.
       let xe = getRandomValue(0, aEndPoints.length - 1);
       epad = [this.tiles.length - 1, xe];
-    } else if (aEndPoints.length == 1){
+    } else if (aEndPoints.length == 1) {
       // if there is only 1 end tile.
-      console.log([ (this.tiles.length - 1), aEndPoints[0] ])
-      epad = [ (this.tiles.length - 1), aEndPoints[0] ];
+      console.log([this.tiles.length - 1, aEndPoints[0]]);
+      epad = [this.tiles.length - 1, aEndPoints[0]];
     } else {
       // if there is no end tile.
-
-    };
+    }
     this.exitAddress = epad;
     // Making sure there is an entrance tile.
     var arrayX2 = [];
-    
-    this.tiles[1].forEach((e, i)=>{
-      if(e.walkable == true){arrayX2.push(i)};
+
+    this.tiles[1].forEach((e, i) => {
+      if (e.walkable == true) {
+        arrayX2.push(i);
+      }
     });
-    if(arrayX2.length){
+    if (arrayX2.length) {
       this.tiles[0][arrayX2[0]].walkable = true;
     }
   }
@@ -2489,7 +2512,7 @@ function generatePrettyAsciiMap(grid) {
           .map((cell) => {
             if (cell.enemy) {
               return " E "; // Enemy present
-            } else if(cell.loot){
+            } else if (cell.loot) {
               return " L "; // Loot present
             } else if (cell.walkable) {
               return " \uf0c8 "; // Walkable terrain
@@ -2512,9 +2535,53 @@ for (x = 0; x < 10; x++) {
 }
 // -;-;-;-;-;-
 
+ipcMain.on("intro_vignette_overlayCreate", () => {
+  const createOverlayWindow = () => {
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    const overlayWindow = new BrowserWindow({
+      width: width,
+      height: height,
+      frame: false,
+      transparent: true,
+      alwaysOnTop: true,
+      skipTaskbar: true,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+      },
+    });
+
+    overlayWindow.setIgnoreMouseEvents(true, { forward: true });
+    overlayWindow.loadFile(path.join(__dirname, "cave_overlay.html"));
+
+    // Open DevTools in a separate window
+    const devToolsWindow = new BrowserWindow({
+      width: 800,
+      height: 600,
+      webPreferences: {
+        nodeIntegration: true,
+        preload: path.join(__dirname, "preload.js"),
+        webSecurity: false,
+        allowRunningInsecureContent: true,
+      },
+    });
+    overlayWindow.webContents.setDevToolsWebContents(
+      devToolsWindow.webContents
+    );
+    overlayWindow.webContents.openDevTools({ mode: "detach" });
+
+    overlayWindow.showInactive();
+  };
+
+  createOverlayWindow();
+  setTimeout()
+});
+
+
+
 ipcMain.on("battleBoxStart", () => {
   var startingLevel = new Level(1);
   console.log(startingLevel);
   win.webContents.send("battleBoxStart_levelSync", startingLevel);
 });
-ipcMain.on("battleBoxResume", () => { });
+ipcMain.on("battleBoxResume", () => {});

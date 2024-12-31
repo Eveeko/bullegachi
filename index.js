@@ -1775,8 +1775,8 @@ battleBoxSplashStart.addEventListener("mousedown", () => {
     battleBoxSplashResume.style.visibility = "hidden";
     battleBoxSplashStart.style.visibility = "hidden";
     setTimeout(() => {
-      battleBoxIntroStart();
-      //window.electron.send("intro_vignette_overlayCreate");
+      //battleBoxIntroStart();
+      window.electron.send("intro_vignette_overlayCreate");
     }, 500);
     //window.electron.send("battleBoxStart");
   }, 150);

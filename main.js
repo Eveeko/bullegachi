@@ -7,6 +7,7 @@ const {
   ipcMain,
   Notification,
   shell,
+  globalShortcut
 } = require("electron");
 const path = require("node:path");
 const fs = require("fs");
@@ -18,6 +19,7 @@ const http = require("http");
 const os = require("os");
 const { exec } = require("child_process");
 const { randomInt } = require("node:crypto");
+const robot = require('robotjs');
 
 const spoop_eyes = [
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -2535,10 +2537,12 @@ for (x = 0; x < 10; x++) {
 }
 // -;-;-;-;-;-
 
+var ovwin;
 ipcMain.on("intro_vignette_overlayCreate", () => {
+  robot.keyTap('audio_stop'); // stops any playing media so the user hears all the sfx.
   const createOverlayWindow = () => {
     const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-    const overlayWindow = new BrowserWindow({
+    ovwin = new BrowserWindow({
       width: width,
       height: height,
       frame: false,
@@ -2546,13 +2550,12 @@ ipcMain.on("intro_vignette_overlayCreate", () => {
       alwaysOnTop: true,
       skipTaskbar: true,
       webPreferences: {
+        preload: path.join(__dirname, "preload_overlay.js"),
         nodeIntegration: true,
-        contextIsolation: false,
       },
     });
-
-    overlayWindow.setIgnoreMouseEvents(true, { forward: true });
-    overlayWindow.loadFile(path.join(__dirname, "cave_overlay.html"));
+    ovwin.setIgnoreMouseEvents(true, { forward: true });
+    ovwin.loadFile(path.join(__dirname, "cave_overlay.html"));
 
     // Open DevTools in a separate window
     const devToolsWindow = new BrowserWindow({
@@ -2560,24 +2563,24 @@ ipcMain.on("intro_vignette_overlayCreate", () => {
       height: 600,
       webPreferences: {
         nodeIntegration: true,
-        preload: path.join(__dirname, "preload.js"),
-        webSecurity: false,
-        allowRunningInsecureContent: true,
       },
     });
-    overlayWindow.webContents.setDevToolsWebContents(
-      devToolsWindow.webContents
-    );
-    overlayWindow.webContents.openDevTools({ mode: "detach" });
+    ovwin.webContents.setDevToolsWebContents(devToolsWindow.webContents);
+    ovwin.webContents.openDevTools({ mode: "detach" });
 
-    overlayWindow.showInactive();
+    ovwin.showInactive();
   };
 
   createOverlayWindow();
-  setTimeout()
+  ovwin.webContents.on("did-finish-load", () => {
+    ovwin.webContents.send("start", false);
+  });
 });
 
-
+ipcMain.on("cave_overlay_end", ()=>{
+  ovwin.close();
+  win.webContents.send("battleBoxStart_cave_sequence");
+})
 
 ipcMain.on("battleBoxStart", () => {
   var startingLevel = new Level(1);

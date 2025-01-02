@@ -73,6 +73,29 @@ function typewriterEffect(h1Element, text, timeToComplete) {
   }
 }
 
+function fadeInVignette() {
+  let start = null;
+  const duration = 2000; // Duration of the fade in milliseconds
+
+  function step(timestamp) {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const opacity1 = 0.2 * progress; // From 0.0 to 0.2
+    const opacity2 = 0.5 * progress; // From 0.0 to 0.5
+
+    vignette.style.background = `radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, ${opacity1}) 25%,
+      rgba(0, 0, 0, ${opacity2}) 100%
+    )`;
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
 function fadeVignette(reverse) {
   let start = null;
   const duration = 2000; // Duration of the fade in milliseconds
@@ -80,7 +103,7 @@ function fadeVignette(reverse) {
   function step(timestamp) {
     if (!start) start = timestamp;
     const progress = Math.min((timestamp - start) / duration, 1);
-    const opacity1 = reverse ? 0.2 * (1 - progress) : 0.2 * progress; // From 0.2 to 0.0 if reverse, else 0.0 to 0.2
+    const opacity1 = reverse ? 0.2 * (1 - progress) : 0.2; // From 0.2 to 0.0 if reverse, else 0.2
     const opacity2 = reverse ? 0.9 * (1 - progress) : 0.5 + (0.4 * progress); // From 0.9 to 0.0 if reverse, else 0.5 to 0.9
 
     vignette.style.background = `radial-gradient(
@@ -98,6 +121,7 @@ function fadeVignette(reverse) {
 }
 window.electron.receive("start", ()=>{
     console.log('start received')
+    fadeInVignette();
     setTimeout(() =>{
         footstep_Sfx.play();
     }, 1000);
@@ -109,12 +133,24 @@ window.electron.receive("start", ()=>{
                 fadeVignette();
                 typewriterEffect(mainh1, "Darkness surrounds as you continue foward without light.", 5000);
                 setTimeout(() =>{
+                  footstep_Sfx.src = "sfx/footsteps_cave_sfx.wav";
+                  footstep_Sfx.load();
+                  footstep_Sfx.currentTime = 0;
+                  footstep_Sfx.play();
+                }, 1000);
+                setTimeout(() =>{
                     mainh1.innerHTML = "";
+                    footstep_Sfx.src = "sfx/footsteps_cave_sfx.wav";
+                    footstep_Sfx.load();
+                    footstep_Sfx.currentTime = 0;
+                    footstep_Sfx.volume = 0.7;
+                    footstep_Sfx.play();
                     setTimeout(()=>{
                         typewriterEffect(mainh1, ". . .", 4000);
                         setTimeout(()=>{
                             mainh1.innerHTML = "";
                             setTimeout(()=>{
+                                footstep_Sfx.volume = 1;
                                 footstep_Sfx.src = "sfx/wall_impact_sfx.wav";
                                 footstep_Sfx.load();
                                 footstep_Sfx.currentTime = 0;

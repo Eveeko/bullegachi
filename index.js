@@ -1775,8 +1775,9 @@ battleBoxSplashStart.addEventListener("mousedown", () => {
     battleBoxSplashResume.style.visibility = "hidden";
     battleBoxSplashStart.style.visibility = "hidden";
     setTimeout(() => {
-      //battleBoxIntroStart();
-      window.electron.send("intro_vignette_overlayCreate");
+      //window.electron.send("cave_debug_skip");
+      battleBoxIntroStart();
+      //window.electron.send("intro_vignette_overlayCreate");
     }, 500);
     //window.electron.send("battleBoxStart");
   }, 150);
@@ -1907,6 +1908,14 @@ function typewriterEffect(h1Element, text, timeToComplete) {
     source.start(audioContext.currentTime, offset, sliceDuration);
   }
 }
+window.electron.receive("battleBoxStart_cave_sequence", () =>{
+  playSelectSfx();
+  battleBoxSplash.style.visibility = "hidden";
+  window.electron.send("battleBoxStart");
+  // TODO: THE INTRO CINEMATIC SEQUENCE GOES HERE
+  // MAKE A CAVE FALLING IN ANIMATION ON THE LEFT SIDE OF THE BATTLEBOX SO IT LOOKS LIKE THE ENTRANCE CAVED IN AND NOW YOU HAVE TO PROGRESS FOWARDS.
+  // THIS IS NOT THAT HARD IM JUST TRYING NOT TO SPEND TEN YILL MAKING THE COSMETICS OF THE GAME AND I NEED TO GET BACK TO THE GAMEPLAY BEFORE THIS UPDATE TAKES FOREVER.
+});
 window.electron.receive("battleBoxStart_levelSync", (level) => {
   console.log("received new level payload.");
   console.log(level);

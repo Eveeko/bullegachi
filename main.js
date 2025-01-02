@@ -2214,111 +2214,111 @@ class Level {
       const COLS = 3;
 
       function isConnected(grid) {
-        const visited = Array.from({ length: ROWS }, () =>
-          Array(COLS).fill(false)
-        );
+      const visited = Array.from({ length: ROWS }, () =>
+        Array(COLS).fill(false)
+      );
 
-        function dfs(r, c) {
-          if (
-            r < 0 ||
-            r >= ROWS ||
-            c < 0 ||
-            c >= COLS ||
-            grid[r][c] === 0 ||
-            visited[r][c]
-          ) {
-            return;
-          }
-          visited[r][c] = true;
-          dfs(r - 1, c);
-          dfs(r + 1, c);
-          dfs(r, c - 1);
-          dfs(r, c + 1);
+      function dfs(r, c) {
+        if (
+        r < 0 ||
+        r >= ROWS ||
+        c < 0 ||
+        c >= COLS ||
+        grid[r][c] === 0 ||
+        visited[r][c]
+        ) {
+        return;
         }
+        visited[r][c] = true;
+        dfs(r - 1, c);
+        dfs(r + 1, c);
+        dfs(r, c - 1);
+        dfs(r, c + 1);
+      }
 
-        let foundStart = false;
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            if (grid[r][c] === 1) {
-              if (!foundStart) {
-                dfs(r, c);
-                foundStart = true;
-              } else if (!visited[r][c]) {
-                return false; // Disconnected
-              }
-            }
+      let foundStart = false;
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+        if (grid[r][c] === 1) {
+          if (!foundStart) {
+          dfs(r, c);
+          foundStart = true;
+          } else if (!visited[r][c]) {
+          return false; // Disconnected
           }
         }
-        return foundStart;
+        }
+      }
+      return foundStart;
       }
 
       function touchesSides(grid) {
-        const leftTouched = grid.some((row) => row[0] === 1);
-        const rightTouched = grid.some((row) => row[COLS - 1] === 1);
-        return leftTouched && rightTouched;
+      const leftTouched = grid.some((row) => row[0] === 1);
+      const rightTouched = grid.some((row) => row[COLS - 1] === 1);
+      return leftTouched && rightTouched;
       }
 
       function gridsAreEqual(grid1, grid2) {
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            if (grid1[r][c] !== grid2[r][c]) {
-              return false;
-            }
-          }
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+        if (grid1[r][c] !== grid2[r][c]) {
+          return false;
         }
-        return true;
+        }
+      }
+      return true;
       }
 
       function normalize(grid) {
-        const rotations = [];
-        let current = grid;
-        for (let i = 0; i < 4; i++) {
-          current = rotateGrid(current);
-          rotations.push(current);
-        }
+      const rotations = [];
+      let current = grid;
+      for (let i = 0; i < 4; i++) {
+        current = rotateGrid(current);
+        rotations.push(current);
+      }
 
-        const reflections = rotations.map(reflectGrid);
-        return [grid, ...rotations, ...reflections].sort((a, b) => {
-          return JSON.stringify(a).localeCompare(JSON.stringify(b));
-        })[0];
+      const reflections = rotations.map(reflectGrid);
+      return [grid, ...rotations, ...reflections].sort((a, b) => {
+        return JSON.stringify(a).localeCompare(JSON.stringify(b));
+      })[0];
       }
 
       function rotateGrid(grid) {
-        const rotated = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            rotated[c][ROWS - 1 - r] = grid[r][c];
-          }
+      const rotated = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+        rotated[c][ROWS - 1 - r] = grid[r][c];
         }
-        return rotated;
+      }
+      return rotated;
       }
 
       function reflectGrid(grid) {
-        const reflected = Array.from({ length: ROWS }, () =>
-          Array(COLS).fill(0)
-        );
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            reflected[r][COLS - 1 - c] = grid[r][c];
-          }
+      const reflected = Array.from({ length: ROWS }, () =>
+        Array(COLS).fill(0)
+      );
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+        reflected[r][COLS - 1 - c] = grid[r][c];
         }
-        return reflected;
+      }
+      return reflected;
       }
 
       const shapes = new Set();
       const maxTiles = ROWS * COLS;
       for (let mask = 1; mask < 1 << maxTiles; mask++) {
-        const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-        for (let bit = 0; bit < maxTiles; bit++) {
-          if (mask & (1 << bit)) {
-            grid[Math.floor(bit / COLS)][bit % COLS] = 1;
-          }
+      const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+      for (let bit = 0; bit < maxTiles; bit++) {
+        if (mask & (1 << bit)) {
+        grid[Math.floor(bit / COLS)][bit % COLS] = 1;
         }
-        if (isConnected(grid) && touchesSides(grid)) {
-          const normalized = normalize(grid);
-          const key = JSON.stringify(normalized);
-          shapes.add(key);
-        }
+      }
+      if (isConnected(grid) && touchesSides(grid)) {
+        const normalized = normalize(grid);
+        const key = JSON.stringify(normalized);
+        shapes.add(key);
+      }
       }
 
       return Array.from(shapes).map((shape) => JSON.parse(shape));
@@ -2345,67 +2345,122 @@ class Level {
      */
     function fillGrid(totalTilesToGen, gridHeight, gridLength) {
       const grid = Array.from({ length: gridLength }, (_, x) =>
-        Array.from({ length: gridHeight }, (_, y) => new Tile(x, y, false))
+      Array.from({ length: gridHeight }, (_, y) => new Tile(x, y, false))
       );
 
       let tilesGenerated = 0;
       let lastX = 0,
-        lastY = 0;
+      lastY = 0;
 
       while (tilesGenerated < totalTilesToGen) {
-        const shape = getRandomShape();
-        let placed = false;
+      const shape = getRandomShape();
+      let placed = false;
 
-        for (let startX = 0; startX < gridLength - 2 && !placed; startX++) {
-          for (let startY = 0; startY < gridHeight - 2 && !placed; startY++) {
-            // Check if shape can fit
-            let canPlace = true;
-            for (let x = 0; x < 3; x++) {
-              for (let y = 0; y < 3; y++) {
-                if (
-                  shape[x][y] === 1 &&
-                  grid[startX + x][startY + y].walkable
-                ) {
-                  canPlace = false;
-                  break;
-                }
-              }
-              if (!canPlace) break;
-            }
+      for (let startX = 0; startX < gridLength - 2 && !placed; startX++) {
+        for (let startY = 0; startY < gridHeight - 2 && !placed; startY++) {
+        // Check if shape can fit
+        let canPlace = true;
+        for (let x = 0; x < 3; x++) {
+          for (let y = 0; y < 3; y++) {
+          if (
+            shape[x][y] === 1 &&
+            grid[startX + x][startY + y].walkable
+          ) {
+            canPlace = false;
+            break;
+          }
+          }
+          if (!canPlace) break;
+        }
 
-            if (canPlace) {
-              // Place shape on grid
-              for (let x = 0; x < 3; x++) {
-                for (let y = 0; y < 3; y++) {
-                  if (shape[x][y] === 1) {
-                    grid[startX + x][startY + y].walkable = true;
-                    tilesGenerated++;
-                  }
-                }
-              }
-              lastX = startX;
-              lastY = startY;
-              placed = true;
+        if (canPlace) {
+          // Place shape on grid
+          for (let x = 0; x < 3; x++) {
+          for (let y = 0; y < 3; y++) {
+            if (shape[x][y] === 1) {
+            grid[startX + x][startY + y].walkable = true;
+            tilesGenerated++;
             }
           }
+          }
+          lastX = startX;
+          lastY = startY;
+          placed = true;
         }
+        }
+      }
 
-        // If no valid placement, exit loop (should not happen in a well-formed input)
-        if (!placed) {
-          break;
-        }
+      // If no valid placement, exit loop (should not happen in a well-formed input)
+      if (!placed) {
+        break;
+      }
       }
 
       // Ensure at least one walkable tile in the first column
       const firstColumnHasTile = grid.some((column) => column[0].walkable);
       if (!firstColumnHasTile) {
-        for (let y = 0; y < gridHeight; y++) {
-          if (!grid[0][y].walkable) {
-            grid[0][y].walkable = true;
-            tilesGenerated++;
-            break;
-          }
+      for (let y = 0; y < gridHeight; y++) {
+        if (!grid[0][y].walkable) {
+        grid[0][y].walkable = true;
+        tilesGenerated++;
+        break;
         }
+      }
+      }
+
+      // Ensure there is a path from the start to the end
+      const visited = Array.from({ length: gridLength }, () =>
+      Array(gridHeight).fill(false)
+      );
+
+      function dfs(x, y) {
+      if (
+        x < 0 ||
+        x >= gridLength ||
+        y < 0 ||
+        y >= gridHeight ||
+        !grid[x][y].walkable ||
+        visited[x][y]
+      ) {
+        return false;
+      }
+      visited[x][y] = true;
+      if (x === gridLength - 1) {
+        return true;
+      }
+      return (
+        dfs(x + 1, y) ||
+        dfs(x - 1, y) ||
+        dfs(x, y + 1) ||
+        dfs(x, y - 1)
+      );
+      }
+
+      let pathExists = false;
+      for (let y = 0; y < gridHeight; y++) {
+      if (grid[0][y].walkable && dfs(0, y)) {
+        pathExists = true;
+        break;
+      }
+      }
+
+      if (!pathExists) {
+      // If no path exists, make one
+      for (let x = 0; x < gridLength; x++) {
+        for (let y = 0; y < gridHeight; y++) {
+        if (!grid[x][y].walkable) {
+          grid[x][y].walkable = true;
+          tilesGenerated++;
+          if (dfs(0, 0)) {
+          pathExists = true;
+          break;
+          }
+          grid[x][y].walkable = false;
+          tilesGenerated--;
+        }
+        }
+        if (pathExists) break;
+      }
       }
 
       return grid;
@@ -2579,6 +2634,9 @@ ipcMain.on("intro_vignette_overlayCreate", () => {
 
 ipcMain.on("cave_overlay_end", ()=>{
   ovwin.close();
+  win.webContents.send("battleBoxStart_cave_sequence");
+})
+ipcMain.on("cave_debug_skip", () =>{
   win.webContents.send("battleBoxStart_cave_sequence");
 })
 

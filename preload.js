@@ -4,11 +4,7 @@ const path = require('path');
 contextBridge.exposeInMainWorld(
   'electron', {
     send: (channel, data) => {
-      // Whitelist channels
-      let validChannels = ['move-mode', 'drag-window', 'get-base-dir', 'consume_food', 'alivePal', 'killPal', 'itemDropped', 'startSacrifice', 'endSacrifice', 'consume_item', 'tutorialEnded', 'updateConfirmed', 'updateDeclined', 'tutorialAdvanced', 'faceMovedX', 'battleBoxStart', 'battleBoxResume', 'battleBoxStart', 'intro_vignette_overlayCreate'];
-      if (validChannels.includes(channel)) {
         ipcRenderer.send(channel, data);
-      }
     },
     receive: (channel, func) => {
       ipcRenderer.on(channel, (event, ...args) => func(...args));

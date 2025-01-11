@@ -1829,22 +1829,22 @@ function battleBoxIntroStart() {
           setTimeout(() => {
             battleBox_intro_lineFlasher.style.backgroundColor = "#ffcc00";
             battleBox_intro_lineFlasher.style.top = `${topOffset + (10 * x)}px`;
-            if(x == 14){ battleBox_intro_lineFlasher.style.visibility = "hidden" }
+            if (x == 14) { battleBox_intro_lineFlasher.style.visibility = "hidden" }
           }, 200)
         }, (delayCt * x))
       }
       introCaveSfx.currentTime = 0;
       introCaveSfx.play();
-      setTimeout(()=>{
+      setTimeout(() => {
         introCaveSfx.pause();
         playSelectSfx();
         battleBox_intro_sprite_1.style.visibility = "hidden";
-        setTimeout(() =>{
+        setTimeout(() => {
           battleBox_intro_h1.innerHTML = "";
           battleBox_intro_h1.style.fontSize = "12px";
           battleBox_intro_h1.style.visibility = "visible";
           typewriterEffect(battleBox_intro_h1, "You enter the caves entrance by foot.", 1000);
-          setTimeout(() =>{
+          setTimeout(() => {
             intro_cave_start_btn.style.visibility = "visible";
           }, 1500)
         }, 500);
@@ -1908,7 +1908,7 @@ function typewriterEffect(h1Element, text, timeToComplete) {
     source.start(audioContext.currentTime, offset, sliceDuration);
   }
 }
-window.electron.receive("battleBoxStart_cave_sequence", () =>{
+window.electron.receive("battleBoxStart_cave_sequence", () => {
   playSelectSfx();
   battleBoxSplash.style.visibility = "hidden";
   window.electron.send("battleBoxStart");
@@ -1953,7 +1953,69 @@ map_controls_left.addEventListener("mousedown", () => {
     setTimeout(() => {
       map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
       map_controls_mask.style.visibility = "visible";
-      window.electron.send("");
+      window.electron.send("attemptMove", "left");
     }, 150);
+  }
+});
+map_controls_right.addEventListener("mousedown", () => {
+  if (!controlsHalted) {
+    playSelectSfx();
+    controllsHalted = true;
+    map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+    setTimeout(() => {
+      map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      map_controls_mask.style.visibility = "visible";
+      window.electron.send("attemptMove", "right");
+    }, 150);
+  }
+});
+map_controls_up.addEventListener("mousedown", () => {
+  if (!controlsHalted) {
+    playSelectSfx();
+    controllsHalted = true;
+    map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+    setTimeout(() => {
+      map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      map_controls_mask.style.visibility = "visible";
+      window.electron.send("attemptMove", "up");
+    }, 150);
+  }
+});
+map_controls_down.addEventListener("mousedown", () => {
+  if (!controlsHalted) {
+    playSelectSfx();
+    controllsHalted = true;
+    map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+    setTimeout(() => {
+      map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      map_controls_mask.style.visibility = "visible";
+      window.electron.send("attemptMove", "down");
+    }, 150);
+  }
+});
+
+window.electron.receive("battleBox_updatePlayerPosition", (position) => {
+  if (position) {
+    // Player was able to move, handle visuals.
+    switch (position[2]) {
+      case "right":
+        map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        break;
+      case "left":
+        map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        break;
+      case "up":
+        map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        break;
+      case "down":
+        map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        break;
+    }
+    playSelectSfx();
+    setTimeout(() =>{ map_controls_mask.style.visibility = "hidden"; }, 500);
+  } else {
+    // Player did not move, closing control block overlay.
+    playAttackSfx();
+    map_controls_mask.style.visibility = "hidden";
   }
 });

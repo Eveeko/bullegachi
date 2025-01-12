@@ -1775,8 +1775,8 @@ battleBoxSplashStart.addEventListener("mousedown", () => {
     battleBoxSplashResume.style.visibility = "hidden";
     battleBoxSplashStart.style.visibility = "hidden";
     setTimeout(() => {
-      //window.electron.send("cave_debug_skip");
-      battleBoxIntroStart();
+      window.electron.send("cave_debug_skip");
+      //battleBoxIntroStart();
       //window.electron.send("intro_vignette_overlayCreate");
     }, 500);
     //window.electron.send("battleBoxStart");
@@ -1949,65 +1949,106 @@ map_controls_left.addEventListener("mousedown", () => {
   if (!controlsHalted) {
     playSelectSfx();
     controllsHalted = true;
-    map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+    map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
     setTimeout(() => {
-      map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
       map_controls_mask.style.visibility = "visible";
       window.electron.send("attemptMove", "left");
     }, 150);
   }
 });
+map_controls_left.addEventListener("mouseover", () =>{
+  playSelectSfx();
+  map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+});
+map_controls_left.addEventListener("mouseleave", () => {
+  map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+});
 map_controls_right.addEventListener("mousedown", () => {
   if (!controlsHalted) {
     playSelectSfx();
     controllsHalted = true;
-    map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+    map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
     setTimeout(() => {
-      map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
       map_controls_mask.style.visibility = "visible";
       window.electron.send("attemptMove", "right");
     }, 150);
   }
 });
+map_controls_right.addEventListener("mouseover", () =>{
+  playSelectSfx();
+  map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+});
+map_controls_right.addEventListener("mouseleave", () => {
+  map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+});
 map_controls_up.addEventListener("mousedown", () => {
   if (!controlsHalted) {
     playSelectSfx();
     controllsHalted = true;
-    map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+    map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
     setTimeout(() => {
-      map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
       map_controls_mask.style.visibility = "visible";
       window.electron.send("attemptMove", "up");
     }, 150);
   }
 });
+map_controls_up.addEventListener("mouseover", () =>{
+  playSelectSfx();
+  map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+});
+map_controls_up.addEventListener("mouseleave", () => {
+  map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+});
 map_controls_down.addEventListener("mousedown", () => {
   if (!controlsHalted) {
     playSelectSfx();
     controllsHalted = true;
-    map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+    map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
     setTimeout(() => {
-      map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+      map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
       map_controls_mask.style.visibility = "visible";
       window.electron.send("attemptMove", "down");
     }, 150);
   }
 });
+map_controls_down.addEventListener("mouseover", () =>{
+  playSelectSfx();
+  map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+});
+map_controls_down.addEventListener("mouseleave", () => {
+  map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+});
 
 window.electron.receive("battleBox_updatePlayerPosition", (position) => {
+  console.log('updatePlayerPosition received: ', position);
+  STYLE = window.getComputedStyle(playfield_player);
   if (position) {
     // Player was able to move, handle visuals.
     switch (position[2]) {
       case "right":
+        console.log('t', STYLE.getPropertyValue('left'))
         map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) + 28}px`;
         break;
       case "left":
         map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - 28}px`;
         break;
       case "up":
         map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) - 8}px`;
         break;
       case "down":
+        map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) + 8}px`;
+        break;
+      default:
+        map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+        map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
         map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
         break;
     }

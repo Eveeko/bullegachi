@@ -2557,7 +2557,7 @@ class Level {
 // --------------------------------------------                               
 
 var curLevelObj = new Level(1); // The current level object.
-var curPlayerPos = [0, 0, "right"]; // The current players position in relation to the level grid. last value is direction of travel.
+var curPlayerPos = [-1, 0, "right"]; // The current players position in relation to the level grid. last value is direction of travel.
 
 // -;-;-;-;-;-
 function generatePrettyAsciiMap(grid) {
@@ -2658,11 +2658,13 @@ ipcMain.on("battleBoxStart", () => {
 });
 ipcMain.on("battleBoxResume", () => { });
 
-ipcMain.on("attemptMove", (direction) => {
+ipcMain.on("attemptMove", (event, direction) => {
+  console.log('attemptMove received', direction);
   switch (direction) {
     case "right":
-      if (curLevelObj.tiles[curPlayerPos[0] + 1, curPlayerPos[1]]) {
-        if (curLevelObj.tiles[curPlayerPos[0] + 1, curPlayerPos[1]].walkable == true) {
+      console.log('attempting movement: right 1');
+      if (curLevelObj.tiles[curPlayerPos[0] + 1][curPlayerPos[1]]) {
+        if (curLevelObj.tiles[curPlayerPos[0] + 1][curPlayerPos[1]].walkable == true) {
           console.log("can walk, moving right 1.");
           curPlayerPos[0] = (curPlayerPos[0] + 1);
           curPlayerPos[2] = "right";
@@ -2677,10 +2679,55 @@ ipcMain.on("attemptMove", (direction) => {
       };
       break;
     case "left":
+      console.log('attempting movement: left 1');
+      if (curLevelObj.tiles[curPlayerPos[0] - 1][curPlayerPos[1]]) {
+        if (curLevelObj.tiles[curPlayerPos[0] - 1][curPlayerPos[1]].walkable == true) {
+          console.log("can walk, moving left 1.");
+          curPlayerPos[0] = (curPlayerPos[0] - 1);
+          curPlayerPos[2] = "left";
+          win.webContents.send("battleBox_updatePlayerPosition", curPlayerPos);
+        } else {
+          win.webContents.send("battleBox_updatePlayerPosition", false);
+          console.log("cant walk, rejecting move.");
+        };
+      } else {
+        win.webContents.send("battleBox_updatePlayerPosition", false);
+        console.log("cant walk, rejecting move.");
+      };
       break;
     case "up":
+      console.log('attempting movement: up 1');
+      if (curLevelObj.tiles[curPlayerPos[0]][curPlayerPos[1] - 1]) {
+        if (curLevelObj.tiles[curPlayerPos[0]][curPlayerPos[1] - 1].walkable == true) {
+          console.log("can walk, moving up 1.");
+          curPlayerPos[1] = (curPlayerPos[1] - 1);
+          curPlayerPos[2] = "up";
+          win.webContents.send("battleBox_updatePlayerPosition", curPlayerPos);
+        } else {
+          win.webContents.send("battleBox_updatePlayerPosition", false);
+          console.log("cant walk, rejecting move.");
+        };
+      } else {
+        win.webContents.send("battleBox_updatePlayerPosition", false);
+        console.log("cant walk, rejecting move.");
+      };
       break;
     case "down":
+      console.log('attempting movement: down 1');
+      if (curLevelObj.tiles[curPlayerPos[0]][curPlayerPos[1] + 1]) {
+        if (curLevelObj.tiles[curPlayerPos[0]][curPlayerPos[1] + 1].walkable == true) {
+          console.log("can walk, moving down 1.");
+          curPlayerPos[1] = (curPlayerPos[1] + 1);
+          curPlayerPos[2] = "down";
+          win.webContents.send("battleBox_updatePlayerPosition", curPlayerPos);
+        } else {
+          win.webContents.send("battleBox_updatePlayerPosition", false);
+          console.log("cant walk, rejecting move.");
+        };
+      } else {
+        win.webContents.send("battleBox_updatePlayerPosition", false);
+        console.log("cant walk, rejecting move.");
+      };
       break;
   }
 });

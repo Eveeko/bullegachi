@@ -1296,6 +1296,7 @@ body {
   outline-color: #110d00;
   outline-style: solid;
   outline-offset: -5px;
+  background-color: #110d00;
   z-index: 1;
 }
 
@@ -1365,7 +1366,4 @@ body {
   background-repeat: no-repeat;
   background-size: 35px 35px;
   rotate: 180deg;
-}
-.pf_map_ctrls_left:hover {
-  background-image: url(sprite/sprite_next_btn_i.png);
 }

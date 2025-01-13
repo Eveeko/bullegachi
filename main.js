@@ -2166,6 +2166,7 @@ class Level {
   //  = = =
   //      =
   exitAddress = null; // The tile address(X and Y coordinate) that is the exit of this level. defaults to the 2nd tile.
+  startAddress = null; // The tile address(X and Y coordinate) that is the start of this level.
   totalEnemies = 1; // The total amount of enemies on all tiles in this level.
   totalLoot = 1; // The total amount of loot(chest tiles, item tiles) on all tiles in this level.
   totalUsableTiles = 0; // The total amount of tiles that can be moved onto.
@@ -2544,6 +2545,16 @@ class Level {
     if (arrayX2.length) {
       this.tiles[0][arrayX2[0]].walkable = true;
     }
+
+    // Select "entrance" tile.
+    var availableStartTiles = [];
+
+    for(let x = 0; x < this.gridHeight; x++){
+      if(this.tiles[0][x].walkable){
+        availableStartTiles.push(x);
+      }
+    }
+    this.startAddress = [ 0, availableStartTiles[Math.floor(Math.random() * availableStartTiles.length)] ];
   }
 }
 
@@ -2654,6 +2665,7 @@ ipcMain.on("battleBoxStart", () => {
   var startingLevel = new Level(1);
   console.log(startingLevel);
   curLevelObj = startingLevel;
+  curPlayerPos = [-1, curLevelObj.startAddress[1], "right"];
   win.webContents.send("battleBoxStart_levelSync", startingLevel);
 });
 ipcMain.on("battleBoxResume", () => { });

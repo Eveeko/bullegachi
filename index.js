@@ -96,6 +96,7 @@ const battleBox_intro_lineFlasher = document.getElementById("battleBox_intro_lin
 const speechSfx = document.getElementById("speechSfx");
 const introCaveSfx = document.getElementById("introCaveSfx");
 const intro_cave_start_btn = document.getElementById("intro_cave_start_btn");
+const battle_tile_origin = document.getElementById("battle_tile_origin");
 
 var moveMode = false;
 var isDragging = false;
@@ -1756,6 +1757,8 @@ window.electron.receive("updateProgress", (info) => {
 // and handled within this block. call 1-800-battle2 for more information™
 // -------------------------------------------------------------------------
 
+var levelObj = null;
+
 battleBoxSplashStart.addEventListener("mouseover", () => {
   playSelectSfx();
   battleBoxSplashStart.style.backgroundColor = "#ffcc00";
@@ -1919,6 +1922,7 @@ window.electron.receive("battleBoxStart_cave_sequence", () => {
 window.electron.receive("battleBoxStart_levelSync", (level) => {
   console.log("received new level payload.");
   console.log(level);
+  levelObj = level;
   var startingHeightOffset = level.gridHeight * 10;
   if (startingHeightOffset == 10) startingHeightOffset = 0;
   for (x = 0; x < level.tiles.length; x++) {
@@ -1934,6 +1938,13 @@ window.electron.receive("battleBoxStart_levelSync", (level) => {
       playfield_grid.appendChild(newTile);
     }
   }
+  // Align players origin tile with the map start.
+  origin_tile_style = window.getComputedStyle(battle_tile_origin);
+  battle_tile_origin.style.top = `${(Number(origin_tile_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(level.startAddress[1]) * 10)}px`;
+  const startAddressY = Number(level.startAddress[1]);
+  battle_tile_origin.style.left = `${(Number(origin_tile_style.getPropertyValue('left').slice(0, -2)) + 4.5) - (Number(level.startAddress[1]) * 2)}px`;
+  playfield_player_style = window.getComputedStyle(playfield_player);
+  playfield_player.style.top = `${(Number(playfield_player_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(level.startAddress[1]) * 10)}px`;
 });
 
 // TODO: Add an inactivity timer that adds the class pf_player_idle to the player div to play an idle animation.

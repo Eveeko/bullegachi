@@ -1933,6 +1933,13 @@ window.electron.receive("battleBoxStart_levelSync", (level) => {
         newTile.style.backgroundImage = `url("sprite/sprite_tile_rock_1.png")`;
         newTile.className = "battle_tile_empty";
       }
+      if(level.tiles[x][z].enemy){
+        newTile.className = "battle_tile";
+        const enemyFrame = document.createElement("div")
+        enemyFrame.className = "battle_tile_enemy";
+        enemyFrame.style.backgroundImage = `url("sprite/sprite_enemy_1.png")`;
+        newTile.appendChild(enemyFrame);
+      }
       newTile.style.top = `${90 - startingHeightOffset + z * 10}px`;
       newTile.style.left = `${112 + x * 28 - z * 3}px`;
       playfield_grid.appendChild(newTile);
@@ -1945,6 +1952,7 @@ window.electron.receive("battleBoxStart_levelSync", (level) => {
   battle_tile_origin.style.left = `${(Number(origin_tile_style.getPropertyValue('left').slice(0, -2)) + 4.5) - (Number(level.startAddress[1]) * 2)}px`;
   playfield_player_style = window.getComputedStyle(playfield_player);
   playfield_player.style.top = `${(Number(playfield_player_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(level.startAddress[1]) * 10)}px`;
+  playfield_player.style.left =  `${(Number(playfield_player_style.getPropertyValue('left').slice(0, -2)) + 4) - (Number(level.startAddress[1]) * 2)}px`;
 });
 
 // TODO: Add an inactivity timer that adds the class pf_player_idle to the player div to play an idle animation.
@@ -2050,11 +2058,11 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
         break;
       case "up":
         map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) - 8}px`;
+        playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) - 10}px`;
         break;
       case "down":
         map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) + 8}px`;
+        playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) + 10}px`;
         break;
       default:
         map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
@@ -2070,4 +2078,8 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
     playAttackSfx();
     map_controls_mask.style.visibility = "hidden";
   }
+});
+
+window.electron.receive("battleBox_startEncounter", (enemyTile) =>{
+
 });

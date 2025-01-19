@@ -2473,7 +2473,7 @@ class Level {
     let enemiesRemaining = this.totalEnemies;
     let lootRemaining = this.totalLoot;
 
-    for (let i = 0; i < totalTilesToGen - 1; i++) {
+    for (let i = 0; i < Math.min(totalTilesToGen - 1, this.tiles.length); i++) {
       // Probability of placing an enemy on this tile
       var probability = enemiesRemaining / (totalTilesToGen - i);
       var XgridValid = [];
@@ -2487,7 +2487,7 @@ class Level {
         }
         // Generate a random index between 0 and (length - 1)
         var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
-        console.log("enemy placed: ", i, randomXgridIndex); // Place loot
+        console.log("enemy placed: ", i, randomXgridIndex); // Place enemy
         this.tiles[i][randomXgridIndex].enemy = new Enemyn();
         this.tiles[i][randomXgridIndex].walkable = true;
         enemiesRemaining--; // Reduce remaining enemies
@@ -2500,39 +2500,57 @@ class Level {
       const probability = lootRemaining / (totalTilesToGen - i);
 
       if (Math.random() < probability) {
-        console.log("loot placed: ", i); // Place loot
-        lootRemaining--; // Reduce remaining loot
+      var Xgrid = this.tiles[i];
+      var XgridValid = [];
+      for (let z = 0; z < Xgrid.length; z++) {
+        if (Xgrid[z].walkable) {
+        XgridValid.push(z);
+        }
+      }
+      // Generate a random index between 0 and (length - 1)
+      var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
+      console.log("loot placed: ", i, randomXgridIndex); // Place loot
+      this.tiles[i][randomXgridIndex].item = new Item("Loot", "Common", 1, 1);
+      lootRemaining--; // Reduce remaining loot
 
-        if (lootRemaining === 0) break; // Exit early if all loot are placed
+      if (lootRemaining === 0) break; // Exit early if all loot are placed
       }
     }
     // ---------------------
     // Generating exit tile.
 
     var aEndPoints = [];
-    var tilesToLoop = Math.floor(this.unusableTiles / 2)
-      ? Math.floor(this.unusableTiles / 2)
-      : 1;
+    var tilesToLoop = Math.floor(this.unusableTiles / 2) ? Math.floor(this.unusableTiles / 2) : 1;
     console.log("exit tiles potential =", tilesToLoop);
     var epad = null;
 
+    // Collect all walkable tiles in the last column
     this.tiles[this.tiles.length - 1].forEach((e, i) => {
       if (e.walkable == true) {
-        aEndPoints.push(i);
-        console.log("aEndPoints", i);
+      aEndPoints.push([this.tiles.length - 1, i]);
+      console.log("aEndPoints", i);
       }
     });
-    if (aEndPoints.length > 1) {
-      // if there is multiple end tiles.
-      let xe = getRandomValue(0, aEndPoints.length - 1);
-      epad = [this.tiles.length - 1, xe];
-    } else if (aEndPoints.length == 1) {
-      // if there is only 1 end tile.
-      console.log([this.tiles.length - 1, aEndPoints[0]]);
-      epad = [this.tiles.length - 1, aEndPoints[0]];
-    } else {
-      // if there is no end tile.
+
+    // If no walkable tiles in the last column, check the second last column, and so on
+    if (aEndPoints.length === 0) {
+      for (let col = this.tiles.length - 2; col >= 0; col--) {
+      this.tiles[col].forEach((e, i) => {
+        if (e.walkable == true) {
+        aEndPoints.push([col, i]);
+        console.log("aEndPoints", i);
+        }
+      });
+      if (aEndPoints.length > 0) break; // Stop if we found any walkable tiles
+      }
     }
+
+    // Randomly pick one of the collected walkable tiles as the exit tile
+    if (aEndPoints.length > 0) {
+      let xe = getRandomValue(0, aEndPoints.length - 1);
+      epad = aEndPoints[xe];
+    }
+
     this.exitAddress = epad;
     // Making sure there is an entrance tile.
     var arrayX2 = [];
@@ -2698,6 +2716,7 @@ ipcMain.on("attemptMove", (event, direction) => {
           curPlayerPos[0] = (curPlayerPos[0] - 1);
           curPlayerPos[2] = "left";
           win.webContents.send("battleBox_updatePlayerPosition", curPlayerPos);
+          win.webContents.send("battleBox_startEncounter", curLevelObj.tiles[curPlayerPos[0] - 1][curPlayerPos[1]]); // Sends the enemies tile object.
         } else {
           win.webContents.send("battleBox_updatePlayerPosition", false);
           console.log("cant walk, rejecting move.");

@@ -1257,7 +1257,7 @@ body {
 
 .pf_player {
   position: absolute;
-  top: 48px;
+  top: 50px;
   left: 78px;
 }
 
@@ -1287,10 +1287,10 @@ body {
 }
 
 .pf_pout {
-  top: 26px;
+  top: 3px;
   left: 4.5px;
   width: 26px;
-  height: 20px;
+  height: 44px;
   position: absolute;
   outline-width: 5px;
   outline-color: #110d00;
@@ -1366,4 +1366,13 @@ body {
   background-repeat: no-repeat;
   background-size: 35px 35px;
   rotate: 180deg;
+}
+.battle_tile_enemy{
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 25px;
+  height: 25px;
+  background-image: url("sprite/sprite_enemy_1.png");
+  background-size: 25px 25px;
 }

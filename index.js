@@ -1933,7 +1933,7 @@ window.electron.receive("battleBoxStart_levelSync", (level) => {
         newTile.style.backgroundImage = `url("sprite/sprite_tile_rock_1.png")`;
         newTile.className = "battle_tile_empty";
       }
-      if(level.tiles[x][z].enemy){
+      if (level.tiles[x][z].enemy) {
         newTile.className = "battle_tile";
         const enemyFrame = document.createElement("div")
         enemyFrame.className = "battle_tile_enemy";
@@ -1952,7 +1952,7 @@ window.electron.receive("battleBoxStart_levelSync", (level) => {
   battle_tile_origin.style.left = `${(Number(origin_tile_style.getPropertyValue('left').slice(0, -2)) + 4.5) - (Number(level.startAddress[1]) * 2)}px`;
   playfield_player_style = window.getComputedStyle(playfield_player);
   playfield_player.style.top = `${(Number(playfield_player_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(level.startAddress[1]) * 10)}px`;
-  playfield_player.style.left =  `${(Number(playfield_player_style.getPropertyValue('left').slice(0, -2)) + 4) - (Number(level.startAddress[1]) * 2)}px`;
+  playfield_player.style.left = `${(Number(playfield_player_style.getPropertyValue('left').slice(0, -2)) + 4) - (Number(level.startAddress[1]) * 2)}px`;
 });
 
 // TODO: Add an inactivity timer that adds the class pf_player_idle to the player div to play an idle animation.
@@ -1976,7 +1976,7 @@ map_controls_left.addEventListener("mousedown", () => {
     }, 150);
   }
 });
-map_controls_left.addEventListener("mouseover", () =>{
+map_controls_left.addEventListener("mouseover", () => {
   playSelectSfx();
   map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
 });
@@ -1995,7 +1995,7 @@ map_controls_right.addEventListener("mousedown", () => {
     }, 150);
   }
 });
-map_controls_right.addEventListener("mouseover", () =>{
+map_controls_right.addEventListener("mouseover", () => {
   playSelectSfx();
   map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
 });
@@ -2014,7 +2014,7 @@ map_controls_up.addEventListener("mousedown", () => {
     }, 150);
   }
 });
-map_controls_up.addEventListener("mouseover", () =>{
+map_controls_up.addEventListener("mouseover", () => {
   playSelectSfx();
   map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
 });
@@ -2033,7 +2033,7 @@ map_controls_down.addEventListener("mousedown", () => {
     }, 150);
   }
 });
-map_controls_down.addEventListener("mouseover", () =>{
+map_controls_down.addEventListener("mouseover", () => {
   playSelectSfx();
   map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
 });
@@ -2046,33 +2046,56 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   STYLE = window.getComputedStyle(playfield_player);
   if (position) {
     // Player was able to move, handle visuals.
-    switch (position[2]) {
-      case "right":
-        console.log('t', STYLE.getPropertyValue('left'))
-        map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) + 28}px`;
-        break;
-      case "left":
-        map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - 28}px`;
-        break;
-      case "up":
-        map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) - 10}px`;
-        break;
-      case "down":
-        map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) + 10}px`;
-        break;
-      default:
-        map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
-        break;
+    if (levelObj.tiles[position[0]][position[1]].enemy) {
+      var enemyObj = levelObj.tiles[position[0]][position[1]].enemy;
+      playSelectSfx();
+      console.log("Enemy detected, starting move sequence.");
+      switch(position[2]){
+        case "right":
+          playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) + enemyObj.encounterOffsetX}px`;
+          break;
+        case "left":
+          playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - enemyObj.encounterOffsetX}px`;
+          break;
+        case "up":
+          playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) + enemyObj.encounterOffsetY}px`;
+          break;
+        case "down":
+          playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) - enemyObj.encounterOffsetY}px`;
+          break;
+        default:
+          break;
+      };
     }
-    playSelectSfx();
-    setTimeout(() =>{ map_controls_mask.style.visibility = "hidden"; }, 500);
+    else {
+      switch (position[2]) {
+        case "right":
+          console.log('t', STYLE.getPropertyValue('left'))
+          map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) + 28}px`;
+          break;
+        case "left":
+          map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - 28}px`;
+          break;
+        case "up":
+          map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) - 10}px`;
+          break;
+        case "down":
+          map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) + 10}px`;
+          break;
+        default:
+          map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          map_controls_up.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          break;
+      }
+      playSelectSfx();
+      setTimeout(() => { map_controls_mask.style.visibility = "hidden"; }, 500);
+    }
   } else {
     // Player did not move, closing control block overlay.
     playAttackSfx();
@@ -2080,6 +2103,6 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   }
 });
 
-window.electron.receive("battleBox_startEncounter", (enemyTile) =>{
+window.electron.receive("battleBox_startEncounter", (enemyTile) => {
 
 });

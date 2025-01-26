@@ -1233,6 +1233,7 @@ body {
   width: 25px;
   height: 25px;
   transform: rotate3d(20, -2, 1, 69deg);
+  transform-style: preserve-3d;
 }
 .battle_tile_popIn {
   animation: tile_popIn 3 ease-out;
@@ -1369,10 +1370,10 @@ body {
 }
 .battle_tile_enemy{
   position: absolute;
-  top: 1px;
-  left: 1px;
-  width: 25px;
-  height: 25px;
+  top: -74px;
+  left: -10px;
+  width: 33px;
+  height: 47px;
   background-image: url("sprite/sprite_enemy_1.png");
-  background-size: 25px 25px;
+  transform: rotate3d(-20, 2, -1, 69deg) translateZ(75px)
 }

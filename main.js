@@ -393,7 +393,7 @@ const byteToBase64 = (byte) => {
   return newBase64;
 };
 
-class Enemy {
+class EnemyX {
   constructor(serialized) {
     if (serialized != null) {
       this.deserialize(serialized);
@@ -403,6 +403,7 @@ class Enemy {
       this.ttk = this.calculateTimerValue();
       this.face = Math.floor(Math.random() * 5) + 1; // Skinwalker type shit
       this.name = this.generateName(this.face);
+      this.encounterOffset = [8, 7, 3, 3, 7][this.face - 1]; // offsets for the encounter anim so the player doesnt overlap on the enemy sprite.
     }
   }
   calculateHealth() {
@@ -2104,13 +2105,45 @@ class Defence {
   entitySpriteX = 0; // the X position.
   entitySpriteY = 0; // the Y position.
 }
-class Enemyn {
+class Enemy {
   name = "enemyName";
   lvl = 1;
   health = 10;
   attacks = []; // Stores the attacks that the enemy can use.
   defences = []; // Stores the defensive abilities the enemy can use.
-  sprite = `${userDataPath}/sprite/sprite_enemy_dead_1.png`; // The enemy sprite.
+  sprite = `${userDataPath}/sprite/sprite_enemy_1.png`; // The enemy sprite.
+  boss = false; // Whether or not the enemy is a boss.
+  encounterOffsetX = 0; // The left and right offset for the encounter anim.
+  encounterOffsetY = 0; // The up and down offset for the encounter anim.
+  constructor() {
+    var faceId = Math.floor(Math.random() * 5) + 1;
+    this.sprite = `${userDataPath}/sprite/sprite_enemy_${faceId}.png`; // Skinwalker type shit
+    this.name = this.generateName(faceId);
+    this.encounterOffsetX = [0, 10, 12, 14, 15][faceId - 1]; // offsets for the encounter anim so the player doesnt overlap on the enemy sprite.
+    this.encounterOffsetY = [0, 0, 0, 0, 0][faceId - 1]; // ^^^
+  }
+  generateName (faceId){
+    // TODO: Make this generate a sudo unique name based on which sprite is being currently used.
+    return "Enemy1";
+  }
+  serialize() {
+    var bossFlag = this.boss ? 1 : 0;
+    var nameEncoded = encodeURIComponent(this.name);
+    var spriteEncoded = encodeURIComponent(this.sprite);
+    var serialized = `${bossFlag}|${this.lvl}|${this.health}|${spriteEncoded}|${nameEncoded}|${this.encounterOffset}`;
+    // TODO: Add attack and defense objects into the serialization and deserialization process. cant be fucked to do atm
+    return serialized;
+  }
+
+  deserialize(serialized) {
+    const [bossFlag, lvl, health, spriteEncoded, nameEncoded, encounterOffset] = serialized.split("|");
+    this.boss = bossFlag === "1";
+    this.lvl = lvl;
+    this.health = parseInt(health, 10);
+    this.sprite = decodeURIComponent(spriteEncoded);
+    this.name = decodeURIComponent(nameEncoded);
+    this.encounterOffset = parseInt(encounterOffset, 10);
+  }
 }
 class Event {
   name = "eventName";
@@ -2488,7 +2521,7 @@ class Level {
         // Generate a random index between 0 and (length - 1)
         var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
         console.log("enemy placed: ", i, randomXgridIndex); // Place enemy
-        this.tiles[i][randomXgridIndex].enemy = new Enemyn();
+        this.tiles[i][randomXgridIndex].enemy = new Enemy();
         this.tiles[i][randomXgridIndex].walkable = true;
         enemiesRemaining--; // Reduce remaining enemies
 
@@ -2500,20 +2533,20 @@ class Level {
       const probability = lootRemaining / (totalTilesToGen - i);
 
       if (Math.random() < probability) {
-      var Xgrid = this.tiles[i];
-      var XgridValid = [];
-      for (let z = 0; z < Xgrid.length; z++) {
-        if (Xgrid[z].walkable) {
-        XgridValid.push(z);
+        var Xgrid = this.tiles[i];
+        var XgridValid = [];
+        for (let z = 0; z < Xgrid.length; z++) {
+          if (Xgrid[z].walkable) {
+            XgridValid.push(z);
+          }
         }
-      }
-      // Generate a random index between 0 and (length - 1)
-      var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
-      console.log("loot placed: ", i, randomXgridIndex); // Place loot
-      this.tiles[i][randomXgridIndex].item = new Item("Loot", "Common", 1, 1);
-      lootRemaining--; // Reduce remaining loot
+        // Generate a random index between 0 and (length - 1)
+        var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
+        console.log("loot placed: ", i, randomXgridIndex); // Place loot
+        this.tiles[i][randomXgridIndex].item = new Item("Loot", "Common", 1, 1);
+        lootRemaining--; // Reduce remaining loot
 
-      if (lootRemaining === 0) break; // Exit early if all loot are placed
+        if (lootRemaining === 0) break; // Exit early if all loot are placed
       }
     }
     // ---------------------
@@ -2527,21 +2560,21 @@ class Level {
     // Collect all walkable tiles in the last column
     this.tiles[this.tiles.length - 1].forEach((e, i) => {
       if (e.walkable == true) {
-      aEndPoints.push([this.tiles.length - 1, i]);
-      console.log("aEndPoints", i);
+        aEndPoints.push([this.tiles.length - 1, i]);
+        console.log("aEndPoints", i);
       }
     });
 
     // If no walkable tiles in the last column, check the second last column, and so on
     if (aEndPoints.length === 0) {
       for (let col = this.tiles.length - 2; col >= 0; col--) {
-      this.tiles[col].forEach((e, i) => {
-        if (e.walkable == true) {
-        aEndPoints.push([col, i]);
-        console.log("aEndPoints", i);
-        }
-      });
-      if (aEndPoints.length > 0) break; // Stop if we found any walkable tiles
+        this.tiles[col].forEach((e, i) => {
+          if (e.walkable == true) {
+            aEndPoints.push([col, i]);
+            console.log("aEndPoints", i);
+          }
+        });
+        if (aEndPoints.length > 0) break; // Stop if we found any walkable tiles
       }
     }
 
@@ -2567,12 +2600,12 @@ class Level {
     // Select "entrance" tile.
     var availableStartTiles = [];
 
-    for(let x = 0; x < this.gridHeight; x++){
-      if(this.tiles[0][x].walkable){
+    for (let x = 0; x < this.gridHeight; x++) {
+      if (this.tiles[0][x].walkable) {
         availableStartTiles.push(x);
       }
     }
-    this.startAddress = [ 0, availableStartTiles[Math.floor(Math.random() * availableStartTiles.length)] ];
+    this.startAddress = [0, availableStartTiles[Math.floor(Math.random() * availableStartTiles.length)]];
   }
 }
 
@@ -2716,7 +2749,7 @@ ipcMain.on("attemptMove", (event, direction) => {
           curPlayerPos[0] = (curPlayerPos[0] - 1);
           curPlayerPos[2] = "left";
           win.webContents.send("battleBox_updatePlayerPosition", curPlayerPos);
-          win.webContents.send("battleBox_startEncounter", curLevelObj.tiles[curPlayerPos[0] - 1][curPlayerPos[1]]); // Sends the enemies tile object.
+          //win.webContents.send("battleBox_startEncounter", curLevelObj.tiles[curPlayerPos[0] - 1][curPlayerPos[1]]); // Sends the enemies tile object.
         } else {
           win.webContents.send("battleBox_updatePlayerPosition", false);
           console.log("cant walk, rejecting move.");

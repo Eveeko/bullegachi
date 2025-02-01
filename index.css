@@ -1260,6 +1260,7 @@ body {
   position: absolute;
   top: 50px;
   left: 78px;
+  animation: none;
 }
 
 .pf_player_idle {
@@ -1376,4 +1377,63 @@ body {
   height: 47px;
   background-image: url("sprite/sprite_enemy_1.png");
   transform: rotate3d(-20, 2, -1, 69deg) translateZ(75px)
+}
+
+.pf_transitionDiv {
+  position: absolute;
+  top: 89px;
+  left: 136px;
+  width: 15px;
+  height: 15px;
+  background-color: #ffcc00;
+  z-index: 1;
+  animation: pf_pfight_encounter 1s forwards;
+  border: 3px solid #ffcc00;
+  border-radius: 1px;
+}
+.crt-lines {
+  position: absolute;
+  top: -4px;
+    left: -3px;
+    width: 140%;
+    height: 150%;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 2px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+@keyframes pf_pfight_shake {
+  0% {
+    transform: translate(0, 0);
+  }
+  9% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-5px, 0);
+  }
+  11% {
+    transform: translate(0px, 0);
+  }
+  12% {
+    transform: translate(5px, 0);
+  }
+  13% {
+    transform: translate(0px, 0);
+  }
+}
+
+@keyframes pf_pfight_encounter {
+  0% {
+    transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  }
+  100% {
+    transform: matrix3d(10.5, 0, 0, 0, 0, 9.4, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  }
 }

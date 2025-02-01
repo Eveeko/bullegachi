@@ -1,5 +1,6 @@
 const path = window.electronRequire("path");
 var speechAudioBuffer;
+var encounterStartAudioBuffer;
 let speechAudioSlices = [];
 let currentSpeechSliceIndex = 0;
 const sliceDuration = 0.16;
@@ -136,6 +137,14 @@ function preloadAudioSlices() {
   speechAudioSlices = Array.from({ length: sliceCount }, () => Math.random() * maxOffset);
   currentSliceIndex = 0; // Reset the index when preloading
 }
+
+fetch("sfx/encounter_start.wav")
+  .then(response => response.arrayBuffer())
+  .then(data => audioContext.decodeAudioData(data))
+  .then(buffer => {
+    encounterStartAudioBuffer = buffer;
+    console.log('Encounter Start Audio buffer loaded:', encounterStartAudioBuffer.duration, 'seconds');
+  }).catch(error => console.error('Error loading Encounter Start audio:', error));
 
 function moveFace() {
   var left = bFace.style.getPropertyValue("left");
@@ -1957,6 +1966,41 @@ window.electron.receive("battleBoxStart_levelSync", (level) => {
 
 // TODO: Add an inactivity timer that adds the class pf_player_idle to the player div to play an idle animation.
 
+function shake(selector) {
+  var enemy;
+  if (!selector) {
+    enemy = playfield_player;
+  } else {
+    enemy = battleEnemy;
+  }
+  const shakeFrames = [
+    { transform: "translate(0, 0)" },
+    { transform: "translate(-10px, 0)" },
+    { transform: "translate(10px, 0)" },
+    { transform: "translate(-10px, 0)" },
+    { transform: "translate(10px, 0)" },
+    { transform: "translate(-5px, 0)" },
+    { transform: "translate(5px, 0)" },
+    { transform: "translate(0, 0)" },
+  ];
+
+  let frame = 0;
+
+  function animate() {
+    enemy.style.transform = shakeFrames[frame].transform;
+    frame++;
+
+    if (frame < shakeFrames.length) {
+      setTimeout(animate, 50); // Adjust the timing as needed
+    } else {
+      // Reset to the original position
+      enemy.style.transform = "translate(0, 0)";
+    }
+  }
+
+  animate();
+}
+
 // Player map controls
 // -------------------
 controlsHalted = false;
@@ -2048,7 +2092,7 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
     // Player was able to move, handle visuals.
     if (levelObj.tiles[position[0]][position[1]].enemy) {
       var enemyObj = levelObj.tiles[position[0]][position[1]].enemy;
-      playSelectSfx();
+      playAttackSfx();
       console.log("Enemy detected, starting move sequence.");
       switch(position[2]){
         case "right":
@@ -2066,6 +2110,20 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
         default:
           break;
       };
+      playfield_player.style.zIndex = "1";
+      shake();
+      setTimeout(() =>{
+        const source = audioContext.createBufferSource();
+        source.buffer = encounterStartAudioBuffer;
+        source.connect(audioContext.destination);
+        source.start(audioContext.currentTime, 0, 1);
+        const transitionDiv = document.createElement("div");
+        const crtLine = document.createElement("div");
+        transitionDiv.className = "pf_transitionDiv";
+        crtLine.className = "crt-lines";
+        transitionDiv.appendChild(crtLine);
+        battleBox.appendChild(transitionDiv);
+      }, 1500);
     }
     else {
       switch (position[2]) {

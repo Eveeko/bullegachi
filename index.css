@@ -1452,30 +1452,64 @@ body {
 
 .pf_enc_player {
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 57px;
+  left: 30px;
 }
 .pf_enc_player_name {
-  
+  position: absolute;
+  top: -22px;
+  left: -30px;
+  width: 100px;
+  color: #ffcc00;
+  font-size: 12px;
+  text-align: center;
 }
 .pf_enc_player_sprite {
-  
+  position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 34px;
+    height: 47px;
+    background-image: url(sprite/sprite_bulletpal_f.png);
 }
 .pf_enc_player_health {
-  
+  text-align: center;
+  position: absolute;
+  top: 44px;
+  left: 2px;
+  width: 32px;
+  color: #ffcc00;
+  font-size: 12px;
 }
 
 .pf_enc_enemy {
   position: absolute;
-  top: 0px;
-  left: 0px;
+    top: 57px;
+    left: 132px;
 }
 .pf_enc_enemy_name {
-  
+  text-align: center;
+    position: absolute;
+    top: -22px;
+    left: -31px;
+    width: 100px;
+    color: #ffcc00;
+    font-size: 12px;
 }
 .pf_enc_enemy_sprite {
-  
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 34px;
+  height: 47px;
+  background-image: url(sprite/sprite_enemy_1.png);
 }
 .pf_enc_enemy_health {
-  
+  text-align: center;
+  position: absolute;
+  top: 43px;
+  left: -34px;
+  width: 100px;
+  color: #ffcc00;
+  font-size: 12px;
 }

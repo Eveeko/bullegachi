@@ -98,6 +98,15 @@ const speechSfx = document.getElementById("speechSfx");
 const introCaveSfx = document.getElementById("introCaveSfx");
 const intro_cave_start_btn = document.getElementById("intro_cave_start_btn");
 const battle_tile_origin = document.getElementById("battle_tile_origin");
+const playfield_encounterDiv = document.getElementById("playfield_encounterDiv");
+const playfield_encounterPlayer = document.getElementById("playfield_encounterPlayer");
+const playfield_encounterPlayer_name = document.getElementById("playfield_encounterPlayer_name");
+const playfield_encounterPlayer_health = document.getElementById("playfield_encounterPlayer_health");
+const playfield_encounterPlayer_sprite = document.getElementById("playfield_encounterPlayer_sprite");
+const playfield_encounterEnemy = document.getElementById("playfield_encounterEnemy");
+const playfield_encounterEnemy_name = document.getElementById("playfield_encounterEnemy_name");
+const playfield_encounterEnemy_health = document.getElementById("playfield_encounterEnemy_health");
+const playfield_encounterEnemy_sprite = document.getElementById("playfield_encounterEnemy_sprite");
 
 var moveMode = false;
 var isDragging = false;
@@ -2088,6 +2097,8 @@ map_controls_down.addEventListener("mouseleave", () => {
 window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   console.log('updatePlayerPosition received: ', position);
   STYLE = window.getComputedStyle(playfield_player);
+  var transitionDiv;
+  var transitionStep = 0;
   if (position) {
     // Player was able to move, handle visuals.
     if (levelObj.tiles[position[0]][position[1]].enemy) {
@@ -2117,13 +2128,50 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
         source.buffer = encounterStartAudioBuffer;
         source.connect(audioContext.destination);
         source.start(audioContext.currentTime, 0, 1);
-        const transitionDiv = document.createElement("div");
+        transitionDiv = document.createElement("div");
         const crtLine = document.createElement("div");
         transitionDiv.className = "pf_transitionDiv";
         crtLine.className = "crt-lines";
         transitionDiv.appendChild(crtLine);
         battleBox.appendChild(transitionDiv);
+        let interval = setInterval(() => {
+          transitionStep++;
+          let scaleX = 1 + (10.5 - 1) * (transitionStep / 11);
+          let scaleY = 1 + (9.4 - 1) * (transitionStep / 11);
+          transitionDiv.style.transform = `matrix3d(${scaleX}, 0, 0, 0, 0, ${scaleY}, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)`;
+          if (transitionStep >= 11) {
+            clearInterval(interval);
+            p2();
+          };
+        }, 75); // Adjust the interval time as needed
       }, 1500);
+      function p2(){
+        // blanking out the battleBox for the encounterBox.
+        playfield_grid.style.visibility = "hidden";
+        playfield_player.style.visibility = "hidden";
+        map_controls_left.style.visibility = "hidden";
+        map_controls_right.style.visibility = "hidden";
+        map_controls_up.style.visibility = "hidden";
+        map_controls_down.style.visibility = "hidden";
+        map_controls_mask.style.visibility = "hidden";
+        battle_tile_origin.style.visibility = "hidden";
+        // Starting the encounterBox.
+        playfield_encounterDiv.style.visibility = "visible";
+
+        setTimeout(() =>{
+          transitionStep = 0;
+            let interval = setInterval(() => {
+              transitionStep++;
+              let scaleX = 10.5 - (10.5 - 1) * (transitionStep / 11);
+              let scaleY = 9.4 - (9.4 - 1) * (transitionStep / 11);
+              transitionDiv.style.transform = `matrix3d(${scaleX}, 0, 0, 0, 0, ${scaleY}, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)`;
+              if (transitionStep >= 11) {
+                clearInterval(interval);
+                transitionDiv.style.visibility = "hidden";
+              };
+            }, 75); // Adjust the interval time as needed
+        }, 1500);
+      };
     }
     else {
       switch (position[2]) {

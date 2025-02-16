@@ -2498,7 +2498,7 @@ class Level {
       return grid;
     }
     this.gridHeight = 3;
-    var grid = fillGrid(totalTilesToGen, this.gridHeight, this.gridLength);
+    var grid = fillGrid(44, 3, 20);
     this.tiles = grid;
 
     // --------------------------------------

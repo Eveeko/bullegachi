@@ -107,6 +107,7 @@ const playfield_encounterEnemy = document.getElementById("playfield_encounterEne
 const playfield_encounterEnemy_name = document.getElementById("playfield_encounterEnemy_name");
 const playfield_encounterEnemy_health = document.getElementById("playfield_encounterEnemy_health");
 const playfield_encounterEnemy_sprite = document.getElementById("playfield_encounterEnemy_sprite");
+const playfield_globalContainer = document.getElementById("playfield_globalContainer");
 
 var moveMode = false;
 var isDragging = false;
@@ -2101,6 +2102,11 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   var transitionStep = 0;
   if (position) {
     // Player was able to move, handle visuals.
+    if (position[0] % 4 === 0 && position[0] !== 0) {
+      // Player was about to move out of the viewport, adjust viewport and player to reflect.
+      playfield_grid.style.left = `${Number(window.getComputedStyle(playfield_grid).getPropertyValue('left').slice(0, -2)) - 112}px`;
+      playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - 112}px`;
+    }
     if (levelObj.tiles[position[0]][position[1]].enemy) {
       var enemyObj = levelObj.tiles[position[0]][position[1]].enemy;
       playAttackSfx();

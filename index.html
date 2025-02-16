@@ -139,72 +139,79 @@
         <div class="battle_box" id="battleBox">
             <div class="line-filter"></div>
         </div>
+        <div class="battle_box_edgeMask_liner" id="battleBoxEdgeMaskLiner"></div>
+        <div class="battle_box_edgeMask" id="battleBoxEdgeMask">
+            <div class="line-filter"></div>
+        </div>
         <audio id="speechSfx" preload="auto">
             <source src="sfx/speech1.wav" type="audio/wav">
         </audio>
         <!-- This houses all the player elements so it can stay static in relation to the screen. -->
-        <div id="playfield_player" class="pf_player">
-            <div id="playfield_player_sprite" class="pf_pspr"></div>
-            <div id="playfield_player_outline" class="pf_pout"></div>
-            <div id="playfield_player_face" class="pf_pface"></div>
-            <div id="playfield_player_bar" class="pf_pbar">
-                <div id="playfield_player_bar_sublines" class="pf_barsl"></div>
-                <div id="playfield_player_bar_sublines" class="pf_barsl" style="left: 18px;"></div>
+        <div id="playfield_globalContainer" class="pf_global_container">
+            <div id="playfield_player" class="pf_player">
+                <div id="playfield_player_sprite" class="pf_pspr"></div>
+                <div id="playfield_player_outline" class="pf_pout"></div>
+                <div id="playfield_player_face" class="pf_pface"></div>
+                <div id="playfield_player_bar" class="pf_pbar">
+                    <div id="playfield_player_bar_sublines" class="pf_barsl"></div>
+                    <div id="playfield_player_bar_sublines" class="pf_barsl" style="left: 18px;"></div>
+                </div>
+                <div id="playfield_player_level" class="pf_lvl">lvl: 1</div>
             </div>
-            <div id="playfield_player_level" class="pf_lvl">lvl: 1</div>
-        </div>
-        <!-- This houses all the level elements so it can move around the player while the player stays static. -->
-        <div id="playfield_grid" class="pf_grid">
-            <div id="battle_tile_origin" class="battle_tile_origin"></div>
+            <!-- This houses all the level elements so it can move around the player while the player stays static. -->
+            <div id="playfield_grid" class="pf_grid">
+                <div id="battle_tile_origin" class="battle_tile_origin"></div>
 
-        </div>
-        <!-- This houses the combat controls -->>
-        <div id="playfield_encounterDiv" class="pf_enc_div" style="visibility: hidden;">
-            <div id="playfield_encounterPlayer" class="pf_enc_player">
-                <h1 id="playfield_encounterPlayer_name" class="pf_enc_player_name" >BulletPal</h1>
-                <div id="playfield_encounterPlayer_sprite" class="pf_enc_player_sprite"></div>
-                <h1 id="playfield_encounterPlayer_health" class="pf_enc_player_health">♥100</h1>
             </div>
-            <div id="playfield_encounterEnemy" class="pf_enc_player pf_enc_enemy">
-                <h1 id="playfield_encounterEnemy_name" class="pf_enc_enemy_name">The Inflated One</h1>
-                <div id="playfield_encounterEnemy_sprite" class="pf_enc_enemy_sprite"></div>
-                <h1 id="playfield_encounterEnemy_health" class="pf_enc_enemy_health">♥30</h1>
+            <!-- This houses the combat controls -->>
+            <div id="playfield_encounterDiv" class="pf_enc_div" style="visibility: hidden;">
+                <div id="playfield_encounterPlayer" class="pf_enc_player">
+                    <h1 id="playfield_encounterPlayer_name" class="pf_enc_player_name">BulletPal</h1>
+                    <div id="playfield_encounterPlayer_sprite" class="pf_enc_player_sprite"></div>
+                    <h1 id="playfield_encounterPlayer_health" class="pf_enc_player_health">♥100</h1>
+                </div>
+                <div id="playfield_encounterEnemy" class="pf_enc_player pf_enc_enemy">
+                    <h1 id="playfield_encounterEnemy_name" class="pf_enc_enemy_name">The Inflated One</h1>
+                    <div id="playfield_encounterEnemy_sprite" class="pf_enc_enemy_sprite"></div>
+                    <h1 id="playfield_encounterEnemy_health" class="pf_enc_enemy_health">♥30</h1>
+                </div>
             </div>
-        </div>
-        <!-- This houses the player movement buttons -->
-        <div id="playfield_map_controls" class="pf_map_ctrls">
-            <div id="map_controls_left" class="pf_map_ctrls_left"></div>
-            <div id="map_controls_right" class="pf_map_ctrls_left" style="left: 105px; rotate: 0deg;"></div>
-            <div id="map_controls_up" class="pf_map_ctrls_left" style="left: 155px; rotate: 270deg;"></div>
-            <div id="map_controls_down" class="pf_map_ctrls_left" style="left: 200px; rotate: 90deg;"></div>
-            <div id="map_controls_mask" class="pf_map_ctrls_mask" style="visibility: hidden;"></div>
-        </div>
-        <!-- This is the splash screen for starting the game ///MUST BE KEPT AT THE BOTTOM/// -->
-        <div id="battleBox_splash" class="battleBox_splash">
-            <div id="battleBox_splash_background" class="battleBox_splash_background"></div>
-            <div id="battleBox_splash_sprite" class="bbx_splsh_sprite"></div>
-            <div id="battleBox_splash_start" class="bbx_splsh_start">
-                <h1 id="battleBox_splash_h1_1" class="bbx_splsh_h1_1">Start descent.</h1> <!-- ooooo button title changing to reflect plot o.o -->
             </div>
-            <div id="battleBox_splash_resume" class="bbx_splsh_resume">
-                <h1 id="battleBox_splash_h1_2" class="bbx_splsh_h1_1 bbx_splsh_h1_2">Resume escape.</h1> <!-- ^ -->
+            <!-- This houses the player movement buttons -->
+            <div id="playfield_map_controls" class="pf_map_ctrls">
+                <div id="map_controls_left" class="pf_map_ctrls_left"></div>
+                <div id="map_controls_right" class="pf_map_ctrls_left" style="left: 105px; rotate: 0deg;"></div>
+                <div id="map_controls_up" class="pf_map_ctrls_left" style="left: 155px; rotate: 270deg;"></div>
+                <div id="map_controls_down" class="pf_map_ctrls_left" style="left: 200px; rotate: 90deg;"></div>
+                <div id="map_controls_mask" class="pf_map_ctrls_mask" style="visibility: hidden;"></div>
             </div>
-        </div>
-        <div id="battleBox_intro_cont" class="bbx_intro_cont" style="visibility: hidden;">
-            <div id="battleBox_intro_background" class="bbx_intro_background"></div>
-            <audio id="introCaveSfx" preload="auto">
-                <source src="sfx/intro_cave.wav" type="audio/wav">
-            </audio>
-            <h1 id="battleBox_intro_h1" class="bbx_intro_h1_1" style="visibility: hidden;"></h1>
-            <h1 id="battleBox_intro_h1_2" class="bbx_intro_h1_2" style="visibility: hidden;"></h1>
-            <div id="battleBox_intro_sprite_1" class="bbx_intro_sprite_1" style="visibility: hidden;"></div>
-            <div id="battleBox_intro_lineFlasher" class="bbx_intro_lineFlasher" style="visibility: hidden;">
-                <div class="line-filter"></div>
-                <div id="battleBox_intro_lineFlasher_mask" class="bbx_intro_lineFlasher_mask"></div>
+            <!-- This is the splash screen for starting the game ///MUST BE KEPT AT THE BOTTOM/// -->
+            <div id="battleBox_splash" class="battleBox_splash">
+                <div id="battleBox_splash_background" class="battleBox_splash_background"></div>
+                <div id="battleBox_splash_sprite" class="bbx_splsh_sprite"></div>
+                <div id="battleBox_splash_start" class="bbx_splsh_start">
+                    <h1 id="battleBox_splash_h1_1" class="bbx_splsh_h1_1">Start descent.</h1>
+                    <!-- ooooo button title changing to reflect plot o.o -->
+                </div>
+                <div id="battleBox_splash_resume" class="bbx_splsh_resume">
+                    <h1 id="battleBox_splash_h1_2" class="bbx_splsh_h1_1 bbx_splsh_h1_2">Resume escape.</h1> <!-- ^ -->
+                </div>
             </div>
-            <div id="intro_cave_start_btn", class="bbx_intro_cave_start_btn">
-                <div class="line-filter"></div>
-            </div>
+            <div id="battleBox_intro_cont" class="bbx_intro_cont" style="visibility: hidden;">
+                <div id="battleBox_intro_background" class="bbx_intro_background"></div>
+                <audio id="introCaveSfx" preload="auto">
+                    <source src="sfx/intro_cave.wav" type="audio/wav">
+                </audio>
+                <h1 id="battleBox_intro_h1" class="bbx_intro_h1_1" style="visibility: hidden;"></h1>
+                <h1 id="battleBox_intro_h1_2" class="bbx_intro_h1_2" style="visibility: hidden;"></h1>
+                <div id="battleBox_intro_sprite_1" class="bbx_intro_sprite_1" style="visibility: hidden;"></div>
+                <div id="battleBox_intro_lineFlasher" class="bbx_intro_lineFlasher" style="visibility: hidden;">
+                    <div class="line-filter"></div>
+                    <div id="battleBox_intro_lineFlasher_mask" class="bbx_intro_lineFlasher_mask"></div>
+                </div>
+                <div id="intro_cave_start_btn" , class="bbx_intro_cave_start_btn">
+                    <div class="line-filter"></div>
+                </div>
         </div>
     </div>
     <div id="settingsBox" style="visibility: hidden;">

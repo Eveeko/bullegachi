@@ -1482,7 +1482,7 @@ body {
 
 .pf_enc_player {
   position: absolute;
-  top: 57px;
+  top: 45px;
   left: 30px;
 }
 
@@ -1502,7 +1502,7 @@ body {
   left: 0px;
   width: 34px;
   height: 47px;
-  background-image: url(sprite/sprite_bulletpal_f.png);
+  background-image: url(sprite/sprite_bulletpal.png);
 }
 
 .pf_enc_player_health {
@@ -1515,9 +1515,20 @@ body {
   font-size: 12px;
 }
 
+.pf_enc_player_face {
+  position: relative;
+  top: 25px;
+  left: 11px;
+  width: 28px;
+  height: 29px;
+  background-image: url(faces/default_idle.png);
+  background-size: 14px 10px;
+  background-repeat: no-repeat;
+}
+
 .pf_enc_enemy {
   position: absolute;
-  top: 57px;
+  top: 45px;
   left: 132px;
 }
 
@@ -1578,4 +1589,43 @@ body {
   width: 20px;
   background-color: #110d00;
   z-index: 10;
+}
+
+.pf_enc_controls {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+.pf_enc_controls_border {
+  position: absolute;
+  top: 120px;
+  left: -2px;
+  height: 64px;
+  width: 210px;
+  border: 3px solid #ffcc00;
+  border-radius: 5px;
+  filter: blur(1px);
+}
+
+.pf_enc_controls_btn {
+  position: absolute;
+  top: 126px;
+  left: 4px;
+  width: 96px;
+  height: 24px;
+
+  border-right: 2px solid;
+  border-image: repeating-linear-gradient(to bottom, #FFCC00, #FFCC00 33px, transparent 10px, transparent 21px) 1;
+  filter: blur(0.5px);
+}
+
+.pf_enc_controls_btn_h1 {
+  position: relative;
+  top: -2px;
+  left: 0px;
+  color: #ffcc00;
+  font-family: VT220;
+  font-size: 12px;
+  text-align: center;
 }

@@ -1,6 +1,6 @@
 {
   "name": "bullegachi",
-  "version": "1.2.22",
+  "version": "1.2.23",
   "description": "A companion app for the BulletPal",
   "main": "main.js",
   "scripts": {

@@ -2095,6 +2095,8 @@ map_controls_down.addEventListener("mouseleave", () => {
   map_controls_down.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
 });
 
+var hasScrolledOnce = false;
+
 window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   console.log('updatePlayerPosition received: ', position);
   STYLE = window.getComputedStyle(playfield_player);
@@ -2102,16 +2104,11 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   var transitionStep = 0;
   if (position) {
     // Player was able to move, handle visuals.
-    if (position[0] % 4 === 0 && position[0] !== 0) {
-      // Player was about to move out of the viewport, adjust viewport and player to reflect.
-      playfield_grid.style.left = `${Number(window.getComputedStyle(playfield_grid).getPropertyValue('left').slice(0, -2)) - 112}px`;
-      playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - 112}px`;
-    }
     if (levelObj.tiles[position[0]][position[1]].enemy) {
       var enemyObj = levelObj.tiles[position[0]][position[1]].enemy;
       playAttackSfx();
       console.log("Enemy detected, starting move sequence.");
-      switch(position[2]){
+      switch (position[2]) {
         case "right":
           playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) + enemyObj.encounterOffsetX}px`;
           break;
@@ -2129,7 +2126,7 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
       };
       playfield_player.style.zIndex = "1";
       shake();
-      setTimeout(() =>{
+      setTimeout(() => {
         const source = audioContext.createBufferSource();
         source.buffer = encounterStartAudioBuffer;
         source.connect(audioContext.destination);
@@ -2151,7 +2148,7 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
           };
         }, 75); // Adjust the interval time as needed
       }, 1500);
-      function p2(){
+      function p2() {
         // blanking out the battleBox for the encounterBox.
         playfield_grid.style.visibility = "hidden";
         playfield_player.style.visibility = "hidden";
@@ -2164,18 +2161,18 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
         // Starting the encounterBox.
         playfield_encounterDiv.style.visibility = "visible";
 
-        setTimeout(() =>{
+        setTimeout(() => {
           transitionStep = 0;
-            let interval = setInterval(() => {
-              transitionStep++;
-              let scaleX = 10.5 - (10.5 - 1) * (transitionStep / 11);
-              let scaleY = 9.4 - (9.4 - 1) * (transitionStep / 11);
-              transitionDiv.style.transform = `matrix3d(${scaleX}, 0, 0, 0, 0, ${scaleY}, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)`;
-              if (transitionStep >= 11) {
-                clearInterval(interval);
-                transitionDiv.style.visibility = "hidden";
-              };
-            }, 75); // Adjust the interval time as needed
+          let interval = setInterval(() => {
+            transitionStep++;
+            let scaleX = 10.5 - (10.5 - 1) * (transitionStep / 11);
+            let scaleY = 9.4 - (9.4 - 1) * (transitionStep / 11);
+            transitionDiv.style.transform = `matrix3d(${scaleX}, 0, 0, 0, 0, ${scaleY}, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)`;
+            if (transitionStep >= 11) {
+              clearInterval(interval);
+              transitionDiv.style.visibility = "hidden";
+            };
+          }, 75); // Adjust the interval time as needed
         }, 1500);
       };
     }
@@ -2184,10 +2181,21 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
         case "right":
           console.log('t', STYLE.getPropertyValue('left'))
           map_controls_right.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          if (position[0] % 4 === 0 && position[0] !== 0) {
+            // Player was about to move out of the viewport, adjust viewport and player to reflect.
+            playfield_grid.style.left = `${Number(window.getComputedStyle(playfield_grid).getPropertyValue('left').slice(0, -2)) - 112}px`;
+            playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - 112}px`;
+            hasScrolledOnce = true;
+          };
           playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) + 28}px`;
           break;
         case "left":
           map_controls_left.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+          if (hasScrolledOnce && position[0] % 2 === 0) {
+            // Player was about to move out of the viewport, adjust viewport and player to reflect.
+            playfield_grid.style.left = `${Number(window.getComputedStyle(playfield_grid).getPropertyValue('left').slice(0, -2)) + 56}px`;
+            playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) + 56}px`;
+          };
           playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - 28}px`;
           break;
         case "up":

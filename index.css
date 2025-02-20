@@ -1629,3 +1629,20 @@ body {
   font-size: 12px;
   text-align: center;
 }
+
+.pf_enc_energyBar{
+  position: absolute;
+  top: -5px;
+  left: 8px;
+}
+
+.pf_enc_energyCount{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 85px;
+  color: #ffcc00;
+  font-family: VT220;
+  font-size: 12px;
+  text-align: left;
+}

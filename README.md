@@ -51,8 +51,8 @@ The application can be used as a standalone app where it does not interact with 
 The core gameplay loop is:<br>
 ───────────────────┘<br>
 `Battle for Food` - to maintain your virtual Pal's hunger stat.<br>
-`Collect Items` - to power up your Pal in various ways.<br>
-`Keep the Pal Alive` - as long as you can!!<br>
+└─>`Collect Items` - to power up your Pal in various ways.<br>
+  └──>`Keep the Pal Alive` - for as long as you can!!<br>
 ────────────────────
 
 ## Future Content

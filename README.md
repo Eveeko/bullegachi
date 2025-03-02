@@ -11,6 +11,8 @@ This work is licensed under a
 [cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
 [cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
+>If you don't want to read and just want to get straight to the content [click here!](https://github.com/Eveeko/bullegachi/releases/latest) to get directed to the latest build.
+
 ___
 This project has taken around 9 months *(mostly due to procrastination and my irl job)* to complete. I have never made a project like this before, and I am honestly very happy with the outcome. Therefore, I will likely end up designing a second and possibly further iterations of this project that encompass the rest of the Bullet Kin family in the coming future.
 

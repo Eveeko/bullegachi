@@ -108,6 +108,11 @@ const playfield_encounterEnemy_name = document.getElementById("playfield_encount
 const playfield_encounterEnemy_health = document.getElementById("playfield_encounterEnemy_health");
 const playfield_encounterEnemy_sprite = document.getElementById("playfield_encounterEnemy_sprite");
 const playfield_globalContainer = document.getElementById("playfield_globalContainer");
+const playfield_encounterControls_btn1 = document.getElementById("playfield_encounterControls_btn1");
+const playfield_encounterControls_btn2 = document.getElementById("playfield_encounterControls_btn2");
+const playfield_encounterControls_btn3 = document.getElementById("playfield_encounterControls_btn3");
+const playfield_encounterControls_btn4 = document.getElementById("playfield_encounterControls_btn4");
+
 
 var moveMode = false;
 var isDragging = false;
@@ -1777,6 +1782,7 @@ window.electron.receive("updateProgress", (info) => {
 // -------------------------------------------------------------------------
 
 var levelObj = null;
+var playerObj = null;
 
 battleBoxSplashStart.addEventListener("mouseover", () => {
   playSelectSfx();
@@ -1938,21 +1944,22 @@ window.electron.receive("battleBoxStart_cave_sequence", () => {
   // MAKE A CAVE FALLING IN ANIMATION ON THE LEFT SIDE OF THE BATTLEBOX SO IT LOOKS LIKE THE ENTRANCE CAVED IN AND NOW YOU HAVE TO PROGRESS FOWARDS.
   // THIS IS NOT THAT HARD IM JUST TRYING NOT TO SPEND TEN YILL MAKING THE COSMETICS OF THE GAME AND I NEED TO GET BACK TO THE GAMEPLAY BEFORE THIS UPDATE TAKES FOREVER.
 });
-window.electron.receive("battleBoxStart_levelSync", (level) => {
+window.electron.receive("battleBoxStart_levelSync", (syncObjs) => {
   console.log("received new level payload.");
-  console.log(level);
-  levelObj = level;
-  var startingHeightOffset = level.gridHeight * 10;
+  console.log(syncObjs[0]);
+  levelObj = syncObjs[0];
+  playerObj = syncObjs[1];
+  var startingHeightOffset = levelObj.gridHeight * 10;
   if (startingHeightOffset == 10) startingHeightOffset = 0;
-  for (x = 0; x < level.tiles.length; x++) {
-    for (z = 0; z < level.tiles[x].length; z++) {
+  for (x = 0; x < levelObj.tiles.length; x++) {
+    for (z = 0; z < levelObj.tiles[x].length; z++) {
       const newTile = document.createElement("div");
       newTile.className = "battle_tile";
-      if (!level.tiles[x][z].walkable) {
+      if (!levelObj.tiles[x][z].walkable) {
         newTile.style.backgroundImage = `url("sprite/sprite_tile_rock_1.png")`;
         newTile.className = "battle_tile_empty";
       }
-      if (level.tiles[x][z].enemy) {
+      if (levelObj.tiles[x][z].enemy) {
         newTile.className = "battle_tile";
         const enemyFrame = document.createElement("div")
         enemyFrame.className = "battle_tile_enemy";
@@ -1966,12 +1973,12 @@ window.electron.receive("battleBoxStart_levelSync", (level) => {
   }
   // Align players origin tile with the map start.
   origin_tile_style = window.getComputedStyle(battle_tile_origin);
-  battle_tile_origin.style.top = `${(Number(origin_tile_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(level.startAddress[1]) * 10)}px`;
-  const startAddressY = Number(level.startAddress[1]);
-  battle_tile_origin.style.left = `${(Number(origin_tile_style.getPropertyValue('left').slice(0, -2)) + 4.5) - (Number(level.startAddress[1]) * 2)}px`;
+  battle_tile_origin.style.top = `${(Number(origin_tile_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(levelObj.startAddress[1]) * 10)}px`;
+  const startAddressY = Number(levelObj.startAddress[1]);
+  battle_tile_origin.style.left = `${(Number(origin_tile_style.getPropertyValue('left').slice(0, -2)) + 4.5) - (Number(levelObj.startAddress[1]) * 2)}px`;
   playfield_player_style = window.getComputedStyle(playfield_player);
-  playfield_player.style.top = `${(Number(playfield_player_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(level.startAddress[1]) * 10)}px`;
-  playfield_player.style.left = `${(Number(playfield_player_style.getPropertyValue('left').slice(0, -2)) + 4) - (Number(level.startAddress[1]) * 2)}px`;
+  playfield_player.style.top = `${(Number(playfield_player_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(levelObj.startAddress[1]) * 10)}px`;
+  playfield_player.style.left = `${(Number(playfield_player_style.getPropertyValue('left').slice(0, -2)) + 4) - (Number(levelObj.startAddress[1]) * 2)}px`;
 });
 
 // TODO: Add an inactivity timer that adds the class pf_player_idle to the player div to play an idle animation.
@@ -2171,6 +2178,7 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
             if (transitionStep >= 11) {
               clearInterval(interval);
               transitionDiv.style.visibility = "hidden";
+              window.electron.send("encounter_started");
             };
           }, 75); // Adjust the interval time as needed
         }, 1500);
@@ -2224,5 +2232,16 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
 });
 
 window.electron.receive("battleBox_startEncounter", (enemyTile) => {
+  let curBtnIndex = 0;
+  let btnList = [playfield_encounterControls_btn1, playfield_encounterControls_btn2, playfield_encounterControls_btn3, playfield_encounterControls_btn4];
+  if(playerObj.attackList.length > 0){
+    playerObj.attackList.forEach((e, i)=>{
+      
+    });
+  };
+  if(playerObj.defenceList.length > 0){
+    playerObj.defenceList.forEach((e, i)=>{
 
+    });
+  };
 });

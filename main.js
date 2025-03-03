@@ -2090,20 +2090,68 @@ class Attack {
   type = "melee";
   damage = 1;
   cd = 1; // Turns it takes to be usable again. 1 == right away.
-  sprite = `${userDataPath}/sprite/sprite_unknown_food.png`; // The thumbnail image
+  animationX = 0;
+  animationY = 0;
+  animationFrames = [];
+  animationFramedelay = 15; // milliseconds between each frame.
   entitySprite = null; // The sprite to draw over either the Pal or the enemy.
   entitySpriteX = 0; // the X position.
   entitySpriteY = 0; // the Y position.
+  constructor(name, type, damage, cd, animationX, animationY, animationFrames, animationFramedelay, entitySprite, entitySpriteX ,entitySpriteY){
+    this.name = name;
+    this.type = type;
+    this.damage = damage;
+    this.cd = cd;
+    this.animationX = animationX;
+    this.animationY = animationY;
+    this.animationFrames = animationFrames;
+    this.animationFramedelay = animationFramedelay;
+    this.entitySprite = entitySprite;
+    this.entitySpriteX = entitySpriteX;
+    this.entitySpriteY = entitySpriteY;
+  }
 }
 class Defence {
   name = "defenceName";
   type = "shield";
   blockDamage = 5; // Amount of damage the defence will mitigate from a receiving attack.
   cd = 2;
-  sprite = `${userDataPath}/sprite/sprite_unknown_food.png`; // The thumbnail image
+  animationX = 0;
+  animationY = 0;
+  animationFrames = [];
+  animationFramedelay = 30;
   entitySprite = null; // The sprite to draw over either the Pal or the enemy.
   entitySpriteX = 0; // the X position.
   entitySpriteY = 0; // the Y position.
+  constructor(name, type, blockDamage, cd, animationX, animationY, animationFrames, animationFramedelay, entitySprite, entitySpriteX ,entitySpriteY){
+    this.name = name;
+    this.type = type;
+    this.blockDamage = blockDamage;
+    this.cd = cd;
+    this.animationX = animationX;
+    this.animationY = animationY;
+    this.animationFrames = animationFrames;
+    this.animationFramedelay = animationFramedelay;
+    this.entitySprite = entitySprite;
+    this.entitySpriteX = entitySpriteX;
+    this.entitySpriteY = entitySpriteY;
+  }
+}
+class Player {
+  health = 100;
+  defenceCo = 0; // The defence coefficient(multiplier)
+  attackCo = 1; // The attack damage coefficient(multiplier) for any attacks.
+  attackList = []; // The attack move set of the player.
+  defenceList = []; // The defense move set of the player.
+  modifiers = []; // any custom items like the heartnecklace for instance.
+  constructor(serializedData){
+    if(serializedData){}
+    else{
+      // no saved data found.
+      this.attackList = [ new Attack("slap", "melee", 10, 0, 0, 0, [ `${userDataPath}/sprite/sprite_attack_slap_1.png`, `${userDataPath}/sprite/sprite_attack_slap_2.png`, `${userDataPath}/sprite/sprite_attack_slap_3.png`, `${userDataPath}/sprite/sprite_attack_slap_4.png`, `${userDataPath}/sprite/sprite_attack_slap_5.png` ], 15, null, 0, 0 ) ];
+      this.defenceList = [ new Defence("stand", "all", 5, 1, 0, 0, [], 0, null, 0, 0) ];
+    };
+  }
 }
 class Enemy {
   name = "enemyName";
@@ -2620,6 +2668,7 @@ class Level {
 
 var curLevelObj = new Level(1); // The current level object.
 var curPlayerPos = [-1, 0, "right"]; // The current players position in relation to the level grid. last value is direction of travel.
+var curPlayerObj = null;
 
 // -;-;-;-;-;-
 function generatePrettyAsciiMap(grid) {
@@ -2714,10 +2763,11 @@ ipcMain.on("cave_debug_skip", () => {
 
 ipcMain.on("battleBoxStart", () => {
   var startingLevel = new Level(1);
+  curPlayerObj = new Player();
   console.log(startingLevel);
   curLevelObj = startingLevel;
   curPlayerPos = [-1, curLevelObj.startAddress[1], "right"];
-  win.webContents.send("battleBoxStart_levelSync", startingLevel);
+  win.webContents.send("battleBoxStart_levelSync", [startingLevel, curPlayerObj]);
 });
 ipcMain.on("battleBoxResume", () => { });
 
@@ -2794,4 +2844,8 @@ ipcMain.on("attemptMove", (event, direction) => {
       };
       break;
   }
+});
+
+ipcMain.on("encounter_started", ()=>{
+  win.webContents.send("battleBox_startEncounter");
 });

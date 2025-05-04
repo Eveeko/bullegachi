@@ -108,6 +108,11 @@ const playfield_encounterEnemy_name = document.getElementById("playfield_encount
 const playfield_encounterEnemy_health = document.getElementById("playfield_encounterEnemy_health");
 const playfield_encounterEnemy_sprite = document.getElementById("playfield_encounterEnemy_sprite");
 const playfield_globalContainer = document.getElementById("playfield_globalContainer");
+const playfield_encounterControls_btn1 = document.getElementById("playfield_encounterControls_btn1");
+const playfield_encounterControls_btn2 = document.getElementById("playfield_encounterControls_btn2");
+const playfield_encounterControls_btn3 = document.getElementById("playfield_encounterControls_btn3");
+const playfield_encounterControls_btn4 = document.getElementById("playfield_encounterControls_btn4");
+
 
 var moveMode = false;
 var isDragging = false;
@@ -1777,6 +1782,7 @@ window.electron.receive("updateProgress", (info) => {
 // -------------------------------------------------------------------------
 
 var levelObj = null;
+var playerObj = null;
 
 battleBoxSplashStart.addEventListener("mouseover", () => {
   playSelectSfx();
@@ -1938,21 +1944,22 @@ window.electron.receive("battleBoxStart_cave_sequence", () => {
   // MAKE A CAVE FALLING IN ANIMATION ON THE LEFT SIDE OF THE BATTLEBOX SO IT LOOKS LIKE THE ENTRANCE CAVED IN AND NOW YOU HAVE TO PROGRESS FOWARDS.
   // THIS IS NOT THAT HARD IM JUST TRYING NOT TO SPEND TEN YILL MAKING THE COSMETICS OF THE GAME AND I NEED TO GET BACK TO THE GAMEPLAY BEFORE THIS UPDATE TAKES FOREVER.
 });
-window.electron.receive("battleBoxStart_levelSync", (level) => {
+window.electron.receive("battleBoxStart_levelSync", (syncObjs) => {
   console.log("received new level payload.");
-  console.log(level);
-  levelObj = level;
-  var startingHeightOffset = level.gridHeight * 10;
+  console.log(syncObjs[0]);
+  levelObj = syncObjs[0];
+  playerObj = syncObjs[1];
+  var startingHeightOffset = levelObj.gridHeight * 10;
   if (startingHeightOffset == 10) startingHeightOffset = 0;
-  for (x = 0; x < level.tiles.length; x++) {
-    for (z = 0; z < level.tiles[x].length; z++) {
+  for (x = 0; x < levelObj.tiles.length; x++) {
+    for (z = 0; z < levelObj.tiles[x].length; z++) {
       const newTile = document.createElement("div");
       newTile.className = "battle_tile";
-      if (!level.tiles[x][z].walkable) {
+      if (!levelObj.tiles[x][z].walkable) {
         newTile.style.backgroundImage = `url("sprite/sprite_tile_rock_1.png")`;
         newTile.className = "battle_tile_empty";
       }
-      if (level.tiles[x][z].enemy) {
+      if (levelObj.tiles[x][z].enemy) {
         newTile.className = "battle_tile";
         const enemyFrame = document.createElement("div")
         enemyFrame.className = "battle_tile_enemy";
@@ -1966,12 +1973,12 @@ window.electron.receive("battleBoxStart_levelSync", (level) => {
   }
   // Align players origin tile with the map start.
   origin_tile_style = window.getComputedStyle(battle_tile_origin);
-  battle_tile_origin.style.top = `${(Number(origin_tile_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(level.startAddress[1]) * 10)}px`;
-  const startAddressY = Number(level.startAddress[1]);
-  battle_tile_origin.style.left = `${(Number(origin_tile_style.getPropertyValue('left').slice(0, -2)) + 4.5) - (Number(level.startAddress[1]) * 2)}px`;
+  battle_tile_origin.style.top = `${(Number(origin_tile_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(levelObj.startAddress[1]) * 10)}px`;
+  const startAddressY = Number(levelObj.startAddress[1]);
+  battle_tile_origin.style.left = `${(Number(origin_tile_style.getPropertyValue('left').slice(0, -2)) + 4.5) - (Number(levelObj.startAddress[1]) * 2)}px`;
   playfield_player_style = window.getComputedStyle(playfield_player);
-  playfield_player.style.top = `${(Number(playfield_player_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(level.startAddress[1]) * 10)}px`;
-  playfield_player.style.left = `${(Number(playfield_player_style.getPropertyValue('left').slice(0, -2)) + 4) - (Number(level.startAddress[1]) * 2)}px`;
+  playfield_player.style.top = `${(Number(playfield_player_style.getPropertyValue('top').slice(0, -2)) - 20) + (Number(levelObj.startAddress[1]) * 10)}px`;
+  playfield_player.style.left = `${(Number(playfield_player_style.getPropertyValue('left').slice(0, -2)) + 4) - (Number(levelObj.startAddress[1]) * 2)}px`;
 });
 
 // TODO: Add an inactivity timer that adds the class pf_player_idle to the player div to play an idle animation.
@@ -2096,6 +2103,8 @@ map_controls_down.addEventListener("mouseleave", () => {
 });
 
 var hasScrolledOnce = false;
+var curEnemyObj = null;
+var isPlayerTurn = true; // Whether or not the player can attack / true = players move, false = AI's move.
 
 window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   console.log('updatePlayerPosition received: ', position);
@@ -2160,6 +2169,13 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
         battle_tile_origin.style.visibility = "hidden";
         // Starting the encounterBox.
         playfield_encounterDiv.style.visibility = "visible";
+        // Bootstrapping the player.
+        playfield_encounterPlayer_health.innerHTML = `♥${playerObj.health}`;
+        // Bootstrapping the enemy.
+        playfield_encounterEnemy_name.innerHTML = enemyObj.name;
+        playfield_encounterEnemy_sprite.style.backgroundImage = `url("${enemyObj.sprite}")`;
+        playfield_encounterEnemy_health.innerHTML = `♥${enemyObj.health}`;
+        curEnemyObj = enemyObj;
 
         setTimeout(() => {
           transitionStep = 0;
@@ -2171,6 +2187,7 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
             if (transitionStep >= 11) {
               clearInterval(interval);
               transitionDiv.style.visibility = "hidden";
+              window.electron.send("encounter_started");
             };
           }, 75); // Adjust the interval time as needed
         }, 1500);
@@ -2224,5 +2241,47 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
 });
 
 window.electron.receive("battleBox_startEncounter", (enemyTile) => {
+  let curBtnIndex = 0;
+  let btnList = [playfield_encounterControls_btn1, playfield_encounterControls_btn2, playfield_encounterControls_btn3, playfield_encounterControls_btn4];
 
+  playfield_encounterControls_btn1.addEventListener("mousedown", () => {
+    // Attack button.
+    if(curEnemyObj.health > 0 && isPlayerTurn){
+      // Process the damage.
+      let baseDamage = 5;
+      baseDamage += Math.floor(playerObj.xp / 100) * 1.5; // Add level scaling to the damage.
+      baseDamage = Math.ceil(baseDamage * playerObj.attackCo); // Add attack co-efficient to the damage.
+      console.log("Base damage: ", baseDamage);
+      curEnemyObj.health -= baseDamage;
+      playfield_encounterEnemy_health.innerHTML = `♥${curEnemyObj.health}`;
+      if(curEnemyObj.health < 0){
+        // If enemy is dead, add player XP relative to overkill damage dealt.
+        let overkillDamage = Math.abs(curEnemyObj.health);
+        playerObj.xp += (overkillDamage * 5) + (curEnemyObj.health);
+      }
+      queueAIturn();
+    }else{
+      // No damage to deal. ignore the press.
+    }
+  });
+  playfield_encounterControls_btn2.addEventListener("mousedown", () => {});
+  playfield_encounterControls_btn3.addEventListener("mousedown", () => {});
+  playfield_encounterControls_btn4.addEventListener("mousedown", () => {});
 });
+
+function queueAIturn(){
+  isPlayerTurn = false;
+  setTimeout(() => {
+    // AI move sequence.
+    let AIattacksAmount = 1; // The amount of attacks to fill the choice pool with.
+    let AIdefenseAmount = 1; // The amount of defenses to fill the choice pool with.
+    let AIchoicePool = []; // The pool of possible choices the AI can make. randomly filled with attacks and defenses.
+    let AIfleeChance = 0.01; // 1% chance to flee.
+    // Basically the AI logic will pick a move to make whether it is defense, attack, or even flee
+    // based on a random length pool filled with a semi-determinate amount of choices based on the
+    // unit(ie, enemy1 might only have 2 attacks 1 defense, while enemy5 might have 9 attacks 1 defense)
+    // enemy1,2,etc is based on the `face` property of the Enemy. a random number generator will then
+    // pick a move inside the choicePool after it has been fully populated and the AI will make its move.
+
+  }, 2500);
+}

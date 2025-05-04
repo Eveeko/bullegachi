@@ -1597,6 +1597,17 @@ body {
   left: 0px;
 }
 
+.pf_enc_controls_mask{
+  position: absolute;
+  top: 123px;
+  left: 2px;
+  width: 208px;
+  height: 63px;
+  filter: blur(1px);
+  background-color: rgba(17, 13, 0, 0.5);
+  z-index: 2;
+}
+
 .pf_enc_controls_border {
   position: absolute;
   top: 120px;
@@ -1614,10 +1625,8 @@ body {
   left: 4px;
   width: 96px;
   height: 24px;
-
   border-right: 2px solid;
   border-image: repeating-linear-gradient(to bottom, #FFCC00, #FFCC00 33px, transparent 10px, transparent 21px) 1;
-  filter: blur(0.5px);
 }
 
 .pf_enc_controls_btn_h1 {

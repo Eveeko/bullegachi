@@ -2085,25 +2085,12 @@ function valChk() {
 // the original battle mechanics of the spam random encounter click-to-kill
 // -------------------------------------------------------------------------
 
-class Attack {
-  name = "attackName";
-  type = "melee";
-  damage = 1;
-  cd = 1; // Turns it takes to be usable again. 1 == right away.
-  sprite = `${userDataPath}/sprite/sprite_unknown_food.png`; // The thumbnail image
-  entitySprite = null; // The sprite to draw over either the Pal or the enemy.
-  entitySpriteX = 0; // the X position.
-  entitySpriteY = 0; // the Y position.
-}
-class Defence {
-  name = "defenceName";
-  type = "shield";
-  blockDamage = 5; // Amount of damage the defence will mitigate from a receiving attack.
-  cd = 2;
-  sprite = `${userDataPath}/sprite/sprite_unknown_food.png`; // The thumbnail image
-  entitySprite = null; // The sprite to draw over either the Pal or the enemy.
-  entitySpriteX = 0; // the X position.
-  entitySpriteY = 0; // the Y position.
+class Player {
+  health = 100;
+  defenceCo = 1; // The defence coefficient(multiplier) for any defenses. the higher the value the more dmg is blocked
+  attackCo = 1; // The attack damage coefficient(multiplier) for any attacks. the higher the value the more dmg is dealt
+  modifiers = []; // any custom items like the heartnecklace for instance.
+  xp = 100; // The players level. in orders of 100. 100 = lvl 1, 200 = lvl 2, etc. (this must be calculated per use instead of stored here for confusion sake)
 }
 class Enemy {
   name = "enemyName";
@@ -2111,16 +2098,42 @@ class Enemy {
   health = 10;
   attacks = []; // Stores the attacks that the enemy can use.
   defences = []; // Stores the defensive abilities the enemy can use.
-  sprite = `${userDataPath}/sprite/sprite_enemy_1.png`; // The enemy sprite.
+  sprite = `sprite/sprite_enemy_1.png`; // The enemy sprite.
   boss = false; // Whether or not the enemy is a boss.
   encounterOffsetX = 0; // The left and right offset for the encounter anim.
   encounterOffsetY = 0; // The up and down offset for the encounter anim.
   constructor() {
-    var faceId = Math.floor(Math.random() * 5) + 1;
-    this.sprite = `${userDataPath}/sprite/sprite_enemy_${faceId}.png`; // Skinwalker type shit
+    var faceId = Math.floor(Math.random() * 6) + 1;
+    this.sprite = `sprite/sprite_enemy_${faceId}.png`; // Skinwalker type shit
+    switch(faceId){
+      case 1:
+        this.attacks = ["pop", "whip"];
+        this.defences = [];
+        break;
+      case 2:
+        this.attacks = ["spray", "crack open"];
+        this.defences = [ "hold" ];
+        break;
+      case 3:
+        this.attacks = ["slam", "fall", "shockwave"];
+        this.defences = [ "lock", "hold" ];
+        break;
+      case 4:
+        this.attacks = ["fall"];
+        this.defences = [ "hold" ];
+        break;
+      case 5:
+        this.attacks = ["shine", "whip"]
+        this.defences = ["hold"];
+        break;
+      case 6:
+        this.attacks = ["shockwave", "whip", "shock", "speak", "taunt"]
+        this.defences = ["forcefield"];
+        break;
+    }
     this.name = this.generateName(faceId);
-    this.encounterOffsetX = [0, 10, 12, 14, 15][faceId - 1]; // offsets for the encounter anim so the player doesnt overlap on the enemy sprite.
-    this.encounterOffsetY = [0, 0, 0, 0, 0][faceId - 1]; // ^^^
+    this.encounterOffsetX = [0, 10, 12, 14, 15, 15][faceId - 1]; // offsets for the encounter anim so the player doesnt overlap on the enemy sprite.
+    this.encounterOffsetY = [0, 0, 0, 0, 0, 0][faceId - 1]; // ^^^
   }
   generateName (faceId){
     // TODO: Make this generate a sudo unique name based on which sprite is being currently used.
@@ -2620,6 +2633,7 @@ class Level {
 
 var curLevelObj = new Level(1); // The current level object.
 var curPlayerPos = [-1, 0, "right"]; // The current players position in relation to the level grid. last value is direction of travel.
+var curPlayerObj = null;
 
 // -;-;-;-;-;-
 function generatePrettyAsciiMap(grid) {
@@ -2714,10 +2728,11 @@ ipcMain.on("cave_debug_skip", () => {
 
 ipcMain.on("battleBoxStart", () => {
   var startingLevel = new Level(1);
+  curPlayerObj = new Player();
   console.log(startingLevel);
   curLevelObj = startingLevel;
   curPlayerPos = [-1, curLevelObj.startAddress[1], "right"];
-  win.webContents.send("battleBoxStart_levelSync", startingLevel);
+  win.webContents.send("battleBoxStart_levelSync", [startingLevel, curPlayerObj]);
 });
 ipcMain.on("battleBoxResume", () => { });
 
@@ -2794,4 +2809,8 @@ ipcMain.on("attemptMove", (event, direction) => {
       };
       break;
   }
+});
+
+ipcMain.on("encounter_started", ()=>{
+  win.webContents.send("battleBox_startEncounter");
 });

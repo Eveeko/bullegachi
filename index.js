@@ -2103,6 +2103,8 @@ map_controls_down.addEventListener("mouseleave", () => {
 });
 
 var hasScrolledOnce = false;
+var curEnemyObj = null;
+var isPlayerTurn = true; // Whether or not the player can attack / true = players move, false = AI's move.
 
 window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   console.log('updatePlayerPosition received: ', position);
@@ -2167,6 +2169,13 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
         battle_tile_origin.style.visibility = "hidden";
         // Starting the encounterBox.
         playfield_encounterDiv.style.visibility = "visible";
+        // Bootstrapping the player.
+        playfield_encounterPlayer_health.innerHTML = `♥${playerObj.health}`;
+        // Bootstrapping the enemy.
+        playfield_encounterEnemy_name.innerHTML = enemyObj.name;
+        playfield_encounterEnemy_sprite.style.backgroundImage = `url("${enemyObj.sprite}")`;
+        playfield_encounterEnemy_health.innerHTML = `♥${enemyObj.health}`;
+        curEnemyObj = enemyObj;
 
         setTimeout(() => {
           transitionStep = 0;
@@ -2234,14 +2243,45 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
 window.electron.receive("battleBox_startEncounter", (enemyTile) => {
   let curBtnIndex = 0;
   let btnList = [playfield_encounterControls_btn1, playfield_encounterControls_btn2, playfield_encounterControls_btn3, playfield_encounterControls_btn4];
-  if(playerObj.attackList.length > 0){
-    playerObj.attackList.forEach((e, i)=>{
-      
-    });
-  };
-  if(playerObj.defenceList.length > 0){
-    playerObj.defenceList.forEach((e, i)=>{
 
-    });
-  };
+  playfield_encounterControls_btn1.addEventListener("mousedown", () => {
+    // Attack button.
+    if(curEnemyObj.health > 0 && isPlayerTurn){
+      // Process the damage.
+      let baseDamage = 5;
+      baseDamage += Math.floor(playerObj.xp / 100) * 1.5; // Add level scaling to the damage.
+      baseDamage = Math.ceil(baseDamage * playerObj.attackCo); // Add attack co-efficient to the damage.
+      console.log("Base damage: ", baseDamage);
+      curEnemyObj.health -= baseDamage;
+      playfield_encounterEnemy_health.innerHTML = `♥${curEnemyObj.health}`;
+      if(curEnemyObj.health < 0){
+        // If enemy is dead, add player XP relative to overkill damage dealt.
+        let overkillDamage = Math.abs(curEnemyObj.health);
+        playerObj.xp += (overkillDamage * 5) + (curEnemyObj.health);
+      }
+      queueAIturn();
+    }else{
+      // No damage to deal. ignore the press.
+    }
+  });
+  playfield_encounterControls_btn2.addEventListener("mousedown", () => {});
+  playfield_encounterControls_btn3.addEventListener("mousedown", () => {});
+  playfield_encounterControls_btn4.addEventListener("mousedown", () => {});
 });
+
+function queueAIturn(){
+  isPlayerTurn = false;
+  setTimeout(() => {
+    // AI move sequence.
+    let AIattacksAmount = 1; // The amount of attacks to fill the choice pool with.
+    let AIdefenseAmount = 1; // The amount of defenses to fill the choice pool with.
+    let AIchoicePool = []; // The pool of possible choices the AI can make. randomly filled with attacks and defenses.
+    let AIfleeChance = 0.01; // 1% chance to flee.
+    // Basically the AI logic will pick a move to make whether it is defense, attack, or even flee
+    // based on a random length pool filled with a semi-determinate amount of choices based on the
+    // unit(ie, enemy1 might only have 2 attacks 1 defense, while enemy5 might have 9 attacks 1 defense)
+    // enemy1,2,etc is based on the `face` property of the Enemy. a random number generator will then
+    // pick a move inside the choicePool after it has been fully populated and the AI will make its move.
+
+  }, 2500);
+}

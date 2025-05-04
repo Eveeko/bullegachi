@@ -2085,73 +2085,12 @@ function valChk() {
 // the original battle mechanics of the spam random encounter click-to-kill
 // -------------------------------------------------------------------------
 
-class Attack {
-  name = "attackName";
-  type = "melee";
-  damage = 1;
-  cd = 1; // Turns it takes to be usable again. 1 == right away.
-  animationX = 0;
-  animationY = 0;
-  animationFrames = [];
-  animationFramedelay = 15; // milliseconds between each frame.
-  entitySprite = null; // The sprite to draw over either the Pal or the enemy.
-  entitySpriteX = 0; // the X position.
-  entitySpriteY = 0; // the Y position.
-  constructor(name, type, damage, cd, animationX, animationY, animationFrames, animationFramedelay, entitySprite, entitySpriteX ,entitySpriteY){
-    this.name = name;
-    this.type = type;
-    this.damage = damage;
-    this.cd = cd;
-    this.animationX = animationX;
-    this.animationY = animationY;
-    this.animationFrames = animationFrames;
-    this.animationFramedelay = animationFramedelay;
-    this.entitySprite = entitySprite;
-    this.entitySpriteX = entitySpriteX;
-    this.entitySpriteY = entitySpriteY;
-  }
-}
-class Defence {
-  name = "defenceName";
-  type = "shield";
-  blockDamage = 5; // Amount of damage the defence will mitigate from a receiving attack.
-  cd = 2;
-  animationX = 0;
-  animationY = 0;
-  animationFrames = [];
-  animationFramedelay = 30;
-  entitySprite = null; // The sprite to draw over either the Pal or the enemy.
-  entitySpriteX = 0; // the X position.
-  entitySpriteY = 0; // the Y position.
-  constructor(name, type, blockDamage, cd, animationX, animationY, animationFrames, animationFramedelay, entitySprite, entitySpriteX ,entitySpriteY){
-    this.name = name;
-    this.type = type;
-    this.blockDamage = blockDamage;
-    this.cd = cd;
-    this.animationX = animationX;
-    this.animationY = animationY;
-    this.animationFrames = animationFrames;
-    this.animationFramedelay = animationFramedelay;
-    this.entitySprite = entitySprite;
-    this.entitySpriteX = entitySpriteX;
-    this.entitySpriteY = entitySpriteY;
-  }
-}
 class Player {
   health = 100;
-  defenceCo = 0; // The defence coefficient(multiplier)
-  attackCo = 1; // The attack damage coefficient(multiplier) for any attacks.
-  attackList = []; // The attack move set of the player.
-  defenceList = []; // The defense move set of the player.
+  defenceCo = 1; // The defence coefficient(multiplier) for any defenses. the higher the value the more dmg is blocked
+  attackCo = 1; // The attack damage coefficient(multiplier) for any attacks. the higher the value the more dmg is dealt
   modifiers = []; // any custom items like the heartnecklace for instance.
-  constructor(serializedData){
-    if(serializedData){}
-    else{
-      // no saved data found.
-      this.attackList = [ new Attack("slap", "melee", 10, 0, 0, 0, [ `${userDataPath}/sprite/sprite_attack_slap_1.png`, `${userDataPath}/sprite/sprite_attack_slap_2.png`, `${userDataPath}/sprite/sprite_attack_slap_3.png`, `${userDataPath}/sprite/sprite_attack_slap_4.png`, `${userDataPath}/sprite/sprite_attack_slap_5.png` ], 15, null, 0, 0 ) ];
-      this.defenceList = [ new Defence("stand", "all", 5, 1, 0, 0, [], 0, null, 0, 0) ];
-    };
-  }
+  xp = 100; // The players level. in orders of 100. 100 = lvl 1, 200 = lvl 2, etc. (this must be calculated per use instead of stored here for confusion sake)
 }
 class Enemy {
   name = "enemyName";
@@ -2159,16 +2098,42 @@ class Enemy {
   health = 10;
   attacks = []; // Stores the attacks that the enemy can use.
   defences = []; // Stores the defensive abilities the enemy can use.
-  sprite = `${userDataPath}/sprite/sprite_enemy_1.png`; // The enemy sprite.
+  sprite = `sprite/sprite_enemy_1.png`; // The enemy sprite.
   boss = false; // Whether or not the enemy is a boss.
   encounterOffsetX = 0; // The left and right offset for the encounter anim.
   encounterOffsetY = 0; // The up and down offset for the encounter anim.
   constructor() {
-    var faceId = Math.floor(Math.random() * 5) + 1;
-    this.sprite = `${userDataPath}/sprite/sprite_enemy_${faceId}.png`; // Skinwalker type shit
+    var faceId = Math.floor(Math.random() * 6) + 1;
+    this.sprite = `sprite/sprite_enemy_${faceId}.png`; // Skinwalker type shit
+    switch(faceId){
+      case 1:
+        this.attacks = ["pop", "whip"];
+        this.defences = [];
+        break;
+      case 2:
+        this.attacks = ["spray", "crack open"];
+        this.defences = [ "hold" ];
+        break;
+      case 3:
+        this.attacks = ["slam", "fall", "shockwave"];
+        this.defences = [ "lock", "hold" ];
+        break;
+      case 4:
+        this.attacks = ["fall"];
+        this.defences = [ "hold" ];
+        break;
+      case 5:
+        this.attacks = ["shine", "whip"]
+        this.defences = ["hold"];
+        break;
+      case 6:
+        this.attacks = ["shockwave", "whip", "shock", "speak", "taunt"]
+        this.defences = ["forcefield"];
+        break;
+    }
     this.name = this.generateName(faceId);
-    this.encounterOffsetX = [0, 10, 12, 14, 15][faceId - 1]; // offsets for the encounter anim so the player doesnt overlap on the enemy sprite.
-    this.encounterOffsetY = [0, 0, 0, 0, 0][faceId - 1]; // ^^^
+    this.encounterOffsetX = [0, 10, 12, 14, 15, 15][faceId - 1]; // offsets for the encounter anim so the player doesnt overlap on the enemy sprite.
+    this.encounterOffsetY = [0, 0, 0, 0, 0, 0][faceId - 1]; // ^^^
   }
   generateName (faceId){
     // TODO: Make this generate a sudo unique name based on which sprite is being currently used.

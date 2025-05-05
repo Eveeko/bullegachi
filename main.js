@@ -2087,7 +2087,7 @@ function valChk() {
 
 class Player {
   health = 100;
-  defenceCo = 1; // The defence coefficient(multiplier) for any defenses. the higher the value the more dmg is blocked
+  defenceCo = 1; // The defence coefficient(multiplier) for any defences. the higher the value the more dmg is blocked
   attackCo = 1; // The attack damage coefficient(multiplier) for any attacks. the higher the value the more dmg is dealt
   modifiers = []; // any custom items like the heartnecklace for instance.
   xp = 100; // The players level. in orders of 100. 100 = lvl 1, 200 = lvl 2, etc. (this must be calculated per use instead of stored here for confusion sake)
@@ -2102,8 +2102,10 @@ class Enemy {
   boss = false; // Whether or not the enemy is a boss.
   encounterOffsetX = 0; // The left and right offset for the encounter anim.
   encounterOffsetY = 0; // The up and down offset for the encounter anim.
+  id = 1;
   constructor() {
     var faceId = Math.floor(Math.random() * 6) + 1;
+    this.id = faceId;
     this.sprite = `sprite/sprite_enemy_${faceId}.png`; // Skinwalker type shit
     switch(faceId){
       case 1:
@@ -2144,7 +2146,7 @@ class Enemy {
     var nameEncoded = encodeURIComponent(this.name);
     var spriteEncoded = encodeURIComponent(this.sprite);
     var serialized = `${bossFlag}|${this.lvl}|${this.health}|${spriteEncoded}|${nameEncoded}|${this.encounterOffset}`;
-    // TODO: Add attack and defense objects into the serialization and deserialization process. cant be fucked to do atm
+    // TODO: Add attack and defence objects into the serialization and deserialization process. cant be fucked to do atm
     return serialized;
   }
 
@@ -2813,4 +2815,12 @@ ipcMain.on("attemptMove", (event, direction) => {
 
 ipcMain.on("encounter_started", ()=>{
   win.webContents.send("battleBox_startEncounter");
+});
+
+ipcMain.on("encounter_enemy_fled", () =>{
+  win.webContents.send("battleBox_endEncounter");
+});
+
+ipcMain.on("encounter_enemy_deafeated", () =>{
+  win.webContents.send("battleBox_endEncounter");
 });

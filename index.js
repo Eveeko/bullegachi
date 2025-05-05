@@ -2246,7 +2246,7 @@ window.electron.receive("battleBox_startEncounter", (enemyTile) => {
 
   playfield_encounterControls_btn1.addEventListener("mousedown", () => {
     // Attack button.
-    if(curEnemyObj.health > 0 && isPlayerTurn){
+    if (curEnemyObj.health > 0 && isPlayerTurn) {
       // Process the damage.
       let baseDamage = 5;
       baseDamage += Math.floor(playerObj.xp / 100) * 1.5; // Add level scaling to the damage.
@@ -2254,34 +2254,139 @@ window.electron.receive("battleBox_startEncounter", (enemyTile) => {
       console.log("Base damage: ", baseDamage);
       curEnemyObj.health -= baseDamage;
       playfield_encounterEnemy_health.innerHTML = `♥${curEnemyObj.health}`;
-      if(curEnemyObj.health < 0){
+      if (curEnemyObj.health < 0) {
         // If enemy is dead, add player XP relative to overkill damage dealt.
         let overkillDamage = Math.abs(curEnemyObj.health);
         playerObj.xp += (overkillDamage * 5) + (curEnemyObj.health);
       }
       queueAIturn();
-    }else{
+    } else {
       // No damage to deal. ignore the press.
     }
   });
-  playfield_encounterControls_btn2.addEventListener("mousedown", () => {});
-  playfield_encounterControls_btn3.addEventListener("mousedown", () => {});
-  playfield_encounterControls_btn4.addEventListener("mousedown", () => {});
+  playfield_encounterControls_btn2.addEventListener("mousedown", () => { });
+  playfield_encounterControls_btn3.addEventListener("mousedown", () => { });
+  playfield_encounterControls_btn4.addEventListener("mousedown", () => { });
 });
 
-function queueAIturn(){
+const AIMoveDict = {
+  "pop": {
+    name: "Pop",
+    value: 5,
+    type: "attack",
+    animation: move_anim_pop(callback),
+  }
+}
+function move_anim_pop(callback) {
+  // play sfx here.
+
+  // playing pop animation here.
+  setTimeout(() => {
+    playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1.png")`;
+    setTimeout(() => {
+      playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_2.png")`;
+      setTimeout(() => {
+        playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_3.png")`;
+        setTimeout(() => {
+          playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_4.png")`;
+          setTimeout(() => {
+            playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_5.png")`;
+            setTimeout(() => {
+              playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_6.png")`;
+            },100)
+          },100)
+        },100)
+      },100)
+    },100)
+  },100)
+};
+
+function queueAIturn() {
   isPlayerTurn = false;
   setTimeout(() => {
     // AI move sequence.
     let AIattacksAmount = 1; // The amount of attacks to fill the choice pool with.
-    let AIdefenseAmount = 1; // The amount of defenses to fill the choice pool with.
-    let AIchoicePool = []; // The pool of possible choices the AI can make. randomly filled with attacks and defenses.
-    let AIfleeChance = 0.01; // 1% chance to flee.
-    // Basically the AI logic will pick a move to make whether it is defense, attack, or even flee
-    // based on a random length pool filled with a semi-determinate amount of choices based on the
-    // unit(ie, enemy1 might only have 2 attacks 1 defense, while enemy5 might have 9 attacks 1 defense)
-    // enemy1,2,etc is based on the `face` property of the Enemy. a random number generator will then
-    // pick a move inside the choicePool after it has been fully populated and the AI will make its move.
-
-  }, 2500);
+    let AIdefenceAmount = 1; // The amount of defences to fill the choice pool with.
+    let AIchoicePool = []; // The pool of possible choices the AI can make. randomly filled with attacks and defences.
+    let AIfleeChance = 10; // 1% chance to flee.
+    /* Basically the AI logic will pick a move to make whether it is defence, attack, or even flee
+     based on a random length pool filled with a semi-determinate amount of choices based on the
+     unit(ie, enemy1 might only have 2 attacks 1 defence, while enemy5 might have 9 attacks 1 defence)
+     enemy1,2,etc is based on the `face` property of the Enemy. a random number generator will then
+     pick a move inside the choicePool after it has been fully populated and the AI will make its move. */
+    switch (curEnemyObj.id) {
+      case 1:
+        AIfleeChance = 25;
+        AIdefenceAmount = 0;
+        AIattacksAmount = 3;
+        break;
+      case 2:
+        AIfleeChance = 10;
+        AIdefenceAmount = 1;
+        AIattacksAmount = 4;
+        break;
+      case 3:
+        AIfleeChance = 0;
+        AIdefenceAmount = 4;
+        AIattacksAmount = 3;
+        break;
+      case 4:
+        AIfleeChance = 0;
+        AIdefenceAmount = 5;
+        AIattacksAmount = 2;
+        break;
+      case 5:
+        AIfleeChance = 25;
+        AIdefenceAmount = 2;
+        AIattacksAmount = 5;
+        break;
+      case 6:
+        AIfleeChance = 15;
+        AIattacksAmount = 7;
+        AIdefenceAmount = 3;
+        break;
+    }
+    // Populate the pool with attacks.
+    for (let x = 0; x < AIattacksAmount; x++) {
+      let randomIndex;
+      do {
+        randomIndex = Math.ceil(Math.random() * (AIattacksAmount + AIdefenceAmount));
+      } while (AIchoicePool[randomIndex] !== undefined);
+      AIchoicePool[randomIndex] = curEnemyObj.attacks[Math.ceil(Math.random() * curEnemyObj.attacks.length - 1)];
+    }
+    // Populate the pool with defences.
+    for (let x = 0; x < AIdefenceAmount; x++) {
+      let randomIndex;
+      do {
+        randomIndex = Math.ceil(Math.random() * (AIattacksAmount + AIdefenceAmount));
+      } while (AIchoicePool[randomIndex] !== undefined);
+      AIchoicePool[randomIndex] = curEnemyObj.defences[Math.ceil(Math.random() * curEnemyObj.defences.length - 1)];
+    }
+    // Prune out any empty values from the array.
+    let tempPool = [];
+    for (let x = 0; x < AIchoicePool.length; x++) {
+      if (AIchoicePool[x] !== undefined) {
+        tempPool.push(AIchoicePool[x]);
+      };
+    };
+    AIchoicePool = tempPool;
+    console.log("AIchoicePool: ", AIchoicePool);
+    // Check if AI is below 40% and if a flee chance is a success.
+    if (curEnemyObj.health < (curEnemyObj.health * 0.40) && (Math.random() * 100 < AIfleeChance)) {
+      console.log("AI fled the battle!");
+                          
+      window.electron.send("encounter_enemy_fled");
+    } else {
+      // AI failed the flee chance, proceed to executing a move
+      let choiceIndex = Math.ceil(Math.random() * AIchoicePool.length - 1);
+      if(AIMoveDict[AIchoicePool[choiceIndex]]){
+        AIMoveDict[AIchoicePool[choiceIndex]].animation();
+      }
+    };
+  }, 1000);
 }
+
+window.electron.receive("battleBox_endEncounter", ()=>{
+  // Clear out the encounter screen and restore the battleBox playfield/controls
+
+});

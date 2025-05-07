@@ -2105,11 +2105,12 @@ class Enemy {
   id = 1;
   constructor() {
     var faceId = Math.floor(Math.random() * 6) + 1;
+    faceId = 1;
     this.id = faceId;
     this.sprite = `sprite/sprite_enemy_${faceId}.png`; // Skinwalker type shit
     switch(faceId){
       case 1:
-        this.attacks = ["pop", "whip"];
+        this.attacks = ["pop", "pop"];
         this.defences = [];
         break;
       case 2:
@@ -2821,6 +2822,10 @@ ipcMain.on("encounter_enemy_fled", () =>{
   win.webContents.send("battleBox_endEncounter");
 });
 
-ipcMain.on("encounter_enemy_deafeated", () =>{
+ipcMain.on("encounter_enemy_defeated", () =>{
   win.webContents.send("battleBox_endEncounter");
+});
+
+ipcMain.on("encounter_player_defeated", () =>{
+  win.webContents.send("battleBox_playerDefeated");
 });

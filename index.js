@@ -112,6 +112,7 @@ const playfield_encounterControls_btn1 = document.getElementById("playfield_enco
 const playfield_encounterControls_btn2 = document.getElementById("playfield_encounterControls_btn2");
 const playfield_encounterControls_btn3 = document.getElementById("playfield_encounterControls_btn3");
 const playfield_encounterControls_btn4 = document.getElementById("playfield_encounterControls_btn4");
+const playfield_encounterControl_mask = document.getElementById("playfield_encounterControl_mask");
 
 
 var moveMode = false;
@@ -2105,6 +2106,38 @@ map_controls_down.addEventListener("mouseleave", () => {
 var hasScrolledOnce = false;
 var curEnemyObj = null;
 var isPlayerTurn = true; // Whether or not the player can attack / true = players move, false = AI's move.
+const AIMoveDict = {
+  "pop": {
+    name: "Pop",
+    value: 5,
+    type: "attack",
+    animation: move_anim_pop,
+  },
+  "whip": {
+    name: "Whip",
+    value: 5,
+    type: "attack",
+    animation: move_anim_whip,
+  },
+  "spray": {
+    name: "Spray",
+    value: 5,
+    type: "attack",
+    animation: move_anim_spray,
+  },
+  "crack open": {
+    name: "Crack Open",
+    value: 5,
+    type: "attack",
+    animation: move_anim_crackOpen,
+  },
+  "hold": {
+    name: "Hold",
+    value: 5,
+    type: "defence",
+    animation: move_anim_hold,
+  }
+};
 
 window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   console.log('updatePlayerPosition received: ', position);
@@ -2245,6 +2278,8 @@ window.electron.receive("battleBox_startEncounter", (enemyTile) => {
   let btnList = [playfield_encounterControls_btn1, playfield_encounterControls_btn2, playfield_encounterControls_btn3, playfield_encounterControls_btn4];
 
   playfield_encounterControls_btn1.addEventListener("mousedown", () => {
+    playfield_encounterControl_mask.style.visibility = "visible";
+    playSelectSfx();
     // Attack button.
     if (curEnemyObj.health > 0 && isPlayerTurn) {
       // Process the damage.
@@ -2269,14 +2304,6 @@ window.electron.receive("battleBox_startEncounter", (enemyTile) => {
   playfield_encounterControls_btn4.addEventListener("mousedown", () => { });
 });
 
-const AIMoveDict = {
-  "pop": {
-    name: "Pop",
-    value: 5,
-    type: "attack",
-    animation: move_anim_pop(callback),
-  }
-}
 function move_anim_pop(callback) {
   // play sfx here.
 
@@ -2289,16 +2316,29 @@ function move_anim_pop(callback) {
         playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_3.png")`;
         setTimeout(() => {
           playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_4.png")`;
+          playfield_encounterPlayer_health.innerHTML = `♥${playerObj.health - Math.floor(AIMoveDict["pop"].value + (curEnemyObj.lvl * 1.5))}`;
+          playAttackSfx();
           setTimeout(() => {
             playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_5.png")`;
             setTimeout(() => {
-              playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_6.png")`;
+              playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/sprite_enemy_1.png")`;
+              setTimeout(() =>{
+                callback();
+              }, 1000)
             },100)
           },100)
         },100)
       },100)
     },100)
   },100)
+};
+function move_anim_whip(callback) {
+};
+function move_anim_spray(callback) {
+};
+function move_anim_crackOpen(callback) {
+};
+function move_anim_hold(callback) {
 };
 
 function queueAIturn() {
@@ -2379,9 +2419,15 @@ function queueAIturn() {
     } else {
       // AI failed the flee chance, proceed to executing a move
       let choiceIndex = Math.ceil(Math.random() * AIchoicePool.length - 1);
-      if(AIMoveDict[AIchoicePool[choiceIndex]]){
-        AIMoveDict[AIchoicePool[choiceIndex]].animation();
-      }
+      console.log("AI choice index: ", choiceIndex);
+      console.log("AIMoveDict: ", AIMoveDict);
+      let move = AIMoveDict[AIchoicePool[choiceIndex]];
+      console.log("AI move: ", move);
+      move.animation(() =>{
+        isPlayerTurn = true;
+        playfield_encounterControl_mask.style.visibility = "hidden";
+        playSelectSfx();
+      });
     };
   }, 1000);
 }

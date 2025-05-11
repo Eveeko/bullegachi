@@ -4,6 +4,10 @@ var encounterStartAudioBuffer;
 let speechAudioSlices = [];
 let currentSpeechSliceIndex = 0;
 const sliceDuration = 0.16;
+// Move sfx buffers for combat.
+var movePopSfxBuffer = null;
+var moveWhipSfxBuffer = null;
+// --- end of move sfx buffers ---
 const scanlines = document.getElementById("scanlines");
 const bPal = document.getElementById("bulletpal");
 const bFace = document.getElementById("bFace");
@@ -160,6 +164,14 @@ fetch("sfx/encounter_start.wav")
     encounterStartAudioBuffer = buffer;
     console.log('Encounter Start Audio buffer loaded:', encounterStartAudioBuffer.duration, 'seconds');
   }).catch(error => console.error('Error loading Encounter Start audio:', error));
+
+fetch("sfx/enemy_1_pop.wav")
+  .then(response => response.arrayBuffer())
+  .then(data => audioContext.decodeAudioData(data))
+  .then(buffer => {
+    movePopSfxBuffer = buffer;
+    console.log('Move Pop Sfx Audio buffer loaded:', movePopSfxBuffer.duration, 'seconds');
+  }).catch(error => console.error('Error loading Move Pop Sfx audio:', error));
 
 function moveFace() {
   var left = bFace.style.getPropertyValue("left");
@@ -2282,23 +2294,27 @@ function move_anim_pop(callback) {
 
   // playing pop animation here.
   setTimeout(() => {
-    playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1.png")`;
+    playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_1.png")`;
     setTimeout(() => {
-      playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_2.png")`;
+      playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_2.png")`;
       setTimeout(() => {
-        playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_3.png")`;
+        playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_3.png")`;
         setTimeout(() => {
-          playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_4.png")`;
+          const source = audioContext.createBufferSource();
+          source.buffer = movePopSfxBuffer;
+          source.connect(audioContext.destination);
+          source.start(audioContext.currentTime, 0, 1);
+          playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_4.png")`;
           setTimeout(() => {
-            playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_5.png")`;
+            playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_5.png")`;
             setTimeout(() => {
-              playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_6.png")`;
-            },100)
-          },100)
-        },100)
-      },100)
-    },100)
-  },100)
+              playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_6.png")`;
+            }, 100)
+          }, 100)
+        }, 100)
+      }, 100)
+    }, 100)
+  }, 100)
 };
 
 function queueAIturn() {
@@ -2374,19 +2390,19 @@ function queueAIturn() {
     // Check if AI is below 40% and if a flee chance is a success.
     if (curEnemyObj.health < (curEnemyObj.health * 0.40) && (Math.random() * 100 < AIfleeChance)) {
       console.log("AI fled the battle!");
-                          
+
       window.electron.send("encounter_enemy_fled");
     } else {
       // AI failed the flee chance, proceed to executing a move
       let choiceIndex = Math.ceil(Math.random() * AIchoicePool.length - 1);
-      if(AIMoveDict[AIchoicePool[choiceIndex]]){
+      if (AIMoveDict[AIchoicePool[choiceIndex]]) {
         AIMoveDict[AIchoicePool[choiceIndex]].animation();
       }
     };
   }, 1000);
 }
 
-window.electron.receive("battleBox_endEncounter", ()=>{
+window.electron.receive("battleBox_endEncounter", () => {
   // Clear out the encounter screen and restore the battleBox playfield/controls
 
 });

@@ -8,6 +8,7 @@ const sliceDuration = 0.16;
 var movePopSfxBuffer = null;
 var moveWhipSfxBuffer = null;
 var movePlayerPunchSfxBuffer = null;
+var deathSfxBuffer = null;
 // --- end of move sfx buffers ---
 const scanlines = document.getElementById("scanlines");
 const bPal = document.getElementById("bulletpal");
@@ -45,7 +46,6 @@ const invCounter4 = document.getElementById("inv_counter_4");
 const invCounter5 = document.getElementById("inv_counter_5");
 const invCounter6 = document.getElementById("inv_counter_6");
 const battleBox = document.getElementById("battleBox");
-const deathSound = document.getElementById("deathSound");
 const foodWarn = document.getElementById("food_warn");
 const moveBtn = document.getElementById("moveBtn");
 const muteBtn = document.getElementById("muteBtn");
@@ -118,6 +118,7 @@ const playfield_encounterControls_btn2 = document.getElementById("playfield_enco
 const playfield_encounterControls_btn3 = document.getElementById("playfield_encounterControls_btn3");
 const playfield_encounterControls_btn4 = document.getElementById("playfield_encounterControls_btn4");
 const playfield_encounterControl_mask = document.getElementById("playfield_encounterControl_mask");
+const playfield_encounterControls_exitBtn = document.getElementById("playfield_encounterControls_exitBtn");
 
 
 var moveMode = false;
@@ -182,6 +183,14 @@ fetch("sfx/player_punch.wav")
     movePlayerPunchSfxBuffer = buffer;
     console.log('Move Player Punch Sfx Audio buffer loaded:', movePlayerPunchSfxBuffer.duration, 'seconds');
   }).catch(error => console.error('Error loading Move Player Punch Sfx audio:', error));
+
+fetch("sfx/death_sfx.wav")
+  .then(response => response.arrayBuffer())
+  .then(data => audioContext.decodeAudioData(data))
+  .then(buffer => {
+    deathSfxBuffer = buffer;
+    console.log('Death Sfx Audio buffer loaded:', deathSfxBuffer.duration, 'seconds');
+  }).catch(error => console.error('Error loading Death Sfx audio:', error));
 
 function moveFace() {
   var left = bFace.style.getPropertyValue("left");
@@ -901,8 +910,13 @@ function playAttackSfx() {
 
 function playDeathSfx() {
   if (audioEnabled) {
-    deathSound.currentTime = 0; // Rewind the sound to the beginning
-    deathSound.play(); // Play the sound
+    const source = audioContext.createBufferSource();
+    source.buffer = deathSfxBuffer;
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.8; // Set volume to 60%
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    source.start(audioContext.currentTime, 0, 1);
   }
 }
 
@@ -945,7 +959,7 @@ function popupItem(name, rand, bl) {
   popupElement.appendChild(audioElement);
 
   setTimeout(function () {
-    battleBox.removeChild(popupElement);
+    //battleBox.removeChild(popupElement);
     battleBox.removeChild(audioElement);
   }, 1500); // 1500 milliseconds = 1.5 seconds
 }
@@ -2008,8 +2022,9 @@ window.electron.receive("battleBoxStart_levelSync", (syncObjs) => {
 function shake(selector, isBattleField) {
   var enemy;
   if (isBattleField) {
-    if(!selector){
-    enemy = playfield_encounterPlayer;}else {enemy=playfield_encounterEnemy}
+    if (!selector) {
+      enemy = playfield_encounterPlayer;
+    } else { enemy = playfield_encounterEnemy }
   } else {
     if (!selector) {
       enemy = playfield_player;
@@ -2326,8 +2341,8 @@ window.electron.receive("battleBox_startEncounter", (enemyTile) => {
       source.start(audioContext.currentTime, 0, 1);
       playfield_encounterEnemy_health.innerHTML = `♥${curEnemyObj.health}`;
       shake(true, true);
-      setTimeout(()=>{
-      queueAIturn();
+      setTimeout(() => {
+        queueAIturn();
       }, 1000);
     } else {
       // No damage to deal. ignore the press.
@@ -2389,6 +2404,31 @@ function queueAIturn() {
     // If enemy is dead, add player XP relative to overkill damage dealt.
     let overkillDamage = Math.abs(curEnemyObj.health);
     playerObj.xp += (overkillDamage * 5) + (curEnemyObj.health);
+    console.log("Overkill XP Bonus: ", (overkillDamage * 5));
+    console.log("AI defeated, player XP: ", playerObj.xp);
+    playDeathSfx();
+    setTimeout(() => {
+      playfield_encounterEnemy_sprite.style.backgroundImage = `url(sprite/sprite_enemy_dead_1.png)`;
+      setTimeout(() => {
+        playfield_encounterEnemy_sprite.style.backgroundImage = `url()`;
+        playfield_encounterEnemy_name.innerHTML = "";
+        var popupElement = document.createElement("h1");
+                popupElement.className = "popupLvl";
+                popupElement.id = "popupLvl";
+                popupElement.textContent = `+${5}xp`; // TODO: MAKE THIS REFLECT THE CORRECT LEVEL.
+                scanlines.appendChild(popupElement);
+                var audioElement = document.createElement("audio");
+                audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
+                audioElement.volume = 0.2; // Adjust the volume as needed
+                audioElement.autoplay = true;
+                popupElement.appendChild(audioElement);
+                setTimeout(function () {
+                  console.log("removing popup.");
+                  scanlines.removeChild(popupElement);
+                  playfield_encounterControls_exitBtn.style.visibility = "visible";
+                }, 1500);
+      }, 1000);
+    }, 1500);
   } else {
     setTimeout(() => {
       // AI move sequence.
@@ -2481,7 +2521,37 @@ function queueAIturn() {
   }
 }
 
+playfield_encounterControls_exitBtn.addEventListener("mouseover", () => {
+  playSelectSfx();
+  playfield_encounterControls_exitBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+})
+playfield_encounterControls_exitBtn.addEventListener("mouseleave", () => {
+  playfield_encounterControls_exitBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+})
+playfield_encounterControls_exitBtn.addEventListener("mousedown", () => {
+  playSelectSfx();
+  playfield_encounterControls_exitBtn.style.backgroundImage = `url("sprite/sprite_next_btn_i.png")`;
+  setTimeout(() => {
+    playfield_encounterControls_exitBtn.style.backgroundImage = `url("sprite/sprite_next_btn.png")`;
+    playfield_encounterControl_mask.style.visibility = "hidden";
+    playfield_encounterControls_exitBtn.style.visibility = "hidden";
+    playfield_encounterControls_btn1.style.visibility = "hidden";
+    playfield_encounterControls_btn2.style.visibility = "hidden";
+    playfield_encounterControls_btn3.style.visibility = "hidden";
+    playfield_encounterControls_btn4.style.visibility = "hidden";
+    playfield_encounterEnemy_health.innerHTML = ``;
+    playfield_encounterPlayer_health.innerHTML = ``;
+    setTimeout(() => {
+      levelObj.tiles[curEnemyObj.x][curEnemyObj.y].enemy = null;
+      window.electron.send("encounter_enemy_defeated");
+      // TODO: Implement the grid updating when a enemy is killed
+    }, 1000);
+  }, 150);
+})
+
 window.electron.receive("battleBox_endEncounter", () => {
   // Clear out the encounter screen and restore the battleBox playfield/controls
-
+  playfield_encounterDiv.style.visibility = "hidden";
+  playfield_grid.style.visibility = "visible";
+  playfield_player.style.visibility = "visible";
 });

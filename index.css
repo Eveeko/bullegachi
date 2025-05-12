@@ -1597,7 +1597,7 @@ body {
   left: 0px;
 }
 
-.pf_enc_controls_mask{
+.pf_enc_controls_mask {
   position: absolute;
   top: 123px;
   left: 2px;
@@ -1640,13 +1640,23 @@ body {
   text-align: center;
 }
 
-.pf_enc_energyBar{
+.pf_enc_controls_exitBtn {
+  position: relative;
+  top: 56px;
+  left: 134px;
+  width: 32px;
+  height: 32px;
+  background-image: url(sprite/sprite_next_btn.png);
+  visibility: hidden;
+}
+
+.pf_enc_energyBar {
   position: absolute;
   top: -5px;
   left: 8px;
 }
 
-.pf_enc_energyCount{
+.pf_enc_energyCount {
   position: absolute;
   top: 0px;
   left: 0px;

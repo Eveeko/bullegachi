@@ -1624,7 +1624,7 @@ body {
   position: absolute;
   top: 126px;
   left: 4px;
-  width: 96px;
+  width: 100px;
   height: 24px;
   border-right: 2px solid;
   border-image: repeating-linear-gradient(to bottom, #FFCC00, #FFCC00 33px, transparent 10px, transparent 21px) 1;
@@ -1665,4 +1665,11 @@ body {
   font-family: VT220;
   font-size: 12px;
   text-align: left;
+}
+
+.popupKillLvl{
+  left: 175px;
+  top: 62px;
+  filter:blur(0px);
+  font-size: 16px;
 }

@@ -108,6 +108,7 @@ const playfield_encounterPlayer = document.getElementById("playfield_encounterPl
 const playfield_encounterPlayer_name = document.getElementById("playfield_encounterPlayer_name");
 const playfield_encounterPlayer_health = document.getElementById("playfield_encounterPlayer_health");
 const playfield_encounterPlayer_sprite = document.getElementById("playfield_encounterPlayer_sprite");
+const playfield_encounterPlayer_face = document.getElementById("playfield_encounterPlayer_face");
 const playfield_encounterEnemy = document.getElementById("playfield_encounterEnemy");
 const playfield_encounterEnemy_name = document.getElementById("playfield_encounterEnemy_name");
 const playfield_encounterEnemy_health = document.getElementById("playfield_encounterEnemy_health");
@@ -2146,7 +2147,10 @@ map_controls_down.addEventListener("mouseleave", () => {
 
 var hasScrolledOnce = false;
 var curEnemyObj = null;
+var curEnemyTile = null;
 var isPlayerTurn = true; // Whether or not the player can attack / true = players move, false = AI's move.
+var isDefending = false; // Whether or not the player is defending.
+var movementDirection = null; // The direction the player is moving in.
 const AIMoveDict = {
   "pop": {
     name: "Pop",
@@ -2185,9 +2189,11 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
   STYLE = window.getComputedStyle(playfield_player);
   var transitionDiv;
   var transitionStep = 0;
+  movementDirection = position[2];
   if (position) {
     // Player was able to move, handle visuals.
     if (levelObj.tiles[position[0]][position[1]].enemy) {
+      curEnemyTile = levelObj.tiles[position[0]][position[1]];
       var enemyObj = levelObj.tiles[position[0]][position[1]].enemy;
       playAttackSfx();
       console.log("Enemy detected, starting move sequence.");
@@ -2317,7 +2323,16 @@ window.electron.receive("battleBox_updatePlayerPosition", (position) => {
 window.electron.receive("battleBox_startEncounter", (enemyTile) => {
   let curBtnIndex = 0;
   let btnList = [playfield_encounterControls_btn1, playfield_encounterControls_btn2, playfield_encounterControls_btn3, playfield_encounterControls_btn4];
-
+  // Attack button logic.
+  // --------------------
+  playfield_encounterControls_btn1.addEventListener("mouseover", () => {
+    playfield_encounterControls_btn1.style.backgroundColor = "#ffcc00";
+    playfield_encounterControls_btn1_h1.style.color = "#110d00";
+  });
+  playfield_encounterControls_btn1.addEventListener("mouseleave", () => {
+    playfield_encounterControls_btn1.style.backgroundColor = "";
+    playfield_encounterControls_btn1_h1.style.color = "#ffcc00";
+  });
   playfield_encounterControls_btn1.addEventListener("mousedown", () => {
     playfield_encounterControl_mask.style.visibility = "visible";
     playSelectSfx();
@@ -2348,10 +2363,64 @@ window.electron.receive("battleBox_startEncounter", (enemyTile) => {
       // No damage to deal. ignore the press.
     }
   });
+  // Special button logic.
+  // ---------------------
+  playfield_encounterControls_btn2.addEventListener("mouseover", () => {
+    playfield_encounterControls_btn2.style.backgroundColor = "#ffcc00";
+    playfield_encounterControls_btn2_h1.style.color = "#110d00";
+  });
+  playfield_encounterControls_btn2.addEventListener("mouseleave", () => {
+    playfield_encounterControls_btn2.style.backgroundColor = "";
+    playfield_encounterControls_btn2_h1.style.color = "#ffcc00";
+  });
   playfield_encounterControls_btn2.addEventListener("mousedown", () => { });
-  playfield_encounterControls_btn3.addEventListener("mousedown", () => { });
+  // Defense button logic.
+  // ---------------------
+  playfield_encounterControls_btn3.addEventListener("mouseover", () => {
+    playfield_encounterControls_btn3.style.backgroundColor = "#ffcc00";
+    playfield_encounterControls_btn3_h1.style.color = "#110d00";
+  });
+  playfield_encounterControls_btn3.addEventListener("mouseleave", () => {
+    playfield_encounterControls_btn3.style.backgroundColor = "";
+    playfield_encounterControls_btn3_h1.style.color = "#ffcc00";
+  });
+  playfield_encounterControls_btn3.addEventListener("mousedown", () => {
+    playfield_encounterControl_mask.style.visibility = "visible";
+    playSelectSfx();
+    setTimeout(() => {
+      playfield_encounterPlayer_face.style.backgroundImage = `url("sprite/moves/anim_crying_1.gif")`;
+      playfield_encounterPlayer_face.style.width = "64px";
+      playfield_encounterPlayer_face.style.height = "64px";
+      playfield_encounterPlayer_face.style.backgroundSize = "42px 42px";
+      playfield_encounterPlayer_face.style.left = "-3px";
+      playfield_encounterPlayer_face.style.top = "9px";
+      setTimeout(() => {
+        isDefending = true;
+        queueAIturn(); // We are defending, set flag to true.
+      }, 1500)
+    }, 1000);
+  });
+  // Flee button logic.
+  // ------------------
+  playfield_encounterControls_btn4.addEventListener("mouseover", () => {
+    playfield_encounterControls_btn4.style.backgroundColor = "#ffcc00";
+    playfield_encounterControls_btn4_h1.style.color = "#110d00";
+  });
+  playfield_encounterControls_btn4.addEventListener("mouseleave", () => {
+    playfield_encounterControls_btn4.style.backgroundColor = "";
+    playfield_encounterControls_btn4_h1.style.color = "#ffcc00";
+  });
   playfield_encounterControls_btn4.addEventListener("mousedown", () => { });
 });
+
+function clearPlayerCrying() {
+  playfield_encounterPlayer_face.style.backgroundImage = `url("faces/default_idle.png")`;
+  playfield_encounterPlayer_face.style.width = "";
+  playfield_encounterPlayer_face.style.height = "";
+  playfield_encounterPlayer_face.style.backgroundSize = "";
+  playfield_encounterPlayer_face.style.left = "";
+  playfield_encounterPlayer_face.style.top = "";
+}
 
 function move_anim_pop(callback) {
   // play sfx here.
@@ -2371,8 +2440,14 @@ function move_anim_pop(callback) {
           source.connect(gainNode);
           gainNode.connect(audioContext.destination);
           source.start(audioContext.currentTime, 0, 1);
+          let damage = Math.floor(AIMoveDict["pop"].value + (curEnemyObj.lvl * 1.5));
+          if (isDefending) {
+            damage = Math.ceil(damage * .40); // Reduces damage by 60% if defending.
+          };
+          console.log(playerObj.health, damage);
+          playerObj.health -= damage;
           playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_4.png")`;
-          playfield_encounterPlayer_health.innerHTML = `♥${playerObj.health - Math.floor(AIMoveDict["pop"].value + (curEnemyObj.lvl * 1.5))}`;
+          playfield_encounterPlayer_health.innerHTML = `♥${playerObj.health}`;
           playAttackSfx();
           shake(false, true);
           setTimeout(() => {
@@ -2411,22 +2486,23 @@ function queueAIturn() {
       playfield_encounterEnemy_sprite.style.backgroundImage = `url(sprite/sprite_enemy_dead_1.png)`;
       setTimeout(() => {
         playfield_encounterEnemy_sprite.style.backgroundImage = `url()`;
+        playfield_encounterEnemy_health.innerHTML = ``;
         playfield_encounterEnemy_name.innerHTML = "";
         var popupElement = document.createElement("h1");
-                popupElement.className = "popupLvl";
-                popupElement.id = "popupLvl";
-                popupElement.textContent = `+${5}xp`; // TODO: MAKE THIS REFLECT THE CORRECT LEVEL.
-                scanlines.appendChild(popupElement);
-                var audioElement = document.createElement("audio");
-                audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
-                audioElement.volume = 0.2; // Adjust the volume as needed
-                audioElement.autoplay = true;
-                popupElement.appendChild(audioElement);
-                setTimeout(function () {
-                  console.log("removing popup.");
-                  scanlines.removeChild(popupElement);
-                  playfield_encounterControls_exitBtn.style.visibility = "visible";
-                }, 1500);
+        popupElement.className = "popupLvl popupKillLvl";
+        popupElement.id = "popupLvl";
+        popupElement.textContent = `+${5}xp`; // TODO: MAKE THIS REFLECT THE CORRECT LEVEL.
+        scanlines.appendChild(popupElement);
+        var audioElement = document.createElement("audio");
+        audioElement.src = "sfx/foodPopupSfx.wav"; // Replace "your_sound_effect.mp3" with the path to your sound effect file
+        audioElement.volume = 0.2; // Adjust the volume as needed
+        audioElement.autoplay = true;
+        popupElement.appendChild(audioElement);
+        setTimeout(function () {
+          console.log("removing popup.");
+          scanlines.removeChild(popupElement);
+          playfield_encounterControls_exitBtn.style.visibility = "visible";
+        }, 1500);
       }, 1000);
     }, 1500);
   } else {
@@ -2514,6 +2590,10 @@ function queueAIturn() {
           playfield_encounterEnemy_sprite.style.backgroundImage = `url("${curEnemyObj.sprite}")`;
           isPlayerTurn = true;
           playfield_encounterControl_mask.style.visibility = "hidden";
+          if (isDefending) {
+            clearPlayerCrying();
+            isDefending = false;
+          };
           playSelectSfx();
         });
       };
@@ -2539,10 +2619,35 @@ playfield_encounterControls_exitBtn.addEventListener("mousedown", () => {
     playfield_encounterControls_btn2.style.visibility = "hidden";
     playfield_encounterControls_btn3.style.visibility = "hidden";
     playfield_encounterControls_btn4.style.visibility = "hidden";
-    playfield_encounterEnemy_health.innerHTML = ``;
     playfield_encounterPlayer_health.innerHTML = ``;
     setTimeout(() => {
-      levelObj.tiles[curEnemyObj.x][curEnemyObj.y].enemy = null;
+      // Remove the enemy element since hes been defeated.
+      playfield_grid.style.visibility = "visible";
+      playfield_encounterDiv.style.visibility = "hidden";
+      console.log(curEnemyObj, "curenemyojb");
+      console.log("enemyTileDeleteIndex", (curEnemyTile.coordX * (levelObj.gridHeight - 1) + curEnemyTile.coordY) + 1);
+      playfield_grid.children.item((curEnemyTile.coordX * levelObj.gridHeight + curEnemyTile.coordY) + 1).children.item(0).remove();
+      levelObj.tiles[curEnemyTile.coordX][curEnemyTile.coordY].enemy = null;
+      map_controls_down.style.visibility = "visible";
+      map_controls_up.style.visibility = "visible";
+      map_controls_left.style.visibility = "visible";
+      map_controls_right.style.visibility = "visible";
+      battle_tile_origin.style.visibility = "visible";
+      let STYLE = window.getComputedStyle(playfield_player);
+      switch (movementDirection) {
+        case "right":
+          playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) + 28}px`;
+          break;
+        case "left":
+          playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - 28}px`;
+          break;
+        case "up":
+          playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) - 10}px`;
+          break;
+        case "down":
+          playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) + 10}px`;
+          break;
+      }
       window.electron.send("encounter_enemy_defeated");
       // TODO: Implement the grid updating when a enemy is killed
     }, 1000);

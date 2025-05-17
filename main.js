@@ -2823,6 +2823,7 @@ ipcMain.on("encounter_enemy_fled", () =>{
 });
 
 ipcMain.on("encounter_enemy_defeated", () =>{
+  curLevelObj.tiles[curPlayerPos[0]][curPlayerPos[1]].enemy = null;
   win.webContents.send("battleBox_endEncounter");
 });
 

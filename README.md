@@ -2,15 +2,15 @@
 # Bullegachi
 A Bullet Kin inspired companion for your desk and pc!
 
-![jsbadge](https://img.shields.io/badge/Made%20with-grey?style=for-the-badge&logo=javascript) ![electronbadge](https://img.shields.io/badge/built%20with%20-grey?style=for-the-badge&logo=electron&logoColor=cyan) ![commitbadge](https://img.shields.io/github/commit-activity/m/Eveeko/bullegachi?style=flat-square)
-[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+![jsbadge](https://img.shields.io/badge/Made%20with-grey?style=for-the-badge&logo=javascript) ![electronbadge](https://img.shields.io/badge/built%20with%20-grey?style=for-the-badge&logo=electron&logoColor=cyan) ![commitbadge](https://img.shields.io/github/commit-activity/m/Eveeko/bullegachi?style=for-the-badge)
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa] ![Total-Downloads](https://img.shields.io/github/downloads/Eveeko/bullegachi/total?style=for-the-badge)
 
 This work is licensed under a
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
 
 [cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
-[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
+[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg?style=for-the-badge
 >If you don't want to read and just want to get straight to the content [click here!](https://github.com/Eveeko/bullegachi/releases/latest) to get directed to the latest build.
 
 ___

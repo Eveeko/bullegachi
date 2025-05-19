@@ -9,6 +9,7 @@ var movePopSfxBuffer = null;
 var moveWhipSfxBuffer = null;
 var movePlayerPunchSfxBuffer = null;
 var deathSfxBuffer = null;
+var crySfxBuffer = null;
 // --- end of move sfx buffers ---
 const scanlines = document.getElementById("scanlines");
 const bPal = document.getElementById("bulletpal");
@@ -192,6 +193,14 @@ fetch("sfx/death_sfx.wav")
     deathSfxBuffer = buffer;
     console.log('Death Sfx Audio buffer loaded:', deathSfxBuffer.duration, 'seconds');
   }).catch(error => console.error('Error loading Death Sfx audio:', error));
+
+fetch("sfx/cry_sfx.wav")
+  .then(response => response.arrayBuffer())
+  .then(data => audioContext.decodeAudioData(data))
+  .then(buffer => {
+    crySfxBuffer = buffer;
+    console.log('Cry Sfx Audio buffer loaded:', crySfxBuffer.duration, 'seconds');
+  }).catch(error => console.error('Error loading Cry Sfx audio:', error));
 
 function moveFace() {
   var left = bFace.style.getPropertyValue("left");
@@ -2394,6 +2403,13 @@ window.electron.receive("battleBox_startEncounter", (enemyTile) => {
       playfield_encounterPlayer_face.style.backgroundSize = "42px 42px";
       playfield_encounterPlayer_face.style.left = "-3px";
       playfield_encounterPlayer_face.style.top = "9px";
+      const source = audioContext.createBufferSource();
+      source.buffer = crySfxBuffer;
+      const gainNode = audioContext.createGain();
+      gainNode.gain.value = 0.2; // Set volume to 60%
+      source.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      source.start(audioContext.currentTime, 0, 1);
       setTimeout(() => {
         isDefending = true;
         queueAIturn(); // We are defending, set flag to true.

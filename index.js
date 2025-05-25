@@ -2170,17 +2170,24 @@ var curEnemyTile = null;
 var isPlayerTurn = true; // Whether or not the player can attack / true = players move, false = AI's move.
 var isDefending = false; // Whether or not the player is defending.
 var movementDirection = null; // The direction the player is moving in.
+var isAIMoveCharging = false; // Whether or not the AI is charging a move. if the AI is this value is the amount of turns to wait. 0 = immediately on next turn.
+var chargingAIMoveObj = null; // The move the AI is charging, if any.
 const AIMoveDict = {
   "pop": {
     name: "Pop",
     value: 5,
     type: "attack",
-    animation: move_anim_pop,
-  },
+    charge: true,
+    chargeTime: 1,
+    chargeAnimation: move_anim_popCharge,
+    attackAnimation: move_anim_pop
+  }, // TODO: Refactor all moves to use this new structure above.
   "whip": {
     name: "Whip",
     value: 5,
     type: "attack",
+    charge: false,
+    chargeTime: 0,
     animation: move_anim_whip,
   },
   "spray": {
@@ -2519,44 +2526,47 @@ function clearPlayerCrying() {
   playfield_encounterPlayer_face.style.top = "";
 }
 
-function move_anim_pop(callback) {
-  // play sfx here.
-
-  // playing pop animation here.
+function move_anim_popCharge(callback) {
   setTimeout(() => {
     playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_1.png")`;
     setTimeout(() => {
       playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_2.png")`;
       setTimeout(() => {
         playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_3.png")`;
+        isAIMoveCharging--; // Decrement the charge counter.
+        callback();
+      }, 100)
+    }, 100)
+  }, 100)
+};
+function move_anim_pop(callback) {
+  setTimeout(() => {
+    const source = audioContext.createBufferSource();
+    source.buffer = movePopSfxBuffer;
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.2; // Set volume to 60%
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    source.start(audioContext.currentTime, 0, 1);
+    let damage = Math.floor(AIMoveDict["pop"].value + (curEnemyObj.lvl * 1.5));
+    if (isDefending) {
+      damage = Math.ceil(damage * .80); // Reduces damage by 80% if defending.
+    };
+    console.log(playerObj.health, damage);
+    playerObj.health -= damage;
+    playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_4.png")`;
+    playfield_encounterPlayer_health.innerHTML = `♥${playerObj.health}`;
+    playAttackSfx();
+    shake(false, true);
+    setTimeout(() => {
+      playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_5.png")`;
+      setTimeout(() => {
+        playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_6.png")`;
         setTimeout(() => {
-          const source = audioContext.createBufferSource();
-          source.buffer = movePopSfxBuffer;
-          const gainNode = audioContext.createGain();
-          gainNode.gain.value = 0.2; // Set volume to 60%
-          source.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          source.start(audioContext.currentTime, 0, 1);
-          let damage = Math.floor(AIMoveDict["pop"].value + (curEnemyObj.lvl * 1.5));
-          if (isDefending) {
-            damage = Math.ceil(damage * .40); // Reduces damage by 60% if defending.
-          };
-          console.log(playerObj.health, damage);
-          playerObj.health -= damage;
-          playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_4.png")`;
-          playfield_encounterPlayer_health.innerHTML = `♥${playerObj.health}`;
-          playAttackSfx();
-          shake(false, true);
-          setTimeout(() => {
-            playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_5.png")`;
-            setTimeout(() => {
-              playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_6.png")`;
-              setTimeout(() => {
-                callback();
-              }, 1000)
-            }, 100)
-          }, 100)
-        }, 100)
+          isAIMoveCharging = false; // Reset the charging state.
+          chargingAIMoveObj = null; // Reset the charging move object.
+          callback();
+        }, 1000)
       }, 100)
     }, 100)
   }, 100)
@@ -2603,87 +2613,10 @@ function queueAIturn() {
       }, 1000);
     }, 1500);
   } else {
-    setTimeout(() => {
-      // AI move sequence.
-      let AIattacksAmount = 1; // The amount of attacks to fill the choice pool with.
-      let AIdefenceAmount = 1; // The amount of defences to fill the choice pool with.
-      let AIchoicePool = []; // The pool of possible choices the AI can make. randomly filled with attacks and defences.
-      let AIfleeChance = 10; // 1% chance to flee.
-      /* Basically the AI logic will pick a move to make whether it is defence, attack, or even flee
-       based on a random length pool filled with a semi-determinate amount of choices based on the
-       unit(ie, enemy1 might only have 2 attacks 1 defence, while enemy5 might have 9 attacks 1 defence)
-       enemy1,2,etc is based on the `face` property of the Enemy. a random number generator will then
-       pick a move inside the choicePool after it has been fully populated and the AI will make its move. */
-      switch (curEnemyObj.id) {
-        case 1:
-          AIfleeChance = 25;
-          AIdefenceAmount = 0;
-          AIattacksAmount = 3;
-          break;
-        case 2:
-          AIfleeChance = 10;
-          AIdefenceAmount = 1;
-          AIattacksAmount = 4;
-          break;
-        case 3:
-          AIfleeChance = 0;
-          AIdefenceAmount = 4;
-          AIattacksAmount = 3;
-          break;
-        case 4:
-          AIfleeChance = 0;
-          AIdefenceAmount = 5;
-          AIattacksAmount = 2;
-          break;
-        case 5:
-          AIfleeChance = 25;
-          AIdefenceAmount = 2;
-          AIattacksAmount = 5;
-          break;
-        case 6:
-          AIfleeChance = 15;
-          AIattacksAmount = 7;
-          AIdefenceAmount = 3;
-          break;
-      }
-      // Populate the pool with attacks.
-      for (let x = 0; x < AIattacksAmount; x++) {
-        let randomIndex;
-        do {
-          randomIndex = Math.ceil(Math.random() * (AIattacksAmount + AIdefenceAmount));
-        } while (AIchoicePool[randomIndex] !== undefined);
-        AIchoicePool[randomIndex] = curEnemyObj.attacks[Math.ceil(Math.random() * curEnemyObj.attacks.length - 1)];
-      }
-      // Populate the pool with defences.
-      for (let x = 0; x < AIdefenceAmount; x++) {
-        let randomIndex;
-        do {
-          randomIndex = Math.ceil(Math.random() * (AIattacksAmount + AIdefenceAmount));
-        } while (AIchoicePool[randomIndex] !== undefined);
-        AIchoicePool[randomIndex] = curEnemyObj.defences[Math.ceil(Math.random() * curEnemyObj.defences.length - 1)];
-      }
-      // Prune out any empty values from the array.
-      let tempPool = [];
-      for (let x = 0; x < AIchoicePool.length; x++) {
-        if (AIchoicePool[x] !== undefined) {
-          tempPool.push(AIchoicePool[x]);
-        };
-      };
-      AIchoicePool = tempPool;
-      console.log("AIchoicePool: ", AIchoicePool);
-      // Check if AI is below 40% and if a flee chance is a success.
-      if (curEnemyObj.health < (curEnemyObj.health * 0.40) && (Math.random() * 100 < AIfleeChance)) {
-        console.log("AI fled the battle!");
-
-        window.electron.send("encounter_enemy_fled");
-      } else {
-        // AI failed the flee chance, proceed to executing a move
-        let choiceIndex = Math.ceil(Math.random() * AIchoicePool.length - 1);
-        console.log("AI choice index: ", choiceIndex);
-        console.log("AIMoveDict: ", AIMoveDict);
-        let move = AIMoveDict[AIchoicePool[choiceIndex]];
-        console.log("AI move: ", move);
-        move.animation(() => {
+    if (isAIMoveCharging !== false) {
+      if (isAIMoveCharging == 0) {
+        // AI move is ready.
+        chargingAIMoveObj.attackAnimation(() => {
           playfield_encounterEnemy_sprite.style.backgroundImage = `url("${curEnemyObj.sprite}")`;
           isPlayerTurn = true;
           playfield_encounterControl_mask.style.visibility = "hidden";
@@ -2693,8 +2626,128 @@ function queueAIturn() {
           };
           playSelectSfx();
         });
-      };
-    }, 1000);
+      } else {
+        // AI move is still charging.
+        // TODO: add a text popup like "passed" or something above the enemy to indicate to the player that the AI is still charging their attack.
+        isAIMoveCharging--; // Decrement the charge counter.
+        isPlayerTurn = true;
+        playfield_encounterControl_mask.style.visibility = "hidden";
+        if (isDefending) {
+          clearPlayerCrying();
+          isDefending = false;
+        };
+        playSelectSfx();
+      }
+    }
+    else {
+      setTimeout(() => {
+        // AI move sequence.
+        let AIattacksAmount = 1; // The amount of attacks to fill the choice pool with.
+        let AIdefenceAmount = 1; // The amount of defences to fill the choice pool with.
+        let AIchoicePool = []; // The pool of possible choices the AI can make. randomly filled with attacks and defences.
+        let AIfleeChance = 10; // 1% chance to flee.
+        /* Basically the AI logic will pick a move to make whether it is defence, attack, or even flee
+         based on a random length pool filled with a semi-determinate amount of choices based on the
+         unit(ie, enemy1 might only have 2 attacks 1 defence, while enemy5 might have 9 attacks 1 defence)
+         enemy1,2,etc is based on the `face` property of the Enemy. a random number generator will then
+         pick a move inside the choicePool after it has been fully populated and the AI will make its move. */
+        switch (curEnemyObj.id) {
+          case 1:
+            AIfleeChance = 25;
+            AIdefenceAmount = 0;
+            AIattacksAmount = 3;
+            break;
+          case 2:
+            AIfleeChance = 10;
+            AIdefenceAmount = 1;
+            AIattacksAmount = 4;
+            break;
+          case 3:
+            AIfleeChance = 0;
+            AIdefenceAmount = 4;
+            AIattacksAmount = 3;
+            break;
+          case 4:
+            AIfleeChance = 0;
+            AIdefenceAmount = 5;
+            AIattacksAmount = 2;
+            break;
+          case 5:
+            AIfleeChance = 25;
+            AIdefenceAmount = 2;
+            AIattacksAmount = 5;
+            break;
+          case 6:
+            AIfleeChance = 15;
+            AIattacksAmount = 7;
+            AIdefenceAmount = 3;
+            break;
+        }
+        // Populate the pool with attacks.
+        for (let x = 0; x < AIattacksAmount; x++) {
+          let randomIndex;
+          do {
+            randomIndex = Math.ceil(Math.random() * (AIattacksAmount + AIdefenceAmount));
+          } while (AIchoicePool[randomIndex] !== undefined);
+          AIchoicePool[randomIndex] = curEnemyObj.attacks[Math.ceil(Math.random() * curEnemyObj.attacks.length - 1)];
+        }
+        // Populate the pool with defences.
+        for (let x = 0; x < AIdefenceAmount; x++) {
+          let randomIndex;
+          do {
+            randomIndex = Math.ceil(Math.random() * (AIattacksAmount + AIdefenceAmount));
+          } while (AIchoicePool[randomIndex] !== undefined);
+          AIchoicePool[randomIndex] = curEnemyObj.defences[Math.ceil(Math.random() * curEnemyObj.defences.length - 1)];
+        }
+        // Prune out any empty values from the array.
+        let tempPool = [];
+        for (let x = 0; x < AIchoicePool.length; x++) {
+          if (AIchoicePool[x] !== undefined) {
+            tempPool.push(AIchoicePool[x]);
+          };
+        };
+        AIchoicePool = tempPool;
+        console.log("AIchoicePool: ", AIchoicePool);
+        // Check if AI is below 40% and if a flee chance is a success.
+        // TODO: overhaul the flee chance.
+        if (curEnemyObj.health < (curEnemyObj.health * 0.40) && (Math.random() * 100 < AIfleeChance)) {
+          console.log("AI fled the battle!");
+          window.electron.send("encounter_enemy_fled");
+        } else {
+          // AI failed the flee chance, proceed to executing a move
+          let choiceIndex = Math.ceil(Math.random() * AIchoicePool.length - 1);
+          console.log("AI choice index: ", choiceIndex);
+          console.log("AIMoveDict: ", AIMoveDict);
+          let move = AIMoveDict[AIchoicePool[choiceIndex]];
+          console.log("AI move: ", move);
+          if (move.charge) {
+            isAIMoveCharging = move.chargeTime; // Set the AI move to charge.
+            chargingAIMoveObj = move; // Set the charging move object
+            console.log("AI move is charging: ", move);
+            move.chargeAnimation(() => {
+              isPlayerTurn = true;
+              playfield_encounterControl_mask.style.visibility = "hidden";
+              if (isDefending) {
+                clearPlayerCrying();
+                isDefending = false;
+              };
+              playSelectSfx();
+            });
+          } else {
+            move.attackAnimation(() => {
+              playfield_encounterEnemy_sprite.style.backgroundImage = `url("${curEnemyObj.sprite}")`;
+              isPlayerTurn = true;
+              playfield_encounterControl_mask.style.visibility = "hidden";
+              if (isDefending) {
+                clearPlayerCrying();
+                isDefending = false;
+              };
+              playSelectSfx();
+            });
+          };
+        };
+      }, 1000);
+    }
   }
 }
 

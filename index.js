@@ -10,6 +10,7 @@ var moveWhipSfxBuffer = null;
 var movePlayerPunchSfxBuffer = null;
 var deathSfxBuffer = null;
 var crySfxBuffer = null;
+var fleeGlitchSfxBuffer = null;
 // --- end of move sfx buffers ---
 const scanlines = document.getElementById("scanlines");
 const bPal = document.getElementById("bulletpal");
@@ -121,6 +122,7 @@ const playfield_encounterControls_btn3 = document.getElementById("playfield_enco
 const playfield_encounterControls_btn4 = document.getElementById("playfield_encounterControls_btn4");
 const playfield_encounterControl_mask = document.getElementById("playfield_encounterControl_mask");
 const playfield_encounterControls_exitBtn = document.getElementById("playfield_encounterControls_exitBtn");
+const playfield_encounterPlayer_flee_h1 = document.getElementById("playfield_encounterPlayer_flee_h1");
 
 
 var moveMode = false;
@@ -201,6 +203,14 @@ fetch("sfx/cry_sfx.wav")
     crySfxBuffer = buffer;
     console.log('Cry Sfx Audio buffer loaded:', crySfxBuffer.duration, 'seconds');
   }).catch(error => console.error('Error loading Cry Sfx audio:', error));
+
+fetch("sfx/flee_glitch_sfx.wav")
+  .then(response => response.arrayBuffer())
+  .then(data => audioContext.decodeAudioData(data))
+  .then(buffer => {
+    fleeGlitchSfxBuffer = buffer;
+    console.log('Flee Glitch Sfx Audio buffer loaded:', fleeGlitchSfxBuffer.duration, 'seconds');
+  }).catch(error => console.error('Error loading Flee Glitch Sfx audio:', error));
 
 function moveFace() {
   var left = bFace.style.getPropertyValue("left");
@@ -2426,7 +2436,78 @@ window.electron.receive("battleBox_startEncounter", (enemyTile) => {
     playfield_encounterControls_btn4.style.backgroundColor = "";
     playfield_encounterControls_btn4_h1.style.color = "#ffcc00";
   });
-  playfield_encounterControls_btn4.addEventListener("mousedown", () => { });
+  playfield_encounterControls_btn4.addEventListener("mousedown", () => {
+    playfield_encounterControl_mask.style.visibility = "visible";
+    playSelectSfx();
+    setTimeout(() => {
+      // attempt to flee.
+      var fleeChance = Math.floor(Math.random() * 100);
+      if (fleeChance > 70) {
+        // Flee success!
+        playfield_encounterPlayer_health.style.visibility = "hidden";
+        playfield_encounterPlayer_name.style.visibility = "hidden";
+        playfield_encounterPlayer.style.animation = "flee-success 3s forwards";
+        setTimeout(() => {
+          playSelectSfx();
+          playfield_encounterPlayer_flee_h1.style.visibility = "visible";
+          setTimeout(() => {
+            const source = audioContext.createBufferSource();
+            source.buffer = fleeGlitchSfxBuffer;
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = 0.6; // Set volume to 60%
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            source.start(audioContext.currentTime, 0, 1);
+            playfield_encounterPlayer_flee_h1.style.visibility = "hidden";
+            playfield_encounterPlayer.style.animation = "";
+            playfield_encounterDiv.style.visibility = "hidden";
+            playfield_grid.style.visibility = "visible";
+            playfield_player.style.visibility = "visible";
+            map_controls_left.style.visibility = "visible";
+            map_controls_right.style.visibility = "visible";
+            map_controls_up.style.visibility = "visible";
+            map_controls_down.style.visibility = "visible";
+            map_controls_mask.style.visibility = "hidden";
+            battle_tile_origin.style.visibility = "visible";
+            playfield_encounterControl_mask.style.visibility = "hidden";
+            playfield_encounterPlayer.style.animation = "";
+            let direction = null;
+            let STYLE = window.getComputedStyle(playfield_player);
+            switch (movementDirection) {
+              case "left":
+                direction = "right";
+                playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) + 56}px`;
+                break;
+              case "right":
+                direction = "left";
+                playfield_player.style.left = `${Number(STYLE.getPropertyValue('left').slice(0, -2)) - 112}px`;
+                break;
+              case "up":
+                direction = "down";
+                playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) - 10}px`; break;
+              case "down":
+                direction = "up";
+                playfield_player.style.top = `${Number(STYLE.getPropertyValue('top').slice(0, -2)) + 10}px`;
+                break;
+            }
+            window.electron.send("attemptMove", direction);
+          }, 5000); // let linger for 5 seconds that exit encounter.
+        }, 3000);
+      } else {
+        // Flee failed.
+        playfield_encounterPlayer_health.style.visibility = "hidden";
+        playfield_encounterPlayer_name.style.visibility = "hidden";
+        playfield_encounterPlayer.style.animation = "flee-fail 3s forwards";
+        setTimeout(() => {
+          playfield_encounterPlayer_health.style.visibility = "visible";
+          playfield_encounterPlayer_name.style.visibility = "visible";
+          playfield_encounterPlayer.style.animation = "";
+          isPlayerTurn = false;
+          queueAIturn();
+        }, 3000);
+      }
+    }, 1000);
+  });
 });
 
 function clearPlayerCrying() {

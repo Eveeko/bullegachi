@@ -2175,7 +2175,7 @@ var chargingAIMoveObj = null; // The move the AI is charging, if any.
 const AIMoveDict = {
   "pop": {
     name: "Pop",
-    value: 5,
+    value: 13,
     type: "attack",
     charge: true,
     chargeTime: 1,
@@ -2188,7 +2188,8 @@ const AIMoveDict = {
     type: "attack",
     charge: false,
     chargeTime: 0,
-    animation: move_anim_whip,
+    chargeAnimation: null,
+    attackAnimation: move_anim_whip
   },
   "spray": {
     name: "Spray",
@@ -2538,7 +2539,7 @@ function move_anim_popCharge(callback) {
       }, 100)
     }, 100)
   }, 100)
-};
+}; // Done
 function move_anim_pop(callback) {
   setTimeout(() => {
     const source = audioContext.createBufferSource();
@@ -2570,8 +2571,9 @@ function move_anim_pop(callback) {
       }, 100)
     }, 100)
   }, 100)
-};
+}; // Done
 function move_anim_whip(callback) {
+  
 };
 function move_anim_spray(callback) {
 };

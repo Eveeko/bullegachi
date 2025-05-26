@@ -1675,55 +1675,64 @@ body {
 }
 
 @keyframes flee-fail {
-  0% {
+
+  0%,
+  9% {
     top: 45px;
     left: 30px;
     transform: scale(1);
   }
 
-  10% {
+  10%,
+  17% {
     top: 30px;
     left: 30px;
     transform: scale(1.1, 0.9);
     /* Jump up */
   }
 
-  18% {
+  18%,
+  27% {
     top: 45px;
     left: 30px;
     transform: scale(1);
     /* Land back */
   }
 
-  28% {
+  28%,
+  37% {
     top: 45px;
     left: 10px;
     transform: scale(1, 1) rotate(-5deg);
     /* Start running left */
   }
 
-  38% {
+  38%,
+  43% {
     top: 45px;
     left: -4px;
     transform: scale(1.1, 0.9) rotate(-12deg);
     /* Hit wall */
   }
 
-  44% {
+  44%,
+  59% {
     top: 45px;
     left: 8px;
     transform: scale(0.95, 1.1) rotate(10deg);
     /* Bounce off wall */
   }
 
-  60% {
+  60%,
+  79% {
     top: 45px;
     left: 18px;
     transform: scale(1, 1) rotate(5deg);
     /* Walk back */
   }
 
-  80% {
+  80%,
+  99% {
     top: 45px;
     left: 30px;
     transform: scale(1, 1) rotate(0deg);
@@ -1738,76 +1747,43 @@ body {
 }
 
 @keyframes flee-success {
-  0% {
+
+  0%,
+  9% {
     top: 45px;
     left: 30px;
     transform: scale(1);
   }
 
-  10% {
+  10%,
+  17% {
     top: 30px;
     left: 30px;
     transform: scale(1.1, 0.9);
     /* Jump up */
   }
 
-  18% {
+  18%,
+  27% {
     top: 45px;
     left: 30px;
     transform: scale(1);
     /* Land back */
   }
 
-  28% {
+  28%,
+  37%, 59% {
     top: 45px;
     left: 10px;
-    transform: scale(1, 1) rotate(-10deg);
+    transform: scale(1, 1);
     /* Start running left */
   }
-
-  38% {
-    top: 45px;
-    transform: scale(1.1, 0.9) rotate(-15deg);
-    /* Approaching wall */
+  60%, 69% {
+    left: -4px;
   }
-
-  44% {
-    top: 45px;
-    transform: scale(1.1, 0.9) rotate(-20deg);
-    /* Through wall */
-  }
-
-  60% {
-    top: 45px;
-    transform: scale(1.1, 0.9) rotate(-25deg) skewX(-10deg);
-    /* Running through */
-  }
-
-  70% {
-    top: 43px;
-    left: -90px;
-    transform: scale(1.15, 0.85) rotate(-30deg) skewX(-15deg);
-    /* Cartoony stretch */
-  }
-
-  80% {
-    top: 47px;
-    left: -120px;
-    transform: scale(1.2, 0.8) rotate(-35deg) skewX(-20deg);
-    /* More stretch */
-  }
-
-  90% {
-    top: 45px;
-    left: -150px;
-    transform: scale(1.1, 0.9) rotate(-30deg) skewX(-10deg);
-    /* End stretch */
-  }
-
-  100% {
+  70%, 100% {
     top: 45px;
     left: -190px;
-    transform: scale(1, 1) rotate(-25deg);
     /* 30px past wall */
   }
 }
@@ -1825,11 +1801,23 @@ body {
 }
 
 @keyframes flee-flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+
+  0%,
+  19%,
+  21%,
+  23%,
+  25%,
+  54%,
+  56%,
+  100% {
     opacity: 1;
     color: #ffcc00;
   }
-  20%, 22%, 24%, 55% {
+
+  20%,
+  22%,
+  24%,
+  55% {
     opacity: 0.5;
     color: #050403;
     filter: brightness(0.7);

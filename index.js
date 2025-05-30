@@ -6,6 +6,7 @@ let currentSpeechSliceIndex = 0;
 const sliceDuration = 0.16;
 // Move sfx buffers for combat.
 var movePopSfxBuffer = null;
+var movePopChargeSfxBuffer = null;
 var moveWhipSfxBuffer = null;
 var movePlayerPunchSfxBuffer = null;
 var deathSfxBuffer = null;
@@ -179,6 +180,14 @@ fetch("sfx/enemy_1_pop.wav")
     movePopSfxBuffer = buffer;
     console.log('Move Pop Sfx Audio buffer loaded:', movePopSfxBuffer.duration, 'seconds');
   }).catch(error => console.error('Error loading Move Pop Sfx audio:', error));
+
+fetch("sfx/enemy_1_pop_charge_sfx.wav")
+  .then(response => response.arrayBuffer())
+  .then(data => audioContext.decodeAudioData(data))
+  .then(buffer => {
+    movePopChargeSfxBuffer = buffer;
+    console.log('Move Pop Charge Sfx Audio buffer loaded:', movePopChargeSfxBuffer.duration, 'seconds');
+  }).catch(error => console.error('Error loading Move Pop Charge Sfx audio:', error));
 
 fetch("sfx/player_punch.wav")
   .then(response => response.arrayBuffer())
@@ -2529,11 +2538,19 @@ function clearPlayerCrying() {
 
 function move_anim_popCharge(callback) {
   setTimeout(() => {
+    const source = audioContext.createBufferSource();
+    source.buffer = movePopChargeSfxBuffer;
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.6; // Set volume to 60%
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    source.start(audioContext.currentTime, 0, 1);
     playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_1.png")`;
     setTimeout(() => {
       playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_2.png")`;
       setTimeout(() => {
         playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_1_3.png")`;
+        source.stop(); // Stop the sound after the animation is done.
         isAIMoveCharging--; // Decrement the charge counter.
         callback();
       }, 100)
@@ -2573,7 +2590,7 @@ function move_anim_pop(callback) {
   }, 100)
 }; // Done
 function move_anim_whip(callback) {
-  
+
 };
 function move_anim_spray(callback) {
 };

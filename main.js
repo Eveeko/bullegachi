@@ -2110,7 +2110,7 @@ class Enemy {
     this.sprite = `sprite/sprite_enemy_${faceId}.png`; // Skinwalker type shit
     switch(faceId){
       case 1:
-        this.attacks = ["pop", "pop"];
+        this.attacks = ["pop", "whip"];
         this.defences = [];
         break;
       case 2:

@@ -221,6 +221,14 @@ fetch("sfx/flee_glitch_sfx.wav")
     console.log('Flee Glitch Sfx Audio buffer loaded:', fleeGlitchSfxBuffer.duration, 'seconds');
   }).catch(error => console.error('Error loading Flee Glitch Sfx audio:', error));
 
+fetch("sfx/enemy_1_whip.wav")
+  .then(response => response.arrayBuffer())
+  .then(data => audioContext.decodeAudioData(data))
+  .then(buffer => {
+    moveWhipSfxBuffer = buffer;
+    console.log('Move Whip Sfx Audio buffer loaded:', moveWhipSfxBuffer.duration, 'seconds');
+  }).catch(error => console.error('Error loading Move Whip Sfx audio:', error));
+
 function moveFace() {
   var left = bFace.style.getPropertyValue("left");
   // Move the div
@@ -264,84 +272,93 @@ function playSelectSfx() {
  */
 function closeAnyOpenPanels(selector) {
   switch (selector) {
-    case 0:
-      foodBox.style.visibility = "hidden";
-      foodBtn.style.backgroundImage = "";
-      invBox.style.visibility = "hidden";
-      invBtn.style.backgroundImage = "";
-      battleBox.style.visibility = "hidden";
-      battleBtn.style.backgroundImage = "";
     case 1:
-      infoBox.style.visibility = "hidden";
+      infoBox.style.display = "none";
       infoBtn.style.backgroundImage = "";
-      invBox.style.visibility = "hidden";
+      infoOpen = false;
+      invBox.style.display = "none";
       invBtn.style.backgroundImage = "";
-      battleBox.style.visibility = "hidden";
+      battleBox.style.display = "none";
       battleBtn.style.backgroundImage = "";
+      settingsBox.style.display = "none";
+      settingsBtn.style.backgroundImage = "";
       break;
     case 2:
-      infoBox.style.visibility = "hidden";
+      infoBox.style.display = "none";
       infoBtn.style.backgroundImage = "";
-      foodBox.style.visibility = "hidden";
+      infoOpen = false;
+      foodBox.style.display = "none";
       foodBtn.style.backgroundImage = "";
-      battleBox.style.visibility = "hidden";
+      battleBox.style.display = "none";
       battleBtn.style.backgroundImage = "";
+      settingsBox.style.display = "none";
+      settingsBtn.style.backgroundImage = "";
       break;
     case 3:
-      infoBox.style.visibility = "hidden";
+      infoBox.style.display = "none";
       infoBtn.style.backgroundImage = "";
-      invBox.style.visibility = "hidden";
+      infoOpen = false;
+      invBox.style.display = "none";
       invBtn.style.backgroundImage = "";
-      foodBox.style.visibility = "hidden";
+      foodBox.style.display = "none";
       foodBtn.style.backgroundImage = "";
+      settingsBox.style.display = "none";
+      settingsBtn.style.backgroundImage = "";
       break;
     case 4:
-      infoBox.style.visibility = "hidden";
+      infoBox.style.display = "none";
       infoBtn.style.backgroundImage = "";
-      foodBox.style.visibility = "hidden";
+      infoOpen = false;
+      foodBox.style.display = "none";
       foodBtn.style.backgroundImage = "";
-      invBox.style.visibility = "hidden";
+      invBox.style.display = "none";
       invBtn.style.backgroundImage = "";
-      battleBox.style.visibility = "hidden";
+      battleBox.style.display = "none";
       battleBtn.style.backgroundImage = "";
       break;
-    default:
-      foodBox.style.visibility = "hidden";
+    case 5:
+      foodBox.style.display = "none";
       foodBtn.style.backgroundImage = "";
-      invBox.style.visibility = "hidden";
+      invBox.style.display = "none";
       invBtn.style.backgroundImage = "";
-      battleBox.style.visibility = "hidden";
+      battleBox.style.display = "none";
+      battleBtn.style.backgroundImage = "";
+      settingsBox.style.display = "none";
+      settingsBtn.style.backgroundImage = "";
+    default:
+      foodBox.style.display = "none";
+      foodBtn.style.backgroundImage = "";
+      invBox.style.display = "none";
+      invBtn.style.backgroundImage = "";
+      battleBox.style.display = "none";
       battleBtn.style.backgroundImage = "";
   }
 }
 infoBtn.onmouseover = () => {
-  if (!infoOpen) {
+  if (infoOpen == false) {
     playSelectSfx();
-    infoBox.style.visibility = "visible";
+    infoBox.style.display = "block";
     infoBtn.style.backgroundImage = `url("sprite/sprite_info_i.png")`;
   }
 };
 infoBtn.onmouseout = () => {
-  if (!infoOpen) {
-    infoBox.style.visibility = "hidden";
+  if (infoOpen == false) {
+    infoBox.style.display = "none";
     infoBtn.style.backgroundImage = `url("sprite/sprite_info.png")`;
   }
 };
 infoBtn.onmousedown = () => {
-  closeAnyOpenPanels(0);
-  if (infoOpen) {
-    infoOpen = false;
-    infoBox.style.visibility = "hidden";
-  } else {
+  if (infoOpen == false) {
+    closeAnyOpenPanels(5);
     infoOpen = true;
-    infoBox.style.visibility = "visible";
-  }
-  if (infoBox.style.visibility == "visible") {
+    infoBox.style.display = "block";
     infoBtn.style.backgroundImage = `url("sprite/sprite_info.png")`;
     setTimeout(() => {
       infoBtn.style.backgroundImage = `url("sprite/sprite_info_i.png")`;
     }, 150);
   } else {
+    infoOpen = false;
+    infoBox.style.display = "none";
     infoBtn.style.backgroundImage = `url("sprite/sprite_info_i.png")`;
     setTimeout(() => {
       infoBtn.style.backgroundImage = `url("sprite/sprite_info.png")`;
@@ -354,14 +371,14 @@ foodBtn.onmouseover = () => {
 };
 foodBtn.onmousedown = () => {
   closeAnyOpenPanels(1);
-  if (foodBox.style.visibility == "visible") {
-    foodBox.style.visibility = "hidden";
+  if (foodBox.style.display == "block") {
+    foodBox.style.display = "none";
     foodBtn.style.backgroundImage = `url("sprite/sprite_food.png")`;
     setTimeout(() => {
       foodBtn.style.backgroundImage = "";
     }, 150);
   } else {
-    foodBox.style.visibility = "visible";
+    foodBox.style.display = "block";
     foodBtn.style.backgroundImage = `url("sprite/sprite_food.png")`;
     setTimeout(() => {
       foodBtn.style.backgroundImage = `url("sprite/sprite_food_i.png")`;
@@ -374,14 +391,14 @@ invBtn.onmouseover = () => {
 };
 invBtn.onmousedown = () => {
   closeAnyOpenPanels(2);
-  if (invBox.style.visibility == "visible") {
-    invBox.style.visibility = "hidden";
+  if (invBox.style.display == "block") {
+    invBox.style.display = "none";
     invBtn.style.backgroundImage = `url("sprite/sprite_inv.png")`;
     setTimeout(() => {
       invBtn.style.backgroundImage = "";
     }, 150);
   } else {
-    invBox.style.visibility = "visible";
+    invBox.style.display = "block";
     invBtn.style.backgroundImage = `url("sprite/sprite_inv.png")`;
     setTimeout(() => {
       invBtn.style.backgroundImage = `url("sprite/sprite_inv_i.png")`;
@@ -394,14 +411,14 @@ battleBtn.onmouseover = () => {
 };
 battleBtn.onmousedown = () => {
   closeAnyOpenPanels(3);
-  if (battleBox.style.visibility == "visible") {
-    battleBox.style.visibility = "hidden";
+  if (battleBox.style.display == "block") {
+    battleBox.style.display = "none";
     battleBtn.style.backgroundImage = `url("sprite/sprite_battle.png")`;
     setTimeout(() => {
       battleBtn.style.backgroundImage = "";
     }, 150);
   } else {
-    battleBox.style.visibility = "visible";
+    battleBox.style.display = "block";
     battleBtn.style.backgroundImage = `url("sprite/sprite_battle.png")`;
     setTimeout(() => {
       battleBtn.style.backgroundImage = `url("sprite/sprite_battle_i.png")`;
@@ -413,14 +430,15 @@ settingsBtn.onmouseover = () => {
   playSelectSfx();
 };
 settingsBtn.onmousedown = () => {
-  if (settingsBox.style.visibility == "visible") {
-    settingsBox.style.visibility = "hidden";
+  closeAnyOpenPanels(4);
+  if (settingsBox.style.display == "block") {
+    settingsBox.style.display = "none";
     settingsBtn.style.backgroundImage = `url("sprite/sprite_settings.png")`;
     setTimeout(() => {
       settingsBtn.style.backgroundImage = "";
     }, 150);
   } else {
-    settingsBox.style.visibility = "visible";
+    settingsBox.style.display = "block";
     settingsBtn.style.backgroundImage = `url("sprite/sprite_settings.png")`;
     setTimeout(() => {
       settingsBtn.style.backgroundImage = `url("sprite/sprite_settings_i.png")`;
@@ -1623,7 +1641,7 @@ function tut12() {
 
 function tut13() {
   playSelectSfx();
-  battleBox.style.visibility = "";
+  battleBox.style.display = "block";
   tutorialNxtBtn.style.top = "132px";
   tutorialNxtBtn.style.left = "193px";
   tutorialArrow.style.top = "28px";
@@ -1696,7 +1714,7 @@ function tut17() {
 
 function tut18() {
   playSelectSfx();
-  battleBox.style.visibility = "hidden";
+  battleBox.style.display = "none";
   battleBtn.style.backgroundImage = "sprite/sprite_battle.png";
   sidebar.style.display = "none";
   tutorialSidebar.style.display = "none";
@@ -2590,7 +2608,44 @@ function move_anim_pop(callback) {
   }, 100)
 }; // Done
 function move_anim_whip(callback) {
-
+  setTimeout(() => {
+    const source = audioContext.createBufferSource();
+    source.buffer = moveWhipSfxBuffer;
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0.8; // Set volume to 80%
+    source.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    let damage = Math.floor(AIMoveDict["whip"].value + (curEnemyObj.lvl * 1.5));
+    if (isDefending) {
+      damage = Math.ceil(damage * .80); // Reduces damage by 80% if defending.
+    };
+    console.log(playerObj.health, damage);
+    playerObj.health -= damage;
+    playfield_encounterEnemy_sprite.style.width = "84px";
+    playfield_encounterEnemy_sprite.style.height = "47px";
+    playfield_encounterEnemy_sprite.style.left = "-49px";
+    playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_2_1.png")`;
+    playfield_encounterPlayer_health.innerHTML = `♥${playerObj.health}`;
+    setTimeout(() => {
+      playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_2_2.png")`;
+      setTimeout(() => {
+        playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_2_3.png")`;
+        setTimeout(() => {
+          source.start(audioContext.currentTime, 0, 1);
+          playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/moves/sprite_enemy_1_2_4.png")`;
+          playAttackSfx();
+          shake(false, true);
+          setTimeout(() => {
+            playfield_encounterEnemy_sprite.style.width = "";
+            playfield_encounterEnemy_sprite.style.height = "";
+            playfield_encounterEnemy_sprite.style.left = "";
+            playfield_encounterEnemy_sprite.style.backgroundImage = `url("sprite/sprite_enemy_1.png")`;
+            callback();
+          }, 100)
+        }, 100);
+      }, 100);
+    }, 100);
+  }, 100);
 };
 function move_anim_spray(callback) {
 };

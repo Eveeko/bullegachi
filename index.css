@@ -537,17 +537,19 @@ body {
   width: 64px;
   height: 4px;
   filter: blur(1px);
+  z-index: 10;
 }
 
 .set_icon {
   position: relative;
   display: inline-block;
   left: 44px;
-  top: -69px;
+  top: -24px;
   width: 32px;
   height: 32px;
   background-color: #110d00;
   background-image: url(sprite/sprite_move.png);
+  z-index: 11;
 }
 
 .icon_mute {

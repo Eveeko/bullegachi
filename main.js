@@ -2085,6 +2085,193 @@ function valChk() {
 // the original battle mechanics of the spam random encounter click-to-kill
 // -------------------------------------------------------------------------
 
+const gridSetDictionary = [
+  {
+    // Shape pattern visualization:
+    //  o o o
+    //  x x x
+    //  x x x
+    totalTiles: 3,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 1, coordY: 0 },
+      { coordX: 2, coordY: 0 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 }, // The first tile in the pattern.
+    lastTile: { coordX: 2, coordY: 0 }, // The last tile in the pattern.
+    height: 1 // The height of the pattern.
+  },
+  {
+    // Shape pattern visualization:
+    //  o o o
+    //  x o x
+    //  x x x
+    totalTiles: 4,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 1, coordY: 0 },
+      { coordX: 1, coordY: 1 },
+      { coordX: 2, coordY: 0 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 }, // The first tile in the pattern.
+    lastTile: { coordX: 2, coordY: 0 }, // The last tile in the pattern.
+    height: 2 // The height of the pattern.
+  },
+  {
+    // Shape pattern visualization:
+    //  o o o
+    //  x x o
+    //  x x o
+    totalTiles: 5,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 1, coordY: 0 },
+      { coordX: 2, coordY: 0 },
+      { coordX: 2, coordY: 1 },
+      { coordX: 2, coordY: 2 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 }, // The first tile in the pattern.
+    lastTile: { coordX: 2, coordY: 2 }, // The last tile in the pattern.
+    height: 3 // The height of the pattern.
+  },
+  {
+    // Shape:
+    //  o o x
+    //  x o x
+    //  x o o
+    totalTiles: 5,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 1, coordY: 0 },
+      { coordX: 1, coordY: 1 },
+      { coordX: 1, coordY: 2 },
+      { coordX: 2, coordY: 2 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 },
+    lastTile: { coordX: 2, coordY: 2 },
+    height: 3 // The height of the pattern.
+  },
+  {
+    // Shape:
+    //  o o o
+    //  x o x
+    //  x o x
+    totalTiles: 5,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 1, coordY: 0 },
+      { coordX: 2, coordY: 0 },
+      { coordX: 1, coordY: 1 },
+      { coordX: 1, coordY: 2 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 },
+    lastTile: { coordX: 1, coordY: 2 },
+    height: 3 // The height of the pattern.
+  },
+  {
+    // Shape:
+    //  o x x
+    //  o o o
+    //  x x o
+    totalTiles: 6,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 0, coordY: 1 },
+      { coordX: 1, coordY: 1 },
+      { coordX: 2, coordY: 1 },
+      { coordX: 2, coordY: 2 },
+      { coordX: 1, coordY: 1 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 },
+    lastTile: { coordX: 2, coordY: 2 },
+    height: 3 // The height of the pattern.
+  },
+  {
+    // Shape:
+    //  x o x
+    //  o o o
+    //  x o x
+    totalTiles: 5,
+    mapping: [
+      { coordX: 1, coordY: 0 },
+      { coordX: 0, coordY: 1 },
+      { coordX: 1, coordY: 1 },
+      { coordX: 2, coordY: 1 },
+      { coordX: 1, coordY: 2 }
+    ],
+    firstTile: { coordX: 1, coordY: 0 },
+    lastTile: { coordX: 1, coordY: 2 },
+    height: 3 // The height of the pattern.
+  },
+  {
+    // Shape:
+    //  x o o
+    //  x o x
+    //  o o x
+    totalTiles: 5,
+    mapping: [
+      { coordX: 1, coordY: 0 },
+      { coordX: 2, coordY: 0 },
+      { coordX: 1, coordY: 1 },
+      { coordX: 0, coordY: 2 },
+      { coordX: 1, coordY: 2 }
+    ],
+    firstTile: { coordX: 1, coordY: 0 },
+    lastTile: { coordX: 0, coordY: 2 },
+    height: 3 // The height of the pattern.
+  },
+  {
+    // Shape:
+    //  x o x
+    //  x o x
+    //  o o o
+    totalTiles: 5,
+    mapping: [
+      { coordX: 1, coordY: 0 },
+      { coordX: 1, coordY: 1 },
+      { coordX: 0, coordY: 2 },
+      { coordX: 1, coordY: 2 },
+      { coordX: 2, coordY: 2 }
+    ],
+    firstTile: { coordX: 1, coordY: 0 },
+    lastTile: { coordX: 2, coordY: 2 },
+    height: 3 // The height of the pattern.
+  },
+  {
+    // Shape:
+    //  x x o
+    //  o o o
+    //  x x o
+    totalTiles: 5,
+    mapping: [
+      { coordX: 2, coordY: 0 },
+      { coordX: 0, coordY: 1 },
+      { coordX: 1, coordY: 1 },
+      { coordX: 2, coordY: 1 },
+      { coordX: 2, coordY: 2 }
+    ],
+    firstTile: { coordX: 0, coordY: 1 },
+    lastTile: { coordX: 2, coordY: 2 },
+    height: 3 // The height of the pattern.
+  },
+  {
+    // Shape:
+    //  o x x
+    //  o o x
+    //  o x x
+    totalTiles: 4,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 0, coordY: 1 },
+      { coordX: 1, coordY: 1 },
+      { coordX: 0, coordY: 2 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 },
+    lastTile: { coordX: 0, coordY: 2 },
+    height: 3 // The height of the pattern.
+  }
+]
+
 class Player {
   health = 100;
   defenceCo = 1; // The defence coefficient(multiplier) for any defences. the higher the value the more dmg is blocked
@@ -2108,22 +2295,22 @@ class Enemy {
     faceId = 1;
     this.id = faceId;
     this.sprite = `sprite/sprite_enemy_${faceId}.png`; // Skinwalker type shit
-    switch(faceId){
+    switch (faceId) {
       case 1:
         this.attacks = ["pop", "whip"];
         this.defences = [];
         break;
       case 2:
         this.attacks = ["spray", "crack open"];
-        this.defences = [ "hold" ];
+        this.defences = ["hold"];
         break;
       case 3:
         this.attacks = ["slam", "fall", "shockwave"];
-        this.defences = [ "lock", "hold" ];
+        this.defences = ["lock", "hold"];
         break;
       case 4:
         this.attacks = ["fall"];
-        this.defences = [ "hold" ];
+        this.defences = ["hold"];
         break;
       case 5:
         this.attacks = ["shine", "whip"]
@@ -2138,7 +2325,7 @@ class Enemy {
     this.encounterOffsetX = [0, 10, 12, 14, 15, 15][faceId - 1]; // offsets for the encounter anim so the player doesnt overlap on the enemy sprite.
     this.encounterOffsetY = [0, 0, 0, 0, 0, 0][faceId - 1]; // ^^^
   }
-  generateName (faceId){
+  generateName(faceId) {
     // TODO: Make this generate a sudo unique name based on which sprite is being currently used.
     return "Enemy1";
   }
@@ -2234,6 +2421,7 @@ class Level {
     var totalTilesToGen = Math.round(
       +this.seed.toString().substring(5, 6) * floorMultiplier + 3
     ); // The amount of tiles we need to generate.
+
     this.seed = ((1 + Math.random() * 9) | 0) + gen(8); // Generates a 9 digit long seed.
 
     var randY = +`0.${this.seed.toString().substring(0, 3)}`; // The random number used for gridHeight determination.
@@ -2250,378 +2438,163 @@ class Level {
       randX = 3;
     } // Protection against a 2x2 cube level.
     this.gridLength = randX; // Sets the grid length to the randX value.
+    totalTilesToGen = Math.min(totalTilesToGen, randY * randX);
 
-    console.log("[*] totalTilesToGen value:", totalTilesToGen);
-    console.log("[*] floorMultiplier value:", floorMultiplier);
+    console.log(`floorStr: ${floorStr}, floorMultiplier: ${floorMultiplier}, gridHeight: ${this.gridHeight}, gridLength: ${this.gridLength}, totalTilesToGen: ${totalTilesToGen}, gridSeed: ${this.seed}`);
 
     // -----t-i-l-e---g-e-n-e-r-a-t-i-o-n------
-
-    // Generates all connected shapes in a 3x3 grid that span both left and right sides.
-    function generateShapes() {
-      const ROWS = 3;
-      const COLS = 3;
-
-      function isConnected(grid) {
-        const visited = Array.from({ length: ROWS }, () =>
-          Array(COLS).fill(false)
-        );
-
-        function dfs(r, c) {
-          if (
-            r < 0 ||
-            r >= ROWS ||
-            c < 0 ||
-            c >= COLS ||
-            grid[r][c] === 0 ||
-            visited[r][c]
-          ) {
-            return;
-          }
-          visited[r][c] = true;
-          dfs(r - 1, c);
-          dfs(r + 1, c);
-          dfs(r, c - 1);
-          dfs(r, c + 1);
-        }
-
-        let foundStart = false;
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            if (grid[r][c] === 1) {
-              if (!foundStart) {
-                dfs(r, c);
-                foundStart = true;
-              } else if (!visited[r][c]) {
-                return false; // Disconnected
-              }
-            }
-          }
-        }
-        return foundStart;
+    var grid = []; // each array inside here is an X value.
+    var lastX = 0; // the last X value we were at when generating chunks.
+    var lastY = -1;
+    var tilesGenerated = 0; // the amount of tiles generated so far.
+    for (let x = 0; x < this.gridLength; x++) {
+      let yArray = [];
+      for (let y = 0; y < this.gridHeight; y++) {
+        yArray.push([]); // each array inside here is an Y value.
+      };
+      grid[x] = yArray; // each array added is a new X value.
+    };
+    console.log(`grid array,`, grid);
+    var ySteps = Math.floor(randY / 3);
+    var filteredDictionary = gridSetDictionary.filter((e) => e.height <= randY);
+    function generateChunk() {
+      let chunkedGrid = filteredDictionary[Math.floor(Math.random() * filteredDictionary.length)];
+      if (lastX != 0) { lastX += 3; }; // if the lastX value is not the starting, increase offset by 3;
+      if (lastY != ySteps) { lastY++ }
+      else if (lastY == ySteps) { lastY = 0; } // if the lastY value is max, reset to 0;
+      for (let i = 0; i < chunkedGrid.totalTiles; i++) {
+        let tileX = chunkedGrid.mapping[i].coordX;
+        let tileY = chunkedGrid.mapping[i].coordY;
+        grid[tileX + lastX][tileY + lastY] = new Tile(tileX + lastX, tileY + lastY, true);
+        tilesGenerated++;
       }
-
-      function touchesSides(grid) {
-        const leftTouched = grid.some((row) => row[0] === 1);
-        const rightTouched = grid.some((row) => row[COLS - 1] === 1);
-        return leftTouched && rightTouched;
-      }
-
-      function gridsAreEqual(grid1, grid2) {
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            if (grid1[r][c] !== grid2[r][c]) {
-              return false;
-            }
-          }
-        }
-        return true;
-      }
-
-      function normalize(grid) {
-        const rotations = [];
-        let current = grid;
-        for (let i = 0; i < 4; i++) {
-          current = rotateGrid(current);
-          rotations.push(current);
-        }
-
-        const reflections = rotations.map(reflectGrid);
-        return [grid, ...rotations, ...reflections].sort((a, b) => {
-          return JSON.stringify(a).localeCompare(JSON.stringify(b));
-        })[0];
-      }
-
-      function rotateGrid(grid) {
-        const rotated = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            rotated[c][ROWS - 1 - r] = grid[r][c];
-          }
-        }
-        return rotated;
-      }
-
-      function reflectGrid(grid) {
-        const reflected = Array.from({ length: ROWS }, () =>
-          Array(COLS).fill(0)
-        );
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            reflected[r][COLS - 1 - c] = grid[r][c];
-          }
-        }
-        return reflected;
-      }
-
-      const shapes = new Set();
-      const maxTiles = ROWS * COLS;
-      for (let mask = 1; mask < 1 << maxTiles; mask++) {
-        const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-        for (let bit = 0; bit < maxTiles; bit++) {
-          if (mask & (1 << bit)) {
-            grid[Math.floor(bit / COLS)][bit % COLS] = 1;
-          }
-        }
-        if (isConnected(grid) && touchesSides(grid)) {
-          const normalized = normalize(grid);
-          const key = JSON.stringify(normalized);
-          shapes.add(key);
+      console.log(`grid array,`, grid);
+      let yPlaceholder = 0;
+      for(let x = 0; x < 8; x++) {
+        if(x % 3 === 0){
+          if(yPlaceholder == 0){
+            yPlaceholder = 1;
+          }else {
+            yPlaceholder = 2;
+          };
+        };
+        if(grid[yPlaceholder][x - (yPlaceholder * 3)]){}else{
+          grid[yPlaceholder][x - (yPlaceholder * 3)] = new Tile(yPlaceholder, x - (yPlaceholder * 3), false); // if the tile is not already set, set it to false.
         }
       }
+      if (tilesGenerated < totalTilesToGen) {
+        generateChunk(); // if we have not generated enough tiles, generate another chunk.
+      } else { finalizeGrid() }; // else wrap it up and generate the enemies and loot.
+    };
+    generateChunk(); // Initiate the chunk generation process.
+    function finalizeGrid() {
+      tiles = grid;
+      // --------------------------------------
 
-      return Array.from(shapes).map((shape) => JSON.parse(shape));
-    }
+      let enemiesRemaining = this.totalEnemies;
+      let lootRemaining = this.totalLoot;
 
-    const SHAPES = generateShapes();
-
-    /**
-     * Returns a random connected shape from the generated SHAPES array.
-     * @returns {number[][]} A 3x3 grid representing a random connected shape.
-     */
-    function getRandomShape() {
-      const randomIndex = Math.floor(Math.random() * SHAPES.length);
-      return SHAPES[randomIndex];
-    }
-
-    /**
-     * Fills a grid of specified dimensions with connected shapes, ensuring a valid path.
-     * @param {number} totalTilesToGen - Total number of tiles that should be walkable.
-     * @param {number} gridHeight - Maximum Y-axis height of the grid.
-     * @param {number} gridLength - Maximum X-axis length of the grid.
-     * @returns {Tile[][][]} A 3D array representing the filled grid.
-     * we love chatgpt 4o !_!
-     */
-    function fillGrid(totalTilesToGen, gridHeight, gridLength) {
-      const grid = Array.from({ length: gridLength }, (_, x) =>
-        Array.from({ length: gridHeight }, (_, y) => new Tile(x, y, false))
-      );
-
-      let tilesGenerated = 0;
-      let lastX = 0,
-        lastY = 0;
-
-      while (tilesGenerated < totalTilesToGen) {
-        const shape = getRandomShape();
-        let placed = false;
-
-        for (let startX = 0; startX < gridLength - 2 && !placed; startX++) {
-          for (let startY = 0; startY < gridHeight - 2 && !placed; startY++) {
-            // Check if shape can fit
-            let canPlace = true;
-            for (let x = 0; x < 3; x++) {
-              for (let y = 0; y < 3; y++) {
-                if (
-                  shape[x][y] === 1 &&
-                  grid[startX + x][startY + y].walkable
-                ) {
-                  canPlace = false;
-                  break;
-                }
-              }
-              if (!canPlace) break;
-            }
-
-            if (canPlace) {
-              // Place shape on grid
-              for (let x = 0; x < 3; x++) {
-                for (let y = 0; y < 3; y++) {
-                  if (shape[x][y] === 1) {
-                    grid[startX + x][startY + y].walkable = true;
-                    tilesGenerated++;
-                  }
-                }
-              }
-              lastX = startX;
-              lastY = startY;
-              placed = true;
-            }
-          }
-        }
-
-        // If no valid placement, exit loop (should not happen in a well-formed input)
-        if (!placed) {
-          break;
-        }
-      }
-
-      // Ensure at least one walkable tile in the first column
-      const firstColumnHasTile = grid.some((column) => column[0].walkable);
-      if (!firstColumnHasTile) {
-        for (let y = 0; y < gridHeight; y++) {
-          if (!grid[0][y].walkable) {
-            grid[0][y].walkable = true;
-            tilesGenerated++;
-            break;
-          }
-        }
-      }
-
-      // Ensure there is a path from the start to the end
-      const visited = Array.from({ length: gridLength }, () =>
-        Array(gridHeight).fill(false)
-      );
-
-      function dfs(x, y) {
-        if (
-          x < 0 ||
-          x >= gridLength ||
-          y < 0 ||
-          y >= gridHeight ||
-          !grid[x][y].walkable ||
-          visited[x][y]
-        ) {
-          return false;
-        }
-        visited[x][y] = true;
-        if (x === gridLength - 1) {
-          return true;
-        }
-        return (
-          dfs(x + 1, y) ||
-          dfs(x - 1, y) ||
-          dfs(x, y + 1) ||
-          dfs(x, y - 1)
-        );
-      }
-
-      let pathExists = false;
-      for (let y = 0; y < gridHeight; y++) {
-        if (grid[0][y].walkable && dfs(0, y)) {
-          pathExists = true;
-          break;
-        }
-      }
-
-      if (!pathExists) {
-        // If no path exists, make one
-        for (let x = 0; x < gridLength; x++) {
-          for (let y = 0; y < gridHeight; y++) {
-            if (!grid[x][y].walkable) {
-              grid[x][y].walkable = true;
-              tilesGenerated++;
-              if (dfs(0, 0)) {
-                pathExists = true;
-                break;
-              }
-              grid[x][y].walkable = false;
-              tilesGenerated--;
-            }
-          }
-          if (pathExists) break;
-        }
-      }
-
-      return grid;
-    }
-    this.gridHeight = 3;
-    var grid = fillGrid(44, 3, 20);
-    this.tiles = grid;
-
-    // --------------------------------------
-
-    let enemiesRemaining = this.totalEnemies;
-    let lootRemaining = this.totalLoot;
-
-    for (let i = 0; i < Math.min(totalTilesToGen - 1, this.tiles.length); i++) {
-      // Probability of placing an enemy on this tile
-      var probability = enemiesRemaining / (totalTilesToGen - i);
-      var XgridValid = [];
-      if (Math.random() < probability) {
-        var Xgrid = this.tiles[i];
-        for (let z = 0; z < Xgrid.length; z++) {
-          console.log(Xgrid[z]);
-          if (Xgrid[z].walkable) {
-            XgridValid.push(z);
-          }
-        }
-        // Generate a random index between 0 and (length - 1)
-        var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
-        console.log("enemy placed: ", i, randomXgridIndex); // Place enemy
-        this.tiles[i][randomXgridIndex].enemy = new Enemy();
-        this.tiles[i][randomXgridIndex].walkable = true;
-        enemiesRemaining--; // Reduce remaining enemies
-
-        if (enemiesRemaining === 0) break; // Exit early if all enemies are placed
-      }
-    }
-    for (let i = 0; i < totalTilesToGen - 1; i++) {
-      // Probability of placing a piece of loot on this tile
-      const probability = lootRemaining / (totalTilesToGen - i);
-
-      if (Math.random() < probability) {
-        var Xgrid = this.tiles[i];
+      for (let i = 0; i < Math.min(totalTilesToGen - 1, this.tiles.length); i++) {
+        // Probability of placing an enemy on this tile
+        var probability = enemiesRemaining / (totalTilesToGen - i);
         var XgridValid = [];
-        for (let z = 0; z < Xgrid.length; z++) {
-          if (Xgrid[z].walkable) {
-            XgridValid.push(z);
+        if (Math.random() < probability) {
+          var Xgrid = this.tiles[i];
+          for (let z = 0; z < Xgrid.length; z++) {
+            console.log(Xgrid[z]);
+            if (Xgrid[z].walkable) {
+              XgridValid.push(z);
+            }
           }
+          // Generate a random index between 0 and (length - 1)
+          var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
+          console.log("enemy placed: ", i, randomXgridIndex); // Place enemy
+          this.tiles[i][randomXgridIndex].enemy = new Enemy();
+          this.tiles[i][randomXgridIndex].walkable = true;
+          enemiesRemaining--; // Reduce remaining enemies
+
+          if (enemiesRemaining === 0) break; // Exit early if all enemies are placed
         }
-        // Generate a random index between 0 and (length - 1)
-        var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
-        console.log("loot placed: ", i, randomXgridIndex); // Place loot
-        this.tiles[i][randomXgridIndex].item = new Item("Loot", "Common", 1, 1);
-        lootRemaining--; // Reduce remaining loot
-
-        if (lootRemaining === 0) break; // Exit early if all loot are placed
       }
-    }
-    // ---------------------
-    // Generating exit tile.
+      for (let i = 0; i < totalTilesToGen - 1; i++) {
+        // Probability of placing a piece of loot on this tile
+        const probability = lootRemaining / (totalTilesToGen - i);
 
-    var aEndPoints = [];
-    var tilesToLoop = Math.floor(this.unusableTiles / 2) ? Math.floor(this.unusableTiles / 2) : 1;
-    console.log("exit tiles potential =", tilesToLoop);
-    var epad = null;
-
-    // Collect all walkable tiles in the last column
-    this.tiles[this.tiles.length - 1].forEach((e, i) => {
-      if (e.walkable == true) {
-        aEndPoints.push([this.tiles.length - 1, i]);
-        console.log("aEndPoints", i);
-      }
-    });
-
-    // If no walkable tiles in the last column, check the second last column, and so on
-    if (aEndPoints.length === 0) {
-      for (let col = this.tiles.length - 2; col >= 0; col--) {
-        this.tiles[col].forEach((e, i) => {
-          if (e.walkable == true) {
-            aEndPoints.push([col, i]);
-            console.log("aEndPoints", i);
+        if (Math.random() < probability) {
+          var Xgrid = this.tiles[i];
+          var XgridValid = [];
+          for (let z = 0; z < Xgrid.length; z++) {
+            if (Xgrid[z].walkable) {
+              XgridValid.push(z);
+            }
           }
-        });
-        if (aEndPoints.length > 0) break; // Stop if we found any walkable tiles
+          // Generate a random index between 0 and (length - 1)
+          var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
+          console.log("loot placed: ", i, randomXgridIndex); // Place loot
+          this.tiles[i][randomXgridIndex].item = new Item("Loot", "Common", 1, 1);
+          lootRemaining--; // Reduce remaining loot
+
+          if (lootRemaining === 0) break; // Exit early if all loot are placed
+        }
       }
-    }
+      // ---------------------
+      // Generating exit tile.
 
-    // Randomly pick one of the collected walkable tiles as the exit tile
-    if (aEndPoints.length > 0) {
-      let xe = getRandomValue(0, aEndPoints.length - 1);
-      epad = aEndPoints[xe];
-    }
+      var aEndPoints = [];
+      var tilesToLoop = Math.floor(this.unusableTiles / 2) ? Math.floor(this.unusableTiles / 2) : 1;
+      console.log("exit tiles potential =", tilesToLoop);
+      var epad = null;
 
-    this.exitAddress = epad;
-    // Making sure there is an entrance tile.
-    var arrayX2 = [];
+      // Collect all walkable tiles in the last column
+      this.tiles[this.tiles.length - 1].forEach((e, i) => {
+        if (e.walkable == true) {
+          aEndPoints.push([this.tiles.length - 1, i]);
+          console.log("aEndPoints", i);
+        }
+      });
 
-    this.tiles[1].forEach((e, i) => {
-      if (e.walkable == true) {
-        arrayX2.push(i);
+      // If no walkable tiles in the last column, check the second last column, and so on
+      if (aEndPoints.length === 0) {
+        for (let col = this.tiles.length - 2; col >= 0; col--) {
+          this.tiles[col].forEach((e, i) => {
+            if (e.walkable == true) {
+              aEndPoints.push([col, i]);
+              console.log("aEndPoints", i);
+            }
+          });
+          if (aEndPoints.length > 0) break; // Stop if we found any walkable tiles
+        }
       }
-    });
-    if (arrayX2.length) {
-      this.tiles[0][arrayX2[0]].walkable = true;
-    }
 
-    // Select "entrance" tile.
-    var availableStartTiles = [];
-
-    for (let x = 0; x < this.gridHeight; x++) {
-      if (this.tiles[0][x].walkable) {
-        availableStartTiles.push(x);
+      // Randomly pick one of the collected walkable tiles as the exit tile
+      if (aEndPoints.length > 0) {
+        let xe = getRandomValue(0, aEndPoints.length - 1);
+        epad = aEndPoints[xe];
       }
+
+      this.exitAddress = epad;
+      // Making sure there is an entrance tile.
+      var arrayX2 = [];
+
+      this.tiles[1].forEach((e, i) => {
+        if (e.walkable == true) {
+          arrayX2.push(i);
+        }
+      });
+      if (arrayX2.length) {
+        this.tiles[0][arrayX2[0]].walkable = true;
+      }
+
+      // Select "entrance" tile.
+      var availableStartTiles = [];
+
+      for (let x = 0; x < this.gridHeight; x++) {
+        if (this.tiles[0][x].walkable) {
+          availableStartTiles.push(x);
+        }
+      }
+      this.startAddress = [0, availableStartTiles[Math.floor(Math.random() * availableStartTiles.length)]];
     }
-    this.startAddress = [0, availableStartTiles[Math.floor(Math.random() * availableStartTiles.length)]];
   }
 }
 
@@ -2814,19 +2787,19 @@ ipcMain.on("attemptMove", (event, direction) => {
   }
 });
 
-ipcMain.on("encounter_started", ()=>{
+ipcMain.on("encounter_started", () => {
   win.webContents.send("battleBox_startEncounter");
 });
 
-ipcMain.on("encounter_enemy_fled", () =>{
+ipcMain.on("encounter_enemy_fled", () => {
   win.webContents.send("battleBox_endEncounter");
 });
 
-ipcMain.on("encounter_enemy_defeated", () =>{
+ipcMain.on("encounter_enemy_defeated", () => {
   curLevelObj.tiles[curPlayerPos[0]][curPlayerPos[1]].enemy = null;
   win.webContents.send("battleBox_endEncounter");
 });
 
-ipcMain.on("encounter_player_defeated", () =>{
+ipcMain.on("encounter_player_defeated", () => {
   win.webContents.send("battleBox_playerDefeated");
 });

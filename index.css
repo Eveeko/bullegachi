@@ -200,6 +200,17 @@ body {
   filter: blur(1px);
 }
 
+.info_seamfiller {
+  position: absolute;
+  top: 15px;
+  left: 34px;
+  border: 4px solid #ffcc00;
+  width: 0px;
+  height: 4px;
+  z-index: 10;
+  filter: blur(1px);
+}
+
 .info_health {
   color: #ffcc00;
   font-size: 12px;
@@ -1774,16 +1785,21 @@ body {
   }
 
   28%,
-  37%, 59% {
+  37%,
+  59% {
     top: 45px;
     left: 10px;
     transform: scale(1, 1);
     /* Start running left */
   }
-  60%, 69% {
+
+  60%,
+  69% {
     left: -4px;
   }
-  70%, 100% {
+
+  70%,
+  100% {
     top: 45px;
     left: -190px;
     /* 30px past wall */

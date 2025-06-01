@@ -56,17 +56,29 @@ const spoop_eyes = [
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0xf0, 0x00, 0x07, 0xff,
-  0xff, 0xff, 0xff, 0xc0, 0x00, 0x0f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x01, 0xf0,
-  0x00, 0x07, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00, 0x0f, 0x80, 0x00, 0x00, 0x00,
-  0x00, 0x01, 0xf0, 0x00, 0x07, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00, 0x0f, 0x80,
-  0x00, 0x00, 0x00, 0x00, 0x01, 0xf0, 0x00, 0x07, 0xff, 0xff, 0xff, 0xff, 0xc0,
-  0x00, 0x0f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x01, 0xf0, 0x00, 0x07, 0xff, 0xff,
-  0xff, 0xff, 0xc0, 0x00, 0x0f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x01, 0xf0, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0xf0, 0x00,
   0x07, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00, 0x0f, 0x80, 0x00, 0x00, 0x00, 0x00,
   0x01, 0xf0, 0x00, 0x07, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00, 0x0f, 0x80, 0x00,
   0x00, 0x00, 0x00, 0x01, 0xf0, 0x00, 0x07, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00,
-  0x0f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x0f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x01, 0xf0, 0x00, 0x07, 0xff, 0xff, 0xff,
+  0xff, 0xc0, 0x00, 0x0f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x01, 0xf0, 0x00, 0x07,
+  0xff, 0xff, 0xff, 0xff, 0xc0, 0x00, 0x0f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x01,
+  0xf0, 0x00, 0x07, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00, 0x0f, 0x80, 0x00, 0x00,
+  0x00, 0x00, 0x01, 0xf0, 0x00, 0x07, 0xff, 0xff, 0xff, 0xff, 0xc0, 0x00, 0x0f,
+  0x80, 0x00, 0x00, 0x00, 0x00, 0x01, 0xf0, 0x00, 0x07, 0xff, 0xff, 0xff, 0xff,
+  0xc0, 0x00, 0x0f, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -2269,6 +2281,101 @@ const gridSetDictionary = [
     firstTile: { coordX: 0, coordY: 0 },
     lastTile: { coordX: 0, coordY: 2 },
     height: 3 // The height of the pattern.
+  },
+  {
+    totalTiles: 1,
+    mapping: [
+      { coordX: 0, coordY: 0 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 },
+    lastTile: { coordX: 0, coordY: 0 },
+    height: 1
+  },
+  {
+    totalTiles: 1,
+    mapping: [
+      { coordX: 0, coordY: 1 }
+    ],
+    firstTile: { coordX: 0, coordY: 1 },
+    lastTile: { coordX: 0, coordY: 1 },
+    height: 2
+  },
+  {
+    totalTiles: 1,
+    mapping: [
+      { coordX: 1, coordY: 1 }
+    ],
+    firstTile: { coordX: 1, coordY: 1 },
+    lastTile: { coordX: 1, coordY: 1 },
+    height: 2
+  },
+  {
+    totalTiles: 1,
+    mapping: [
+      { coordX: 0, coordY: 2 }
+    ],
+    firstTile: { coordX: 0, coordY: 2 },
+    lastTile: { coordX: 0, coordY: 2 },
+    height: 3
+  }, {
+    totalTiles: 2,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 0, coordY: 1 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 },
+    lastTile: { coordX: 0, coordY: 1 },
+    height: 2
+  },
+  {
+    totalTiles: 2,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 1, coordY: 1 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 },
+    lastTile: { coordX: 1, coordY: 1 },
+    height: 2
+  },
+  {
+    totalTiles: 2,
+    mapping: [
+      { coordX: 0, coordY: 0 },
+      { coordX: 0, coordY: 2 }
+    ],
+    firstTile: { coordX: 0, coordY: 0 },
+    lastTile: { coordX: 0, coordY: 2 },
+    height: 3
+  },
+  {
+    totalTiles: 2,
+    mapping: [
+      { coordX: 0, coordY: 1 },
+      { coordX: 1, coordY: 1 }
+    ],
+    firstTile: { coordX: 0, coordY: 1 },
+    lastTile: { coordX: 1, coordY: 1 },
+    height: 2
+  },
+  {
+    totalTiles: 2,
+    mapping: [
+      { coordX: 0, coordY: 1 },
+      { coordX: 0, coordY: 2 }
+    ],
+    firstTile: { coordX: 0, coordY: 1 },
+    lastTile: { coordX: 0, coordY: 2 },
+    height: 3
+  },
+  {
+    totalTiles: 2,
+    mapping: [
+      { coordX: 1, coordY: 1 },
+      { coordX: 0, coordY: 2 }
+    ],
+    firstTile: { coordX: 1, coordY: 1 },
+    lastTile: { coordX: 0, coordY: 2 },
+    height: 3
   }
 ]
 
@@ -2431,14 +2538,16 @@ class Level {
       randY = 1;
     } // Protection against a Zero height level.
     this.gridHeight = randY; // Sets the grid height to the randY value.
-
+    this.gridHeight = 5; // DEBUG
     var randX = +`0.${this.seed.toString().substring(2, 5)}`; // The random number used for gridLength determination.
     randX = Math.log10(randX.toFixed(1) + 1) * floorMultiplier;
     if (randX <= 2) {
       randX = 3;
     } // Protection against a 2x2 cube level.
     this.gridLength = randX; // Sets the grid length to the randX value.
+    this.gridLength = 6; // DEBUG
     totalTilesToGen = Math.min(totalTilesToGen, randY * randX);
+    totalTilesToGen = 13; // DEBUG
 
     console.log(`floorStr: ${floorStr}, floorMultiplier: ${floorMultiplier}, gridHeight: ${this.gridHeight}, gridLength: ${this.gridLength}, totalTilesToGen: ${totalTilesToGen}, gridSeed: ${this.seed}`);
 
@@ -2454,54 +2563,30 @@ class Level {
       };
       grid[x] = yArray; // each array added is a new X value.
     };
-    console.log(`grid array,`, grid);
-    var ySteps = Math.floor(randY / 3);
-    var filteredDictionary = gridSetDictionary.filter((e) => e.height <= randY);
-    function generateChunk() {
-      let chunkedGrid = filteredDictionary[Math.floor(Math.random() * filteredDictionary.length)];
-      if (lastX != 0) { lastX += 3; }; // if the lastX value is not the starting, increase offset by 3;
-      if (lastY != ySteps) { lastY++ }
-      else if (lastY == ySteps) { lastY = 0; } // if the lastY value is max, reset to 0;
-      for (let i = 0; i < chunkedGrid.totalTiles; i++) {
-        let tileX = chunkedGrid.mapping[i].coordX;
-        let tileY = chunkedGrid.mapping[i].coordY;
-        grid[tileX + lastX][tileY + lastY] = new Tile(tileX + lastX, tileY + lastY, true);
-        tilesGenerated++;
-      }
-      console.log(`grid array,`, grid);
-      let yPlaceholder = 0;
-      for(let x = 0; x < 8; x++) {
-        if(x % 3 === 0){
-          if(yPlaceholder == 0){
-            yPlaceholder = 1;
-          }else {
-            yPlaceholder = 2;
-          };
-        };
-        if(grid[yPlaceholder][x - (yPlaceholder * 3)]){}else{
-          grid[yPlaceholder][x - (yPlaceholder * 3)] = new Tile(yPlaceholder, x - (yPlaceholder * 3), false); // if the tile is not already set, set it to false.
-        }
-      }
-      if (tilesGenerated < totalTilesToGen) {
-        generateChunk(); // if we have not generated enough tiles, generate another chunk.
-      } else { finalizeGrid() }; // else wrap it up and generate the enemies and loot.
-    };
-    generateChunk(); // Initiate the chunk generation process.
-    function finalizeGrid() {
-      tiles = grid;
+    //console.log(`grid array,`, grid);
+    var ySteps = Math.floor(this.gridHeight / 3);
+    var filteredDictionary = gridSetDictionary.filter((e) => e.height <= this.gridHeight);
+    var chunkSize = 3; // The size of the chunks inside the chunkDictionary. they're 3x3
+    var currentChunkX = 0; // The current chunk we are generating.
+    var currentChunkY = 0; // The current chunk we are generating.
+    var validTiles = []; // The valid tiles that can be used for generation.
+    var lastTileTouched = null; // The last tile generated in the grid. used for checking if a chunk can connect.
+    var chunkedGrid = null;
+    var isAdjacent = false;
+    const finalizeGrid = () => {
+      this.tiles = grid;
       // --------------------------------------
 
       let enemiesRemaining = this.totalEnemies;
       let lootRemaining = this.totalLoot;
 
-      for (let i = 0; i < Math.min(totalTilesToGen - 1, this.tiles.length); i++) {
+      /* for (let i = 0; i < Math.min(totalTilesToGen - 1, this.tiles.length); i++) {
         // Probability of placing an enemy on this tile
         var probability = enemiesRemaining / (totalTilesToGen - i);
         var XgridValid = [];
         if (Math.random() < probability) {
           var Xgrid = this.tiles[i];
           for (let z = 0; z < Xgrid.length; z++) {
-            console.log(Xgrid[z]);
             if (Xgrid[z].walkable) {
               XgridValid.push(z);
             }
@@ -2515,28 +2600,8 @@ class Level {
 
           if (enemiesRemaining === 0) break; // Exit early if all enemies are placed
         }
-      }
-      for (let i = 0; i < totalTilesToGen - 1; i++) {
-        // Probability of placing a piece of loot on this tile
-        const probability = lootRemaining / (totalTilesToGen - i);
+      } */
 
-        if (Math.random() < probability) {
-          var Xgrid = this.tiles[i];
-          var XgridValid = [];
-          for (let z = 0; z < Xgrid.length; z++) {
-            if (Xgrid[z].walkable) {
-              XgridValid.push(z);
-            }
-          }
-          // Generate a random index between 0 and (length - 1)
-          var randomXgridIndex = Math.floor(Math.random() * XgridValid.length);
-          console.log("loot placed: ", i, randomXgridIndex); // Place loot
-          this.tiles[i][randomXgridIndex].item = new Item("Loot", "Common", 1, 1);
-          lootRemaining--; // Reduce remaining loot
-
-          if (lootRemaining === 0) break; // Exit early if all loot are placed
-        }
-      }
       // ---------------------
       // Generating exit tile.
 
@@ -2549,7 +2614,7 @@ class Level {
       this.tiles[this.tiles.length - 1].forEach((e, i) => {
         if (e.walkable == true) {
           aEndPoints.push([this.tiles.length - 1, i]);
-          console.log("aEndPoints", i);
+          //console.log("aEndPoints", i);
         }
       });
 
@@ -2559,7 +2624,7 @@ class Level {
           this.tiles[col].forEach((e, i) => {
             if (e.walkable == true) {
               aEndPoints.push([col, i]);
-              console.log("aEndPoints", i);
+              //console.log("aEndPoints", i);
             }
           });
           if (aEndPoints.length > 0) break; // Stop if we found any walkable tiles
@@ -2595,8 +2660,74 @@ class Level {
       }
       this.startAddress = [0, availableStartTiles[Math.floor(Math.random() * availableStartTiles.length)]];
     }
+    const p2 = () => {
+      console.log(tilesGenerated, totalTilesToGen);
+      var bypass = false;
+      for (let x = 0; x < chunkedGrid.totalTiles; x++) {
+        if (tilesGenerated < totalTilesToGen) {
+          let xIndex = chunkedGrid.mapping[x].coordX + (chunkSize * currentChunkX);
+          let yIndex = chunkedGrid.mapping[x].coordY + (chunkSize * currentChunkY);
+          if (yIndex >= this.gridHeight || xIndex >= this.gridLength) { console.log("bypassed overflow, outside bounds"); bypass= true; } else {
+            console.log(`Generating tile at: [${xIndex}, ${yIndex}]`, `local chunk:[${chunkedGrid.mapping[x].coordX}, ${chunkedGrid.mapping[x].coordY}]`);
+            grid[xIndex][yIndex] = new Tile(xIndex, yIndex, true);
+            tilesGenerated++;
+            lastTileTouched = [xIndex, yIndex]; // update the last tile touched.
+            validTiles.push([xIndex, yIndex]); // add the tile to the valid tiles array.
+            }
+          } else { console.log("bypassed overflow, tilesGenerated >= totalTilesToGen"); }
+        }
+        console.log("currentChunkY check", (currentChunkY * chunkSize), this.gridHeight, "currentChunkX", currentChunkX);
+        if ((currentChunkY * chunkSize) < this.gridHeight) {
+          currentChunkY++;
+        } else {
+          currentChunkY = 0;
+          currentChunkX++;
+        };
+        //console.log("current grid", grid);
+        if (tilesGenerated < totalTilesToGen && bypass == false) {
+          generateChunk(); // if we have not generated enough tiles, generate another chunk.
+        } else { finalizeGrid() }; // else wrap it up and generate the enemies and loot.
+      }
+      const generateChunk = () => {
+        console.log(`Generating a chunk...`);
+        if (lastTileTouched != null) {
+          // this makes sure the new chunk can connect to the last chunk.
+          filteredDictionary.forEach((chk, chki) => {
+            if (chk.totalTiles <= (totalTilesToGen - tilesGenerated)) {
+              chk.mapping.forEach((tile) => {
+                // Calculate absolute coordinates for the candidate tile
+                let absX = tile.coordX + (chunkSize * currentChunkX);
+                let absY = tile.coordY + (chunkSize * currentChunkY);
+
+                // Check adjacency with any valid tile
+                for (let i = 0; i < validTiles.length; i++) {
+                  let [vx, vy] = validTiles[i];
+                  if (
+                    Math.abs(absX - vx) <= 1 &&
+                    Math.abs(absY - vy) <= 1 &&
+                    !(absX === vx && absY === vy)
+                  ) {
+                    isAdjacent = true;
+                    break;
+                  }
+                }
+              });
+              if (isAdjacent) {
+                chunkedGrid = chk;
+                p2();
+              }
+            }
+          })
+        } else {
+          // first time around, pick a random chunk.
+          chunkedGrid = filteredDictionary[Math.floor(Math.random() * filteredDictionary.length)]; // the random grid piece to use for generation.
+          p2();
+        };
+        //console.log(`Using chunk:`, chunkedGrid, "grid", grid);
+      };
+      generateChunk(); // Initiate the chunk generation process.
+    }
   }
-}
 
 // --------------------------------------------
 // ____ _    _____      _    __               
@@ -2616,6 +2747,7 @@ function generatePrettyAsciiMap(grid) {
   const transposedGrid = [];
 
   // Transpose the grid to switch X and Y coordinates
+  //console.log("transpose",grid)
   for (let y = 0; y < grid[0].length; y++) {
     const row = [];
     for (let x = 0; x < grid.length; x++) {
@@ -2630,28 +2762,29 @@ function generatePrettyAsciiMap(grid) {
         row
           .map((cell) => {
             if (cell.enemy) {
-              return " E "; // Enemy present
+              return " [E] "; // Enemy present
             } else if (cell.loot) {
-              return " L "; // Loot present
+              return " [L] "; // Loot present
             } else if (cell.walkable) {
-              return " \uf0c8 "; // Walkable terrain
+              return " [=] "; // Walkable terrain
             } else {
-              return " \udb85\udd10 "; // Impassable terrain
+              return " [X] "; // Impassable terrain
             }
           })
           .join("") // Combine row into a single string for X positions
     )
     .join("\n"); // Combine all Y-position rows into the final map
 }
-//console.log(generatePrettyAsciiMap(this.tiles));
 var levelSet = [];
-for (z = 0; z < 10; z++) {
+for (z = 0; z < 3; z++) {
   levelSet.push(new Level(1));
 }
-for (x = 0; x < 10; x++) {
-  console.log("-");
-  console.log(generatePrettyAsciiMap(levelSet[x].tiles));
-}
+setTimeout(() => {
+  for (x = 0; x < 3; x++) {
+    console.log("-");
+    console.log(generatePrettyAsciiMap(levelSet[x].tiles));
+  }
+}, 5000);
 // -;-;-;-;-;-
 
 var ovwin;
@@ -2709,6 +2842,10 @@ ipcMain.on("battleBoxStart", () => {
   curLevelObj = startingLevel;
   curPlayerPos = [-1, curLevelObj.startAddress[1], "right"];
   win.webContents.send("battleBoxStart_levelSync", [startingLevel, curPlayerObj]);
+  console.log("Printing ascii map of starting level:");
+  setTimeout(() => {
+    console.log(generatePrettyAsciiMap(curLevelObj.tiles));
+  }, 2000);
 });
 ipcMain.on("battleBoxResume", () => { });
 

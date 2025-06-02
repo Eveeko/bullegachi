@@ -1237,7 +1237,7 @@ body {
 /* the origin tile where the player starts the level at. */
 .battle_tile_origin {
   position: absolute;
-  top: 60px;
+  top: 80px;
   left: 80px;
   background-color: #110d00;
   border: 3px solid #ffcc00;
